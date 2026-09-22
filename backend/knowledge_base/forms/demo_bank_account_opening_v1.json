@@ -1,0 +1,179 @@
+{
+  "form_id": "demo_bank_account_opening_v1",
+  "display_name": "Demo Bank Account Opening Form",
+  "category": "banking",
+  "version": "1",
+  "disclaimer": "Synthetic demonstration form, not an official bank document.",
+  "fingerprint_terms": [
+    "account type",
+    "nominee",
+    "occupation",
+    "demo bank"
+  ],
+  "fields": [
+    {
+      "field_id": "full_name",
+      "aliases": [
+        "name of applicant",
+        "applicant name",
+        "full name"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter your full legal name as printed on the identity document the form asks for.",
+        "hi": "Jo pehchan patra form maangta hai, usi par chhapa poora kanooni naam likhen.",
+        "kn": "Form keluva gurutina dakhalealli iruva poorna kanoonu hesaranu baredi."
+      },
+      "why_needed": {
+        "en": "The form uses this to identify the applicant.",
+        "hi": "Form aavedak ki pehchan ke liye yeh naam maangta hai.",
+        "kn": "Arjidaarana gurutisalu ee hesaru beku."
+      },
+      "example": "Ananya Rao",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "date_of_birth",
+      "aliases": [
+        "date of birth",
+        "dob"
+      ],
+      "type": "date",
+      "what_to_enter": {
+        "en": "Enter your date of birth in DD/MM/YYYY format.",
+        "hi": "Apni janm tithi DD/MM/YYYY praroop mein likhen.",
+        "kn": "Nimma janma dinankavannu DD/MM/YYYY svaroopadalli baredi."
+      },
+      "why_needed": {
+        "en": "The bank uses this as part of customer identification on this demo form.",
+        "hi": "Yeh demo form par pehchan ke liye janm tithi maangi gayi hai.",
+        "kn": "Ee demo formnalli gurutige janma dinanka kelalagide."
+      },
+      "example": "15/08/1998",
+      "validation": {
+        "kind": "date",
+        "format": "DD/MM/YYYY"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "occupation",
+      "aliases": [
+        "occupation"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter your current occupation or write Student, Homemaker, or Retired if that applies.",
+        "hi": "Apna vartaman vyavsay likhen, ya Student / Homemaker / Retired likhen.",
+        "kn": "Nimma igina vrttiyannu baredi, athava Student / Homemaker / Retired baredi."
+      },
+      "why_needed": {
+        "en": "The form records how the applicant earns a living.",
+        "hi": "Form aavedak ke vyavsay ka record rakhta hai.",
+        "kn": "Arjidaara vrttiya dakhale idu."
+      },
+      "example": "School teacher",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "nominee",
+      "aliases": [
+        "nominee",
+        "nominee name"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the full name of the person you want to name as nominee, if the form asks for one.",
+        "hi": "Yadi form maange to nominee ke roop mein jis vyakti ka naam dena chahte hain, unka poora naam likhen.",
+        "kn": "Form kelidare nominee aagi hesaru needabekada vyaktiya poorna hesaranu baredi."
+      },
+      "why_needed": {
+        "en": "A nominee is the person named to receive proceeds if the account holder dies. This is general guidance, not legal advice.",
+        "hi": "Nominee vah vyakti hai jiska naam aap aapatkal ke liye dete hain. Yeh kanooni salah nahi hai.",
+        "kn": "Nominee endare khateya malika illadiddare hesaru kottiruva vyakti. Idu kanoonu salahe alla."
+      },
+      "example": "Rohit Sharma",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "account_type",
+      "aliases": [
+        "account type",
+        "savings",
+        "current"
+      ],
+      "type": "checkbox",
+      "what_to_enter": {
+        "en": "Mark the account type printed on the form, such as Savings or Current.",
+        "hi": "Form par chhape Savings ya Current account type ko chinhit karen.",
+        "kn": "Formnalli iruva Savings athava Current khateya prakara gurutisi."
+      },
+      "why_needed": {
+        "en": "The demo bank groups applications by account type.",
+        "hi": "Demo bank account prakar se aavedan jodta hai.",
+        "kn": "Demo bank khateya prakara arjigala gumpumaaduttade."
+      },
+      "example": "Savings",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "address",
+      "aliases": [
+        "residential address",
+        "address"
+      ],
+      "type": "multiline",
+      "what_to_enter": {
+        "en": "Enter the full postal address the form asks for, including house number and locality.",
+        "hi": "Ghar sankhya aur ilake ke saath poora daak pata likhen.",
+        "kn": "Mane sankhye mattu pradesha sahita poornadaak vilasavannu baredi."
+      },
+      "why_needed": {
+        "en": "The bank uses a postal address for this demo application.",
+        "hi": "Yeh demo aavedan ke liye daak pata maanga gaya hai.",
+        "kn": "Ee demo arjige daak vilasa beku."
+      },
+      "example": "12 Lotus Lane, Demo Nagar",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "signature",
+      "aliases": [
+        "applicant signature",
+        "signature",
+        "sign here"
+      ],
+      "type": "signature",
+      "what_to_enter": {
+        "en": "Leave this blank in FormSathi. Sign the official paper form by hand.",
+        "hi": "Yahan FormSathi mein kuch na likhen. Asli form par haath se hastakshar karen.",
+        "kn": "FormSathiyalli idannu khali bidi. Adhikrita formnalli kaiyinda sahi maadi."
+      },
+      "why_needed": {
+        "en": "A signature confirms the applicant reviewed the official form.",
+        "hi": "Hastakshar se aavedak form padhkar sahmat hota hai.",
+        "kn": "Sahi arjidaaru form nodiddu dhrudhapadisuttade."
+      },
+      "example": "[SIGN MANUALLY]",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    }
+  ]
+}

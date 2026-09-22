@@ -1,0 +1,175 @@
+{
+  "form_id": "demo_government_service_v1",
+  "display_name": "Demo Basic Government Service Application",
+  "category": "government",
+  "version": "1",
+  "disclaimer": "Synthetic demonstration form, not an official government document.",
+  "fingerprint_terms": [
+    "service requested",
+    "ward number",
+    "acknowledgement",
+    "demo civic"
+  ],
+  "fields": [
+    {
+      "field_id": "full_name",
+      "aliases": [
+        "applicant name",
+        "full name"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter your full legal name as printed on the identity document the form asks for.",
+        "hi": "Jo pehchan patra form maangta hai, usi par chhapa poora kanooni naam likhen.",
+        "kn": "Form keluva gurutina dakhalealli iruva poorna kanoonu hesaranu baredi."
+      },
+      "why_needed": {
+        "en": "The civic office uses this to identify the applicant.",
+        "hi": "Nagar karyalay aavedak ko pehchanne ke liye.",
+        "kn": "Nagara karyalaya arjidaarana gurutisalu."
+      },
+      "example": "Farhan Qureshi",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "address",
+      "aliases": [
+        "address",
+        "residential address"
+      ],
+      "type": "multiline",
+      "what_to_enter": {
+        "en": "Enter the full postal address the form asks for, including house number and locality.",
+        "hi": "Ghar sankhya aur ilake ke saath poora daak pata likhen.",
+        "kn": "Mane sankhye mattu pradesha sahita poornadaak vilasavannu baredi."
+      },
+      "why_needed": {
+        "en": "The office may visit or post a reply to this address.",
+        "hi": "Is pata par uttar bheja ja sakta hai.",
+        "kn": "Ee vilasakke uttara kaluhisabahudu."
+      },
+      "example": "44 Demo Ward Street",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "ward_number",
+      "aliases": [
+        "ward number"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the ward or locality number printed on your civic record, if you have it.",
+        "hi": "Yadi pata ho to civic record ka ward number likhen.",
+        "kn": "Civic dakhale iruvaga ward sankhye baredi."
+      },
+      "why_needed": {
+        "en": "Helps route a local service request.",
+        "hi": "Sthaniya seva ke routing ke liye.",
+        "kn": "Sthaliya sevege kaluhisalu."
+      },
+      "example": "12",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "service_requested",
+      "aliases": [
+        "service requested",
+        "type of service"
+      ],
+      "type": "radio",
+      "what_to_enter": {
+        "en": "Choose the printed service you are requesting, such as Water or Street light.",
+        "hi": "Water ya Street light jaise chhape seva vikalp chunen.",
+        "kn": "Water athava Street light haage mudrisida seveyannu aayisi."
+      },
+      "why_needed": {
+        "en": "Tells the office which demo service is needed.",
+        "hi": "Kaunsi seva chahiye yeh batata hai.",
+        "kn": "Yava seve beku embudannu heluttade."
+      },
+      "example": "Water",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "contact_number",
+      "aliases": [
+        "mobile number",
+        "contact number"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter a 10-digit mobile number you can be reached on.",
+        "hi": "10 ank ka mobile number likhen.",
+        "kn": "10 ankada mobile number baredi."
+      },
+      "why_needed": {
+        "en": "The office may call about this demo request.",
+        "hi": "Is demo aavedan par call ho sakta hai.",
+        "kn": "Ee demo arji bagge call agabahudu."
+      },
+      "example": "9876543210",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "acknowledgement",
+      "aliases": [
+        "acknowledgement",
+        "i understand"
+      ],
+      "type": "checkbox",
+      "what_to_enter": {
+        "en": "Mark only if you understand that this is a demonstration form.",
+        "hi": "Tabhi chinhit karen jab aap samajhte hain ki yeh pradarshan form hai.",
+        "kn": "Idu pradarshana form endu tilididdare maatra gurutisi."
+      },
+      "why_needed": {
+        "en": "Confirms the applicant read the printed notice.",
+        "hi": "Aavedak ne suchna padhi yeh darj karta hai.",
+        "kn": "Arjidaaru suchane nodida dakhale."
+      },
+      "example": "I understand",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "signature",
+      "aliases": [
+        "applicant signature",
+        "signature"
+      ],
+      "type": "signature",
+      "what_to_enter": {
+        "en": "Leave this blank in FormSathi. Sign the official paper form by hand.",
+        "hi": "Yahan FormSathi mein kuch na likhen. Asli form par haath se hastakshar karen.",
+        "kn": "FormSathiyalli idannu khali bidi. Adhikrita formnalli kaiyinda sahi maadi."
+      },
+      "why_needed": {
+        "en": "Sign the official copy after you verify every answer.",
+        "hi": "Har uttar jaanchkar asli prati par hastakshar karen.",
+        "kn": "Prati uttara parishilisi adhikrita pratiyalli sahi maadi."
+      },
+      "example": "[SIGN MANUALLY]",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    }
+  ]
+}

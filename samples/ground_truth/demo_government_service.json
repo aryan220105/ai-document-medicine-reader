@@ -1,0 +1,109 @@
+{
+  "form_id": "demo_government_service_v1",
+  "fields": [
+    {
+      "field_id": "full_name",
+      "label": "Applicant Name",
+      "type": "text",
+      "pixel": {
+        "x": 360,
+        "y": 174,
+        "width": 740,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "address",
+      "label": "Residential Address",
+      "type": "multiline",
+      "pixel": {
+        "x": 64,
+        "y": 296,
+        "width": 1036,
+        "height": 110,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "ward_number",
+      "label": "Ward Number",
+      "type": "text",
+      "pixel": {
+        "x": 360,
+        "y": 434,
+        "width": 200,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "service_requested",
+      "label": "Service Requested",
+      "type": "radio",
+      "pixel": {
+        "x": 360,
+        "y": 524,
+        "width": 16,
+        "height": 16,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": [
+        "Water",
+        "Street light"
+      ]
+    },
+    {
+      "field_id": "contact_number",
+      "label": "Contact Number",
+      "type": "text",
+      "pixel": {
+        "x": 360,
+        "y": 594,
+        "width": 400,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "acknowledgement",
+      "label": "Acknowledgement",
+      "type": "checkbox",
+      "pixel": {
+        "x": 360,
+        "y": 684,
+        "width": 18,
+        "height": 18,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": [
+        "I understand"
+      ]
+    },
+    {
+      "field_id": "signature",
+      "label": "Applicant Signature",
+      "type": "signature",
+      "pixel": {
+        "x": 64,
+        "y": 836,
+        "width": 420,
+        "height": 90,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    }
+  ],
+  "image": "demo_government_service.png"
+}

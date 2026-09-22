@@ -1,0 +1,178 @@
+{
+  "form_id": "demo_scholarship_application_v1",
+  "display_name": "Demo Scholarship Application Form",
+  "category": "education",
+  "version": "1",
+  "disclaimer": "Synthetic demonstration form, not an official scholarship document.",
+  "fingerprint_terms": [
+    "scholarship",
+    "course name",
+    "institution",
+    "marks"
+  ],
+  "fields": [
+    {
+      "field_id": "full_name",
+      "aliases": [
+        "student name",
+        "full name",
+        "name of applicant"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter your full legal name as printed on the identity document the form asks for.",
+        "hi": "Jo pehchan patra form maangta hai, usi par chhapa poora kanooni naam likhen.",
+        "kn": "Form keluva gurutina dakhalealli iruva poorna kanoonu hesaranu baredi."
+      },
+      "why_needed": {
+        "en": "The office uses this to identify the student.",
+        "hi": "Chatra ki pehchan ke liye naam maanga gaya hai.",
+        "kn": "Vidyarthiya gurutige hesaru beku."
+      },
+      "example": "Meera Iyer",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "date_of_birth",
+      "aliases": [
+        "date of birth"
+      ],
+      "type": "date",
+      "what_to_enter": {
+        "en": "Enter your date of birth in DD/MM/YYYY format.",
+        "hi": "Apni janm tithi DD/MM/YYYY praroop mein likhen.",
+        "kn": "Nimma janma dinankavannu DD/MM/YYYY svaroopadalli baredi."
+      },
+      "why_needed": {
+        "en": "Age or eligibility checks may use this date. Verify official rules.",
+        "hi": "Aayu jaanch ke liye tithi ho sakti hai. Adhikarik niyam dekhen.",
+        "kn": "Vayassina padyarigagi dinanka beku. Adhikrita niyamagala parishilisi."
+      },
+      "example": "03/11/2004",
+      "validation": {
+        "kind": "date",
+        "format": "DD/MM/YYYY"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "institution",
+      "aliases": [
+        "institution",
+        "college name",
+        "school name"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the name of the school or college printed on your ID card.",
+        "hi": "Apne ID card par chhapa school ya college ka naam likhen.",
+        "kn": "Nimma ID cardnalli iruva shaale athava kalejiya hesaru baredi."
+      },
+      "why_needed": {
+        "en": "The form routes the application to an institution.",
+        "hi": "Aavedan sanstha tak pahunchane ke liye.",
+        "kn": "Arjiyannu sansthege kaluhisalu."
+      },
+      "example": "Demo Public College",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "course_name",
+      "aliases": [
+        "course name",
+        "programme"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the course or programme name you are applying from.",
+        "hi": "Jis course se aavedan kar rahe hain uska naam likhen.",
+        "kn": "Neevu arji maaduttiruva pathyakramada hesaru baredi."
+      },
+      "why_needed": {
+        "en": "The scholarship office groups applications by course.",
+        "hi": "Course ke anusaar aavedan jode jaate hain.",
+        "kn": "Pathyakramada prakara arjigala gumpumaaduttare."
+      },
+      "example": "B.Sc. Computer Science",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "marks",
+      "aliases": [
+        "marks obtained",
+        "percentage"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter marks or percentage exactly as on the mark sheet.",
+        "hi": "Marksheet jaisi sankhya likhen.",
+        "kn": "Ankapatradalli iruva pramanakke sariyagi anka baredi."
+      },
+      "why_needed": {
+        "en": "This demo form uses marks to rank applications.",
+        "hi": "Yeh demo form ankdon se kram nikalta hai.",
+        "kn": "Ee demo form ankadinda sariyaadisuttade."
+      },
+      "example": "86.5",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "declaration",
+      "aliases": [
+        "declaration",
+        "i confirm"
+      ],
+      "type": "checkbox",
+      "what_to_enter": {
+        "en": "Mark the box only if you agree with the printed declaration.",
+        "hi": "Tabhi box chinhit karen jab aap chhape ghoshna se sahmat hon.",
+        "kn": "Mudrisida ghoshanege sammatadiddare maatra gurutisi."
+      },
+      "why_needed": {
+        "en": "Records that the student reviewed the statement.",
+        "hi": "Chatra ne kathan padha yeh darj karta hai.",
+        "kn": "Vidyarthi helikeya nodida dakhale."
+      },
+      "example": "I confirm",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "signature",
+      "aliases": [
+        "student signature",
+        "signature"
+      ],
+      "type": "signature",
+      "what_to_enter": {
+        "en": "Leave this blank in FormSathi. Sign the official paper form by hand.",
+        "hi": "Yahan FormSathi mein kuch na likhen. Asli form par haath se hastakshar karen.",
+        "kn": "FormSathiyalli idannu khali bidi. Adhikrita formnalli kaiyinda sahi maadi."
+      },
+      "why_needed": {
+        "en": "Sign the official paper after checking every answer.",
+        "hi": "Har uttar jaanchkar asli kagaz par hastakshar karen.",
+        "kn": "Prati uttara parishilisi adhikrita kaagadadalli sahi maadi."
+      },
+      "example": "[SIGN MANUALLY]",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "form_id": "demo_insurance_nominee_v1",
+  "fields": [
+    {
+      "field_id": "policyholder_name",
+      "label": "Policyholder Name",
+      "type": "text",
+      "pixel": {
+        "x": 400,
+        "y": 174,
+        "width": 700,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "policy_number",
+      "label": "Policy Number",
+      "type": "text",
+      "pixel": {
+        "x": 400,
+        "y": 254,
+        "width": 700,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "nominee",
+      "label": "Nominee Name",
+      "type": "text",
+      "pixel": {
+        "x": 400,
+        "y": 334,
+        "width": 700,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "relationship",
+      "label": "Relationship",
+      "type": "text",
+      "pixel": {
+        "x": 400,
+        "y": 414,
+        "width": 700,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "share_percent",
+      "label": "Share Percent",
+      "type": "text",
+      "pixel": {
+        "x": 400,
+        "y": 494,
+        "width": 700,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "date_of_birth",
+      "label": "Date of Birth",
+      "type": "date",
+      "pixel": {
+        "x": 400,
+        "y": 576,
+        "width": 700,
+        "height": 32,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "signature",
+      "label": "Sign here",
+      "type": "signature",
+      "pixel": {
+        "x": 64,
+        "y": 736,
+        "width": 420,
+        "height": 90,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    }
+  ],
+  "image": "demo_insurance_nominee.png"
+}

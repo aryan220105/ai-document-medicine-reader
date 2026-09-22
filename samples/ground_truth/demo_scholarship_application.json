@@ -1,0 +1,106 @@
+{
+  "form_id": "demo_scholarship_application_v1",
+  "fields": [
+    {
+      "field_id": "full_name",
+      "label": "Student Name",
+      "type": "text",
+      "pixel": {
+        "x": 360,
+        "y": 174,
+        "width": 740,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "date_of_birth",
+      "label": "Date of Birth",
+      "type": "date",
+      "pixel": {
+        "x": 360,
+        "y": 254,
+        "width": 740,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "institution",
+      "label": "Institution",
+      "type": "text",
+      "pixel": {
+        "x": 360,
+        "y": 334,
+        "width": 740,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "course_name",
+      "label": "Course Name",
+      "type": "text",
+      "pixel": {
+        "x": 360,
+        "y": 414,
+        "width": 740,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "marks",
+      "label": "Marks Obtained",
+      "type": "text",
+      "pixel": {
+        "x": 360,
+        "y": 494,
+        "width": 740,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "declaration",
+      "label": "Declaration",
+      "type": "checkbox",
+      "pixel": {
+        "x": 360,
+        "y": 590,
+        "width": 18,
+        "height": 18,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": [
+        "I confirm"
+      ]
+    },
+    {
+      "field_id": "signature",
+      "label": "Student Signature",
+      "type": "signature",
+      "pixel": {
+        "x": 64,
+        "y": 736,
+        "width": 420,
+        "height": 90,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    }
+  ],
+  "image": "demo_scholarship_application.png"
+}

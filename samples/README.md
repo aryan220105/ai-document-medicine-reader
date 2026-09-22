@@ -1,16 +1,4 @@
-# Sample documents
+# Synthetic FormSathi samples
 
-These images are generated programmatically with Pillow. They are not scans of real prescriptions, bills, or identity documents.
-
-Generate them with:
-
-```bash
-python scripts/generate_samples.py
-```
-
-This creates:
-
-- `samples/medicine_label.png`
-- `samples/electricity_bill.png`
-
-Use these files for classroom demonstrations and smoke tests.
+All files are original demonstration forms. They are not copies of official documents.
+Each clean PNG has a `_noisy` rotated variant and a ground-truth JSON file.

@@ -1,0 +1,175 @@
+{
+  "form_id": "demo_insurance_nominee_v1",
+  "display_name": "Demo Insurance Nominee Form",
+  "category": "insurance",
+  "version": "1",
+  "disclaimer": "Synthetic demonstration form, not an official insurance document.",
+  "fingerprint_terms": [
+    "policy number",
+    "nominee",
+    "relationship",
+    "share percent"
+  ],
+  "fields": [
+    {
+      "field_id": "policyholder_name",
+      "aliases": [
+        "policyholder name",
+        "full name",
+        "name of applicant"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter your full legal name as printed on the identity document the form asks for.",
+        "hi": "Jo pehchan patra form maangta hai, usi par chhapa poora kanooni naam likhen.",
+        "kn": "Form keluva gurutina dakhalealli iruva poorna kanoonu hesaranu baredi."
+      },
+      "why_needed": {
+        "en": "Identifies the person named on the demo policy.",
+        "hi": "Demo policy par naam ke liye.",
+        "kn": "Demo policynalli hesaru gurutisalu."
+      },
+      "example": "Kavya Menon",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "policy_number",
+      "aliases": [
+        "policy number"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Copy the policy number exactly as printed on the policy schedule.",
+        "hi": "Policy schedule par chhapa number vaise hi likhen.",
+        "kn": "Policy schedulealli iruva numberannu nijavagiyu baredi."
+      },
+      "why_needed": {
+        "en": "The office matches this form to a policy record.",
+        "hi": "Form ko policy se jodne ke liye.",
+        "kn": "Formannu policy dakhalege sariyaadisalu."
+      },
+      "example": "DEMO-INS-4421",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "nominee",
+      "aliases": [
+        "nominee name",
+        "nominee"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the full name of the person you want to name as nominee, if the form asks for one.",
+        "hi": "Yadi form maange to nominee ke roop mein jis vyakti ka naam dena chahte hain, unka poora naam likhen.",
+        "kn": "Form kelidare nominee aagi hesaru needabekada vyaktiya poorna hesaranu baredi."
+      },
+      "why_needed": {
+        "en": "A nominee is the person named to receive proceeds if the account holder dies. This is general guidance, not legal advice.",
+        "hi": "Nominee vah vyakti hai jiska naam aap aapatkal ke liye dete hain. Yeh kanooni salah nahi hai.",
+        "kn": "Nominee endare khateya malika illadiddare hesaru kottiruva vyakti. Idu kanoonu salahe alla."
+      },
+      "example": "Arjun Menon",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "relationship",
+      "aliases": [
+        "relationship"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the relationship printed on the options, such as Spouse or Parent.",
+        "hi": "Spouse ya Parent jaise chhape vikalp mein se sambandh likhen.",
+        "kn": "Spouse athava Parent haage mudrisida sambandha baredi."
+      },
+      "why_needed": {
+        "en": "The form records how the nominee is related.",
+        "hi": "Nominee ka rishta darj karne ke liye.",
+        "kn": "Nominee sambandha dakhalege."
+      },
+      "example": "Spouse",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "share_percent",
+      "aliases": [
+        "share percent",
+        "share %"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the share percentage the form asks for, using numbers only.",
+        "hi": "Jo hisse ki pratishat form maange, keval ank likhen.",
+        "kn": "Form keluva palada pratisatavannu sankhyegala maatra baredi."
+      },
+      "why_needed": {
+        "en": "Some demo forms split a benefit across nominees.",
+        "hi": "Kuch demo form hisse baantte hain.",
+        "kn": "Kela demo formgalu palavannu hanchuttave."
+      },
+      "example": "100",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "date_of_birth",
+      "aliases": [
+        "date of birth"
+      ],
+      "type": "date",
+      "what_to_enter": {
+        "en": "Enter your date of birth in DD/MM/YYYY format.",
+        "hi": "Apni janm tithi DD/MM/YYYY praroop mein likhen.",
+        "kn": "Nimma janma dinankavannu DD/MM/YYYY svaroopadalli baredi."
+      },
+      "why_needed": {
+        "en": "Used on this demo form as a nominee identifier.",
+        "hi": "Yeh demo form par nominee pehchan ke liye.",
+        "kn": "Ee demo formnalli nominee gurutige."
+      },
+      "example": "21/04/1995",
+      "validation": {
+        "kind": "date",
+        "format": "DD/MM/YYYY"
+      },
+      "source_reference": "Synthetic demo guidance"
+    },
+    {
+      "field_id": "signature",
+      "aliases": [
+        "signature",
+        "sign here"
+      ],
+      "type": "signature",
+      "what_to_enter": {
+        "en": "Leave this blank in FormSathi. Sign the official paper form by hand.",
+        "hi": "Yahan FormSathi mein kuch na likhen. Asli form par haath se hastakshar karen.",
+        "kn": "FormSathiyalli idannu khali bidi. Adhikrita formnalli kaiyinda sahi maadi."
+      },
+      "why_needed": {
+        "en": "A handwritten signature belongs only on the official paper.",
+        "hi": "Hastakshar sirf asli kagaz par likhen.",
+        "kn": "Sahi kevala adhikrita kaagadadalli."
+      },
+      "example": "[SIGN MANUALLY]",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "Synthetic demo guidance"
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+[
+  {
+    "id": "full_name",
+    "aliases": [
+      "full name",
+      "name of applicant",
+      "applicant name",
+      "name"
+    ],
+    "type": "text",
+    "simple_label": {
+      "en": "Full name",
+      "hi": "पूरा नाम",
+      "kn": "ಪೂರ್ಣ ಹೆಸರು"
+    },
+    "what_to_enter": {
+      "en": "Enter your full legal name as printed on the identity document the form asks for.",
+      "hi": "Jo pehchan patra form maangta hai, usi par chhapa poora kanooni naam likhen.",
+      "kn": "Form keluva gurutina dakhalealli iruva poorna kanoonu hesaranu baredi."
+    },
+    "why_needed": {
+      "en": "The form uses this to identify the applicant.",
+      "hi": "Form aavedak ki pehchan ke liye yeh naam maangta hai.",
+      "kn": "Arjidaarana gurutisalu ee hesaru beku."
+    },
+    "example": "Ananya Rao",
+    "format_hint": "Given name and family name"
+  },
+  {
+    "id": "date_of_birth",
+    "aliases": [
+      "date of birth",
+      "dob",
+      "birth date"
+    ],
+    "type": "date",
+    "simple_label": {
+      "en": "Date of birth",
+      "hi": "जन्म तिथि",
+      "kn": "ಜನ್ಮ ದಿನಾಂಕ"
+    },
+    "what_to_enter": {
+      "en": "Enter your date of birth in DD/MM/YYYY format.",
+      "hi": "Apni janm tithi DD/MM/YYYY praroop mein likhen.",
+      "kn": "Nimma janma dinankavannu DD/MM/YYYY svaroopadalli baredi."
+    },
+    "example": "15/08/1998",
+    "format_hint": "DD/MM/YYYY"
+  },
+  {
+    "id": "address",
+    "aliases": [
+      "address",
+      "residential address",
+      "postal address"
+    ],
+    "type": "multiline",
+    "simple_label": {
+      "en": "Address",
+      "hi": "पता",
+      "kn": "ವಿಳಾಸ"
+    },
+    "what_to_enter": {
+      "en": "Enter the full postal address the form asks for, including house number and locality.",
+      "hi": "Ghar sankhya aur ilake ke saath poora daak pata likhen.",
+      "kn": "Mane sankhye mattu pradesha sahita poornadaak vilasavannu baredi."
+    },
+    "example": "12 Lotus Lane, Demo Nagar, Bengaluru 560001"
+  },
+  {
+    "id": "occupation",
+    "aliases": [
+      "occupation",
+      "profession",
+      "employment"
+    ],
+    "type": "text",
+    "simple_label": {
+      "en": "Occupation",
+      "hi": "व्यवसाय",
+      "kn": "ವೃತ್ತಿ"
+    },
+    "what_to_enter": {
+      "en": "Enter your current occupation or write Student, Homemaker, or Retired if that applies.",
+      "hi": "Apna vartaman vyavsay likhen, ya Student / Homemaker / Retired likhen.",
+      "kn": "Nimma igina vrttiyannu baredi, athava Student / Homemaker / Retired baredi."
+    },
+    "example": "School teacher"
+  },
+  {
+    "id": "nominee",
+    "aliases": [
+      "nominee",
+      "nominee name"
+    ],
+    "type": "text",
+    "simple_label": {
+      "en": "Nominee",
+      "hi": "Nominee",
+      "kn": "Nominee"
+    },
+    "what_to_enter": {
+      "en": "Enter the full name of the person you want to name as nominee, if the form asks for one.",
+      "hi": "Yadi form maange to nominee ke roop mein jis vyakti ka naam dena chahte hain, unka poora naam likhen.",
+      "kn": "Form kelidare nominee aagi hesaru needabekada vyaktiya poorna hesaranu baredi."
+    },
+    "why_needed": {
+      "en": "A nominee is the person named to receive proceeds if the account holder dies. This is general guidance, not legal advice.",
+      "hi": "Nominee vah vyakti hai jiska naam aap aapatkal ke liye dete hain. Yeh kanooni salah nahi hai.",
+      "kn": "Nominee endare khateya malika illadiddare hesaru kottiruva vyakti. Idu kanoonu salahe alla."
+    },
+    "example": "Rohit Sharma"
+  },
+  {
+    "id": "signature",
+    "aliases": [
+      "signature",
+      "applicant signature",
+      "sign here"
+    ],
+    "type": "signature",
+    "simple_label": {
+      "en": "Signature",
+      "hi": "हस्ताक्षर",
+      "kn": "ಸಹಿ"
+    },
+    "what_to_enter": {
+      "en": "Leave this blank in FormSathi. Sign the official paper form by hand.",
+      "hi": "Yahan FormSathi mein kuch na likhen. Asli form par haath se hastakshar karen.",
+      "kn": "FormSathiyalli idannu khali bidi. Adhikrita formnalli kaiyinda sahi maadi."
+    },
+    "example": "[SIGN MANUALLY]"
+  }
+]

@@ -1,0 +1,62 @@
+{
+  "form_id": null,
+  "fields": [
+    {
+      "field_id": "full_name",
+      "label": "Full Name",
+      "type": "text",
+      "pixel": {
+        "x": 360,
+        "y": 174,
+        "width": 740,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "date_of_birth",
+      "label": "Date of Birth",
+      "type": "date",
+      "pixel": {
+        "x": 360,
+        "y": 256,
+        "width": 300,
+        "height": 32,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "favourite_genre",
+      "label": "Favourite Genre",
+      "type": "text",
+      "pixel": {
+        "x": 360,
+        "y": 334,
+        "width": 740,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    },
+    {
+      "field_id": "membership_code",
+      "label": "Membership Code",
+      "type": "text",
+      "pixel": {
+        "x": 360,
+        "y": 414,
+        "width": 400,
+        "height": 40,
+        "image_width": 1240,
+        "image_height": 1754
+      },
+      "options": []
+    }
+  ],
+  "image": "demo_unknown_library_card.png"
+}
