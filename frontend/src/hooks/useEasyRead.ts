@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const KEY = "easy-read-mode";
+const KEY = "formsathi.easyRead";
 
 export function useEasyRead() {
   const [easyRead, setEasyRead] = useState(() => localStorage.getItem(KEY) === "true");

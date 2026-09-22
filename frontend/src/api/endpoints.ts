@@ -1,0 +1,17 @@
+export const API = {
+  health: "/api/health",
+  config: "/api/config",
+  upload: "/api/documents/upload",
+  document: (id: string) => `/api/documents/${id}`,
+  status: (id: string) => `/api/documents/${id}/status`,
+  pages: (id: string) => `/api/documents/${id}/pages`,
+  pageOriginal: (id: string, page: number) => `/api/documents/${id}/pages/${page}/original`,
+  pageProcessed: (id: string, page: number) => `/api/documents/${id}/pages/${page}/processed`,
+  ocr: (id: string) => `/api/documents/${id}/ocr`,
+  fields: (id: string) => `/api/documents/${id}/fields`,
+  formMatch: (id: string) => `/api/documents/${id}/form-match`,
+  guidance: (id: string) => `/api/documents/${id}/guidance`,
+  ask: (id: string) => `/api/documents/${id}/ask`,
+  preview: (id: string) => `/api/documents/${id}/preview`,
+  previewPdf: (id: string, previewId: string) => `/api/documents/${id}/previews/${previewId}.pdf`,
+} as const;

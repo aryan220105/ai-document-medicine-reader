@@ -1,83 +1,112 @@
 import { useRef, useState } from "react";
-import { FileUp, Pill, ScrollText } from "lucide-react";
-import { validateImageFile } from "../utils/validation";
+import { Upload } from "lucide-react";
+import { LanguageSelector } from "./LanguageSelector";
+import { PrivacyNotice } from "./PrivacyNotice";
+import type { AppConfig, DocumentCategory, Language } from "../types";
+
+const CATEGORIES: DocumentCategory[] = ["government", "banking", "insurance", "education", "financial", "other"];
 
 interface Props {
-  maxMb: number;
+  config: AppConfig | null;
+  language: Language;
+  onLanguage: (language: Language) => void;
+  category: DocumentCategory;
+  onCategory: (category: DocumentCategory) => void;
+  allowAi: boolean;
+  onAllowAi: (value: boolean) => void;
   onFile: (file: File) => void;
-  disabled?: boolean;
+  onDemo: () => void;
+  error: string | null;
 }
 
-export function UploadZone({ maxMb, onFile, disabled }: Props) {
+export function UploadZone({
+  config,
+  language,
+  onLanguage,
+  category,
+  onCategory,
+  allowAi,
+  onAllowAi,
+  onFile,
+  onDemo,
+  error,
+}: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [dragOver, setDragOver] = useState(false);
+  const [drag, setDrag] = useState(false);
 
-  function handleFile(file: File | undefined) {
-    if (!file) {
-      return;
-    }
-    const message = validateImageFile(file, maxMb);
-    setError(message);
-    if (!message) {
+  function accept(file: File | undefined) {
+    if (file) {
       onFile(file);
     }
   }
 
   return (
-    <section className="mx-auto max-w-5xl px-4 pb-16">
-      <div className="mb-8 grid gap-4 md:grid-cols-2">
-        <article className="rounded-2xl border border-sand bg-white p-6 shadow-sm">
-          <Pill className="h-8 w-8 text-moss" aria-hidden />
-          <h2 className="mt-4 font-serif text-2xl">Medicine Label</h2>
-          <p className="mt-2 text-slate-600">Read dosage, expiry date, warnings and medicine information.</p>
-        </article>
-        <article className="rounded-2xl border border-sand bg-white p-6 shadow-sm">
-          <ScrollText className="h-8 w-8 text-moss" aria-hidden />
-          <h2 className="mt-4 font-serif text-2xl">General Document</h2>
-          <p className="mt-2 text-slate-600">Understand bills, notices, insurance letters and government documents.</p>
-        </article>
-      </div>
+    <div className="mx-auto max-w-3xl space-y-6">
+      <header>
+        <p className="text-sm uppercase tracking-wide text-teal-800">Academic demonstration</p>
+        <h1 className="mt-1 font-serif text-3xl text-slate-900">FormSathi</h1>
+        <p className="mt-2 text-slate-700">
+          Upload a form, see where each answer belongs, and hear simple guidance in English, Hindi, or Kannada.
+        </p>
+      </header>
       <div
+        className={`rounded-lg border-2 border-dashed px-6 py-10 text-center ${drag ? "border-teal-700 bg-teal-50" : "border-slate-300 bg-white"}`}
         onDragOver={(event) => {
           event.preventDefault();
-          setDragOver(true);
+          setDrag(true);
         }}
-        onDragLeave={() => setDragOver(false)}
+        onDragLeave={() => setDrag(false)}
         onDrop={(event) => {
           event.preventDefault();
-          setDragOver(false);
-          handleFile(event.dataTransfer.files[0]);
+          setDrag(false);
+          accept(event.dataTransfer.files[0]);
         }}
-        className={`rounded-3xl border-2 border-dashed p-10 text-center transition ${
-          dragOver ? "border-moss bg-white" : "border-moss/30 bg-white/70"
-        }`}
       >
-        <FileUp className="mx-auto h-10 w-10 text-moss" aria-hidden />
-        <p className="mt-4 text-lg font-medium">Drop a document photo here</p>
-        <p className="mt-1 text-slate-600">PNG, JPG, JPEG, or WEBP. Maximum {maxMb} MB.</p>
+        <Upload className="mx-auto h-8 w-8 text-teal-800" aria-hidden />
+        <p className="mt-3 font-medium">Drop a PNG, JPG, WEBP, or PDF here</p>
+        <p className="mt-1 text-sm text-slate-600">Maximum {config?.max_upload_mb ?? 10} MB. Up to {config?.max_pdf_pages ?? 5} PDF pages.</p>
         <button
           type="button"
-          className="mt-6 rounded-full bg-moss px-6 py-3 font-semibold text-white hover:bg-mossdark disabled:opacity-60"
+          className="mt-4 rounded-md bg-teal-800 px-4 py-2 text-white"
           onClick={() => inputRef.current?.click()}
-          disabled={disabled}
         >
-          Upload Document
+          Choose file
         </button>
         <input
           ref={inputRef}
-          className="sr-only"
           type="file"
-          accept="image/png,image/jpeg,image/webp"
-          aria-label="Upload document image"
-          onChange={(event) => handleFile(event.target.files?.[0])}
+          className="sr-only"
+          accept=".png,.jpg,.jpeg,.webp,.pdf"
+          onChange={(event) => accept(event.target.files?.[0])}
         />
-        {error ? (
-          <p role="alert" className="mt-4 text-clay">
-            {error}
-          </p>
-        ) : null}
       </div>
-    </section>
+      {error ? <p role="alert" className="text-red-800">{error}</p> : null}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="block text-sm font-medium text-slate-700">
+          Form category
+          <select
+            className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 capitalize"
+            value={category}
+            onChange={(event) => onCategory(event.target.value as DocumentCategory)}
+          >
+            {CATEGORIES.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+        </label>
+        <LanguageSelector value={language} onChange={onLanguage} />
+      </div>
+      <PrivacyNotice
+        notice={config?.privacy_notice ?? "Uploaded forms stay on this machine for the demonstration."}
+        allowAi={allowAi}
+        aiEnabled={Boolean(config?.llm_configured)}
+        onAllowAi={onAllowAi}
+      />
+      <button type="button" className="text-teal-800 underline" onClick={onDemo}>
+        Try a synthetic Demo Bank form
+      </button>
+    </div>
   );
 }

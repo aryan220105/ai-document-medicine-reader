@@ -1,57 +1,30 @@
-const ALLOWED = ["image/png", "image/jpeg", "image/webp", "image/jpg"];
+import type { CSSProperties } from "react";
+import type { DetectedField } from "../types";
 
-export function validateImageFile(file: File, maxMb = 10): string | null {
-  const type = file.type.toLowerCase();
-  if (!ALLOWED.includes(type) && !/\.(png|jpe?g|webp)$/i.test(file.name)) {
-    return "Please upload a PNG, JPG, JPEG, or WEBP image.";
+const ACCEPT = ["image/png", "image/jpeg", "image/jpg", "image/webp", "application/pdf"];
+
+export function validateUpload(file: File, maxMb = 10): string | null {
+  if (!ACCEPT.includes(file.type) && !/\.(png|jpe?g|webp|pdf)$/i.test(file.name)) {
+    return "Please upload a PNG, JPG, JPEG, WEBP, or PDF form.";
   }
   if (file.size > maxMb * 1024 * 1024) {
-    return `Please upload an image smaller than ${maxMb} MB.`;
-  }
-  if (file.size === 0) {
-    return "The selected file is empty.";
+    return `Please choose a file smaller than ${maxMb} MB.`;
   }
   return null;
 }
 
-export const DOCUMENT_TYPE_LABELS: Record<string, string> = {
-  medicine_label: "Medicine Label",
-  electricity_bill: "Electricity Bill",
-  bank_document: "Bank Document",
-  insurance_document: "Insurance Document",
-  government_notice: "Government Notice",
-  tax_document: "Tax Document",
-  general_document: "General Document",
-  unknown: "Unknown",
-};
+export function validateAnswer(field: DetectedField, value: string): string | null {
+  if (field.field_type === "date" && value && !/^\d{2}\/\d{2}\/\d{4}$/.test(value) && !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return "Use a date such as DD/MM/YYYY.";
+  }
+  return null;
+}
 
-export const STAGE_LABELS: Record<string, string> = {
-  uploading: "Uploading image",
-  detecting: "Detecting document",
-  enhancing: "Enhancing image",
-  ocr: "Running OCR",
-  extracting: "Extracting important information",
-  indexing: "Building searchable document context",
-  ready: "Ready",
-  failed: "Processing failed",
-};
-
-export const MEDICINE_SUGGESTIONS = [
-  "What is the medicine name?",
-  "What is the expiry date?",
-  "What dosage is printed?",
-  "Are there any warnings?",
-  "Explain this label simply.",
-  "Are there any food-related precautions?",
-  "Where is the expiry date?",
-];
-
-export const DOCUMENT_SUGGESTIONS = [
-  "Summarize this document.",
-  "What do I need to do?",
-  "Is there a due date?",
-  "How much do I need to pay?",
-  "What is the account/reference number?",
-  "Are there any important deadlines?",
-  "Where is the due date?",
-];
+export function overlayStyle(box: { x: number; y: number; width: number; height: number }): CSSProperties {
+  return {
+    left: `${box.x * 100}%`,
+    top: `${box.y * 100}%`,
+    width: `${box.width * 100}%`,
+    height: `${box.height * 100}%`,
+  };
+}

@@ -1,3 +1,4 @@
+import { LANGUAGES } from "../utils/languages";
 import type { Language } from "../types";
 
 interface Props {
@@ -7,17 +8,18 @@ interface Props {
 
 export function LanguageSelector({ value, onChange }: Props) {
   return (
-    <label className="flex items-center gap-2 text-sm">
+    <label className="block text-sm font-medium text-slate-700">
       Answer language
       <select
-        aria-label="Answer language"
-        className="rounded-full border border-sand bg-white px-3 py-2"
+        className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2"
         value={value}
         onChange={(event) => onChange(event.target.value as Language)}
       >
-        <option value="en">English</option>
-        <option value="hi">Hindi</option>
-        <option value="kn">Kannada</option>
+        {LANGUAGES.map((item) => (
+          <option key={item.id} value={item.id}>
+            {item.label}
+          </option>
+        ))}
       </select>
     </label>
   );

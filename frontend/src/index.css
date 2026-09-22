@@ -3,33 +3,36 @@
 @tailwind utilities;
 
 :root {
-  color: #142026;
-  background: #f6f3ec;
+  color: #1b2430;
+  background: #f4f1ea;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top right, rgba(31, 111, 100, 0.08), transparent 28%),
-    #f6f3ec;
+  background: #f4f1ea;
 }
 
 #root {
   min-height: 100vh;
 }
 
+:focus-visible {
+  outline: 3px solid #1f4e5f;
+  outline-offset: 2px;
+}
+
 .easy-read {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
 }
 
 .easy-read button,
 .easy-read select,
-.easy-read textarea {
+.easy-read textarea,
+.easy-read input {
   min-height: 3rem;
-  font-size: 1.05rem;
-}
-
-.easy-read .clutter-hide {
-  display: none;
+  font-size: 1.1rem;
 }
