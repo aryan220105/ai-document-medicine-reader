@@ -20,10 +20,13 @@ Thumbs.db
 
 data/uploads/*
 data/processed/*
+data/previews/*
 data/chroma/*
 data/app.db
+evaluation_results.json
 !data/uploads/.gitkeep
 !data/processed/.gitkeep
+!data/previews/.gitkeep
 !data/chroma/.gitkeep
 
 backend/.venv/

@@ -1,143 +1,103 @@
-# AI-Powered Document & Medicine Label Reader
+# FormSathi: AI-Powered Multilingual Form Assistant
 
-Upload a photographed document or medicine label, extract the printed text, ask grounded questions, and see the matching words highlighted on the image.
+FormSathi analyzes an uploaded form, detects fillable fields, explains each field in simple language, highlights where the answer belongs, provides English, Hindi, and Kannada text and voice guidance, collects answers locally, and generates a **Completed Reference Preview** for the user to copy onto the official form.
 
-## Overview
+## Problem statement
 
-This academic application helps people understand everyday paperwork:
+Government, banking, insurance, educational, and financial forms often use unfamiliar terminology and dense layouts. First-time users may know their own information but not what a field asks, why it is required, which format it expects, or where the answer belongs. Existing tools often stop at OCR or generic chat and do not connect guidance to the exact region on the page.
 
-- medicine labels
-- electricity bills
-- government notices
-- insurance documents
-- bank-related documents
-- property-tax notices
-- ration-card forms
-- other photographed or scanned documents
+## Project objective
 
-It is designed for elderly users, non-technical users, people with limited English proficiency, and people facing literacy barriers.
+Build a hybrid Computer Vision + RAG assistant that localizes fields, retrieves trusted guidance for known synthetic forms, explains unknown fields without inventing official rules, and keeps the user in control of every answer.
 
-## Problem Being Solved
+## Product boundary and disclaimer
 
-Printed documents are often dense, small, or written in mixed languages. This project combines OpenCV preprocessing, Tesseract OCR, structured field extraction, retrieval-augmented generation, and visual highlighting so a user can:
+FormSathi is an **academic demonstration**, not an official submission service.
 
-1. Upload or photograph a document.
-2. Read the extracted text.
-3. See likely fields such as expiry date, amount, or account number.
-4. Ask questions in English, Hindi, or Kannada.
-5. See the relevant printed text highlighted on the image.
+It does not:
+
+- submit a form to a government, bank, insurer, school, or third party
+- claim legal, financial, or government approval
+- invent required values or official field meanings
+- sign a document or imitate a signature
+- silently alter the official source upload
+- send user-entered personal values to an external LLM
+
+Users remain responsible for verifying official instructions. Avoid highly sensitive real forms unless you trust the deployment environment.
 
 ## Features
 
-- Drag-and-drop image upload with validation
-- OpenCV document detection, deskewing, and OCR enhancement
-- Tesseract OCR with word-level bounding boxes and confidence
-- Deterministic extraction of dates, amounts, medicine strength, batch numbers, and more
-- Document-type detection with a user override
-- Conversational Q&A with document-first grounding
-- Trusted local knowledge base for supplemental explanations
-- Visual highlight overlay using normalized OCR coordinates
-- Easy Read Mode, language selection, original/enhanced image toggle
-- Works without an LLM API key for OCR, extraction, highlighting, and common field questions
-- Groq/OpenAI-compatible LLM with automatic API-key failover on rate limits
+- PNG, JPG, JPEG, WEBP, and PDF upload with MIME validation
+- Page rendering, preprocessing, Tesseract OCR with word coordinates
+- Detection of boxes, underlines, checkboxes, radios, dates, and signature areas
+- Label-to-field association and known-form fingerprint matching
+- Local knowledge-base RAG plus lexical fallback
+- Optional Groq interpretation for unknown fields only
+- English, Hindi, and Kannada stored guidance and browser text-to-speech
+- Non-destructive answer overlay and Completed Reference Preview PDF
+- Delete and start-over cleanup
 
-## System Architecture
+## Architecture
 
 ```mermaid
-flowchart TD
-    A[User Uploads Image] --> B[OpenCV Preprocessing]
-    B --> C[OCR]
-    C --> D[Text + Bounding Boxes]
-    D --> E[Field Extraction]
-    D --> F[Document Vector Store]
-    G[Trusted Knowledge Base] --> H[Knowledge Vector Store]
-    I[User Question] --> J[RAG Retrieval]
-    F --> J
-    H --> J
-    J --> K[LLM or deterministic answer]
-    K --> L[Simple Answer]
-    D --> M[Highlight Matcher]
-    K --> M
-    M --> N[Visual Highlight]
+flowchart LR
+  upload[Upload] --> pages[Prepare pages]
+  pages --> ocr[OCR + coordinates]
+  ocr --> detect[Field detection]
+  detect --> labels[Label association]
+  labels --> match{Known form?}
+  match -->|yes| rag[Local RAG / JSON KB]
+  match -->|no| dict[Common-field dictionary]
+  dict --> groq[Optional Groq]
+  rag --> ui[Guidance + overlay]
+  groq --> ui
+  ui --> preview[Reference preview PDF]
 ```
 
-## Technology Stack
+### Known-form flow
 
-- Frontend: React, TypeScript, Vite, Tailwind CSS
-- Backend: Python 3.11, FastAPI, Pydantic, Uvicorn
-- Computer vision: OpenCV, Pillow
-- OCR: Tesseract via pytesseract
-- RAG: ChromaDB and sentence-transformers (`all-MiniLM-L6-v2`), with a hashing-embedding fallback
-- LLM: OpenAI-compatible client, configured for Groq by default
+OCR and layout features → fingerprint match → local field chunks → trusted multilingual guidance.
 
-## How It Works
+### Unknown-form flow
 
-1. The image is stored under a server-generated UUID.
-2. OpenCV attempts document-boundary detection and OCR enhancement. If detection is unreliable, the original image is used.
-3. Tesseract returns full text, words, confidences, and pixel boxes. Boxes are normalized to 0–1 for the frontend overlay.
-4. Regex and OCR structure extract fields such as `EXP: DEC 2027` or `Bill Amount: Rs 2450`.
-5. OCR lines are chunked and indexed in ChromaDB. A local markdown knowledge base is indexed separately.
-6. A question is classified by intent. Common field questions are answered deterministically. Other questions use retrieved document chunks, optional knowledge-base chunks, and the LLM.
-7. Highlight matching prefers extracted-field boxes, then fuzzy OCR phrase matching.
+OCR and nearby labels → common-field dictionary → optional Groq interpretation of printed context → honest unavailable state if neither applies.
 
-## Project Structure
+## Technology stack
 
-```text
-.
-├── README.md
-├── .env.example
-├── docker-compose.yml
-├── backend/
-│   ├── app/
-│   ├── knowledge_base/
-│   └── tests/
-├── frontend/
-│   └── src/
-├── samples/
-├── scripts/
-└── data/
-```
+- Frontend: React, TypeScript, Vite, Tailwind CSS, Lucide, Vitest
+- Backend: FastAPI, Pydantic v2, OpenCV, Pillow, PyMuPDF, Tesseract, SQLite, ChromaDB, Sentence Transformers
+- LLM: Groq OpenAI-compatible API behind a provider interface (optional)
 
-## Installation
-
-Install Tesseract OCR on the host if you are not using Docker.
-
-- Windows: install from the [Tesseract Windows installer](https://github.com/UB-Mannheim/tesseract/wiki) and ensure `tesseract` is on `PATH`, or set `TESSERACT_CMD`.
-- macOS: `brew install tesseract tesseract-lang`
-- Debian/Ubuntu: `sudo apt install tesseract-ocr tesseract-ocr-eng tesseract-ocr-hin tesseract-ocr-kan`
-
-## Docker Setup
+## Installation with Docker
 
 ```bash
-cp .env.example .env
 docker compose up --build
 ```
 
-The Groq keys can be placed in `.env` as `GROQ_API_KEY` and `GROQ_API_KEY_2`. If the first key is rate-limited, the backend switches to the second key automatically.
+- Frontend: http://localhost:5173
+- Backend: http://localhost:8000
+- Swagger: http://localhost:8000/docs
 
-## Local Setup
+## Local installation
 
-### Backend
-
-Windows PowerShell:
-
-```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-macOS / Linux:
+### Backend (Windows / macOS / Linux)
 
 ```bash
 cd backend
 python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS / Linux
 source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
+
+### Tesseract
+
+- Windows: install UB-Mannheim Tesseract and set `TESSERACT_CMD=C:\Program Files\Tesseract-OCR\tesseract.exe`
+- macOS: `brew install tesseract tesseract-lang`
+- Linux: `sudo apt-get install tesseract-ocr tesseract-ocr-eng tesseract-ocr-hin tesseract-ocr-kan`
 
 ### Frontend
 
@@ -147,151 +107,81 @@ npm install
 npm run dev
 ```
 
-## Environment Variables
-
-See `.env.example`.
-
-| Variable | Purpose |
-| --- | --- |
-| `GROQ_API_KEY` | Primary Groq key |
-| `GROQ_API_KEY_2` | Failover Groq key used on HTTP 429 / rate-limit errors |
-| `OPENAI_API_KEY` | Optional extra OpenAI-compatible key |
-| `OPENAI_MODEL` | Model name, default `llama-3.3-70b-versatile` |
-| `OPENAI_BASE_URL` | Default `https://api.groq.com/openai/v1` |
-| `FRONTEND_ORIGIN` | Allowed CORS origin |
-| `MAX_UPLOAD_MB` | Upload size limit, default 10 |
-| `TESSERACT_LANG` | Default `eng+hin+kan` |
-| `TESSERACT_CMD` | Optional full path to the Tesseract binary |
-
-Do not commit `.env`. API keys never go to the frontend.
-
-## Running the Application
-
-- Frontend: [http://localhost:5173](http://localhost:5173)
-- Backend health: [http://localhost:8000/api/health](http://localhost:8000/api/health)
-- Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
-
-Generate demo images:
+### Knowledge and samples
 
 ```bash
+python scripts/_write_knowledge.py
 python scripts/generate_samples.py
+python scripts/seed_knowledge_base.py
 ```
 
-## How to Use
+## Environment variables
 
-1. Open the frontend.
-2. Upload a PNG/JPG/WEBP image, or use a generated sample.
-3. Wait for the processing stages to reach Ready.
-4. Review detected fields and extracted text.
-5. Ask a question, click a suggestion, or use **Explain Simply**.
-6. Use **Where is...** questions to highlight printed values.
-7. Use **New Document** to clear the session and delete stored files.
+Copy `.env.example` to `.env`. Never commit `.env`.
 
-## Sample Demo Flow
+Place `GROQ_API_KEY` and `GROQ_MODEL` only in the local `.env` file. The app starts without them. External AI runs only when `EXTERNAL_AI_ENABLED=true` and the user consents in the UI.
 
-1. Upload `samples/medicine_label.png`.
-2. Confirm medicine name, `500 mg`, batch `ABC123`, and expiry `DEC 2027`.
-3. Ask: `Where is the expiry date?`
-4. Ask: `What dosage is written?`
-5. Upload `samples/electricity_bill.png`.
-6. Ask: `How much do I need to pay?` and `Where is the due date?`
+## Sample demonstration
 
-## API Endpoints
+1. Generate samples.
+2. Open http://localhost:5173 and use **Try a synthetic Demo Bank form**, or upload `samples/demo_bank_account_opening.png`.
+3. Confirm the known-form match, inspect overlays, switch languages, enter fictional answers, and download the reference preview.
 
-- `GET /api/health`
-- `GET /api/config`
-- `POST /api/documents/upload`
-- `GET /api/documents/{document_id}`
-- `GET /api/documents/{document_id}/image/original`
-- `GET /api/documents/{document_id}/image/processed`
-- `GET /api/documents/{document_id}/ocr`
-- `GET /api/documents/{document_id}/fields`
-- `PATCH /api/documents/{document_id}/type`
-- `POST /api/documents/{document_id}/ask`
-- `DELETE /api/documents/{document_id}`
+## API endpoints
 
-Interactive docs: `/docs`.
+See Swagger at `/docs`. Core routes live under `/api/documents`, `/api/health`, and `/api/config`.
+
+## Coordinate and overlay design
+
+Backend normalization:
+
+`normalized_x = x / image_width` (same for y, width, height).
+
+Frontend overlays use percentages inside a wrapper that matches the displayed processed page.
+
+## RAG, LLM privacy, and preview
+
+Field guidance is chunked per field and language. Retrieval returns source metadata. Groq receives only printed labels and nearby OCR text. User answers never leave the browser except to this backend for preview rendering. Signature regions render `[SIGN MANUALLY]`.
 
 ## Testing
 
-Backend:
-
 ```bash
 cd backend
-pytest
-```
+pytest -q
+python -m compileall app
+ruff check .
 
-Frontend:
-
-```bash
-cd frontend
+cd ../frontend
 npm install
-npm run test -- --run
+npm run lint
 npm run build
+npm run test -- --run
+
+python scripts/evaluate_pipeline.py --samples samples --output evaluation_results.json
+python scripts/smoke_test.py
+docker compose config
 ```
 
-Smoke test against a running backend:
+## Research evaluation
 
-```bash
-python scripts/smoke_test.py --base-url http://127.0.0.1:8000
-```
+See `docs/research_evaluation.md`. Objective CV metrics are computed from ground truth. Human-rated metrics use `samples/human_review_template.csv` and must not be fabricated.
 
-## RAG Architecture
+## Security and privacy
 
-Two collections are stored in ChromaDB:
+CORS is limited to configured origins. Uploads use server-side UUIDs. Path traversal is rejected for previews. Logs omit full OCR text and personal answers.
 
-- Uploaded document chunks built from OCR lines, with word IDs in metadata
-- Trusted markdown files in `backend/knowledge_base/`
+## Current limitations
 
-Document-specific facts must come from the uploaded OCR context. Knowledge-base text is labelled as additional general information.
+- Field detection is heuristic and weaker on heavy tables and handwriting.
+- Perspective correction uses the processed page as the display surface.
+- Browser voices for Hindi and Kannada depend on the operating system.
+- Groq is unused unless configured and consented.
+- Confidence scores are heuristics, not calibrated probabilities.
 
-## OCR + Visual Highlighting Architecture
+## Future work
 
-Each OCR word keeps pixel `x, y, width, height` plus image dimensions. The API returns normalized boxes:
+Optional vision models, more known-form templates, evaluator studies, and improved table detection.
 
-```text
-x / image_width, y / image_height, width / image_width, height / image_height
-```
+## Academic context
 
-The browser overlay uses percentage CSS positioning. Highlights are not burned into the image. If perspective correction succeeded, the enhanced image is the coordinate space for OCR and is shown by default.
-
-## Medicine Safety Considerations
-
-This is an educational document-understanding tool. It is not a prescribing system.
-
-It may explain printed name, strength, dosage text, expiry, manufacturer, warnings, and storage. It must not prescribe, change a dose, diagnose, or tell a user to stop medication. Uncertain OCR is described as uncertain. Supplemental medicine notes are labelled **Additional general information**.
-
-## Privacy
-
-Uploaded documents are processed for this demonstration application. Avoid uploading highly sensitive personal information unless the deployment environment is trusted. Use **New Document** to delete the current upload from local storage.
-
-## Limitations
-
-- OCR quality depends on lighting, focus, and print size.
-- Hindi and Kannada OCR require the matching Tesseract language packs.
-- Generative explanations need a reachable Groq/OpenAI-compatible API.
-- The knowledge base is small and educational, not a clinical database.
-- Coordinate mapping is for the image that OCR actually ran on.
-
-## Future Improvements
-
-- PDF and multi-page support
-- Text-to-speech and microphone input
-- Stronger handwriting OCR
-- Verified medicine databases with explicit licensing
-- User accounts and encrypted retention controls
-
-## Academic Context
-
-This repository is a 7th-semester academic project demonstrating computer vision, OCR, information extraction, retrieval-augmented generation, grounded LLM answers, and accessible interface design in one runnable system.
-
-## Quick Demo
-
-```bash
-cp .env.example .env
-docker compose up --build
-```
-
-Open [http://localhost:5173](http://localhost:5173).
-
-An LLM API key is optional for OCR and deterministic extraction. Configure Groq keys in `.env` to enable generative explanations, translation, and open-ended questions. If one free-tier key hits a rate limit, the backend fails over to the second key automatically.
+This repository is a 7th-semester Computer Science project. FormSathi is not an official form-filing service.
