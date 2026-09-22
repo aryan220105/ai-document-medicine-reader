@@ -1,1 +1,1 @@
-"""AI-Powered Document & Medicine Label Reader backend."""
+"""FormSathi backend."""

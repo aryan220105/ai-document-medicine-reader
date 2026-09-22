@@ -40,7 +40,19 @@ class ImageService:
             path = str(Path(path).with_suffix(".png"))
         encoded.tofile(path)
 
+    def apply_exif(self, source_path: str) -> None:
+        try:
+            from PIL import Image, ImageOps
+
+            with Image.open(source_path) as image:
+                corrected = ImageOps.exif_transpose(image)
+                if corrected is not None and corrected.size != image.size:
+                    corrected.save(source_path)
+        except Exception:
+            logger.debug("EXIF orientation correction skipped")
+
     def preprocess(self, source_path: str, destination_path: str) -> PreprocessResult:
+        self.apply_exif(source_path)
         original = self.load(source_path)
         original_height, original_width = original.shape[:2]
         working = self._resize_if_needed(original)

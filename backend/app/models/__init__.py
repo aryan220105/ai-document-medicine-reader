@@ -1,20 +1,33 @@
-from app.models.chat import ChatRequest, ChatResponse, LLMStructuredOutput, QuestionIntent
-from app.models.common import BoundingBox, DocumentType, Language, ProcessingStage
-from app.models.document import DetectedField, DocumentRecord, DocumentResponse
+from app.models.common import (
+    DocumentCategory,
+    DocumentStatus,
+    FieldType,
+    GuidanceSource,
+    Language,
+    NormalizedBoundingBox,
+    PixelBoundingBox,
+    ProcessingStage,
+)
+from app.models.document import DocumentRecord, DocumentResponse, KnownFormMatch
+from app.models.fields import DetectedField, FieldAnswer
+from app.models.guidance import FieldGuidance
 from app.models.ocr import OCRResult, OCRWord
 
 __all__ = [
-    "BoundingBox",
-    "ChatRequest",
-    "ChatResponse",
     "DetectedField",
+    "DocumentCategory",
     "DocumentRecord",
     "DocumentResponse",
-    "DocumentType",
-    "LLMStructuredOutput",
+    "DocumentStatus",
+    "FieldAnswer",
+    "FieldGuidance",
+    "FieldType",
+    "GuidanceSource",
+    "KnownFormMatch",
     "Language",
+    "NormalizedBoundingBox",
     "OCRResult",
     "OCRWord",
+    "PixelBoundingBox",
     "ProcessingStage",
-    "QuestionIntent",
 ]

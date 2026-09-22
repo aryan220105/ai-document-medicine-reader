@@ -1,76 +1,91 @@
 from dataclasses import dataclass
 
 from app.config import Settings, get_settings
-from app.providers.llm.openai_compatible import OpenAICompatibleProvider
+from app.providers.embeddings.hashing import HashingEmbeddingProvider
+from app.providers.embeddings.sentence_transformer import SentenceTransformerEmbeddings
+from app.providers.llm.disabled import DisabledLLMProvider
+from app.providers.llm.groq_provider import GroqProvider
 from app.providers.ocr.tesseract import TesseractOCRProvider
-from app.services.chat_service import ChatService
-from app.services.classification_service import ClassificationService
+from app.repositories.document_repository import DocumentRepository
+from app.repositories.form_knowledge_repository import FormKnowledgeRepository
+from app.repositories.vector_repository import VectorRepository
 from app.services.document_service import DocumentService
-from app.services.extraction_service import ExtractionService
-from app.services.highlight_service import HighlightService
+from app.services.field_detection_service import FieldDetectionService
+from app.services.form_identification_service import FormIdentificationService
+from app.services.guidance_service import GuidanceService
 from app.services.image_service import ImageService
-from app.services.intent_service import IntentService
+from app.services.label_association_service import LabelAssociationService
 from app.services.llm_service import LLMService
 from app.services.ocr_service import OCRService
-from app.services.rag_service import RAGService
+from app.services.pdf_service import PdfService
+from app.services.preview_service import PreviewService
+from app.services.retrieval_service import RetrievalService
 from app.services.storage_service import StorageService
+from app.services.translation_service import TranslationService
+from app.services.validation_service import ValidationService
 
 
 @dataclass
 class AppContainer:
     settings: Settings
-    storage: StorageService
-    image_service: ImageService
+    documents: DocumentRepository
+    knowledge: FormKnowledgeRepository
+    vectors: VectorRepository
     ocr_service: OCRService
-    extraction_service: ExtractionService
-    classification_service: ClassificationService
-    rag_service: RAGService
     llm_service: LLMService
+    retrieval: RetrievalService
     document_service: DocumentService
-    chat_service: ChatService
 
 
 def build_container(settings: Settings | None = None) -> AppContainer:
     settings = settings or get_settings()
     storage = StorageService(settings)
-    image_service = ImageService()
-    ocr_service = OCRService(TesseractOCRProvider(settings))
-    extraction_service = ExtractionService()
-    classification_service = ClassificationService()
-    rag_service = RAGService(settings)
-    llm_provider = OpenAICompatibleProvider(
-        api_keys=settings.llm_api_keys(),
-        model=settings.openai_model,
-        base_url=settings.openai_base_url,
-        fallback_models=settings.llm_fallback_models(),
+    documents = DocumentRepository(settings)
+    knowledge = FormKnowledgeRepository(settings)
+    embeddings = (
+        HashingEmbeddingProvider()
+        if settings.use_light_embeddings
+        else SentenceTransformerEmbeddings(settings.embedding_model)
     )
-    llm_service = LLMService(settings, provider=llm_provider)
+    vectors = VectorRepository(settings, embeddings)  # type: ignore[arg-type]
+    retrieval = RetrievalService(knowledge, vectors)
+    ocr_service = OCRService(TesseractOCRProvider(settings))
+    provider = (
+        GroqProvider(settings.llm_api_keys(), settings.llm_models(), settings.groq_base_url, settings.groq_timeout_seconds)
+        if settings.llm_configured
+        else DisabledLLMProvider()
+    )
+    llm_service = LLMService(provider)
+    guidance = GuidanceService(
+        knowledge=knowledge,
+        retrieval=retrieval,
+        llm=llm_service,
+        translation=TranslationService(),
+        common_threshold=0.7,
+        retrieval_threshold=settings.retrieval_min_score,
+    )
     document_service = DocumentService(
         settings=settings,
         storage=storage,
-        image_service=image_service,
+        documents=documents,
+        image_service=ImageService(),
+        pdf_service=PdfService(),
         ocr_service=ocr_service,
-        extraction_service=extraction_service,
-        classification_service=classification_service,
-        rag_service=rag_service,
-        llm_configured=llm_service.configured,
-    )
-    chat_service = ChatService(
-        document_service=document_service,
-        intent_service=IntentService(),
-        highlight_service=HighlightService(),
-        rag_service=rag_service,
-        llm_service=llm_service,
+        field_detection=FieldDetectionService(settings),
+        label_association=LabelAssociationService(),
+        form_identification=FormIdentificationService(knowledge, settings),
+        guidance=guidance,
+        preview=PreviewService(settings, PdfService()),
+        validation=ValidationService(),
+        llm_configured=settings.llm_configured,
     )
     return AppContainer(
         settings=settings,
-        storage=storage,
-        image_service=image_service,
+        documents=documents,
+        knowledge=knowledge,
+        vectors=vectors,
         ocr_service=ocr_service,
-        extraction_service=extraction_service,
-        classification_service=classification_service,
-        rag_service=rag_service,
         llm_service=llm_service,
+        retrieval=retrieval,
         document_service=document_service,
-        chat_service=chat_service,
     )
