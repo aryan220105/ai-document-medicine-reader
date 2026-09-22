@@ -1,31 +1,41 @@
-from __future__ import annotations
-
-import sys
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
-from app.config import get_settings
-
-ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = ROOT / "scripts"
-if str(SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS))
+from app.config import Settings, get_settings
+from app.dependencies import build_container
+from app.main import create_app
 
 
 @pytest.fixture
-def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
-    monkeypatch.setenv("APP_ENV", "test")
-    monkeypatch.setenv("DATA_DIR", str(tmp_path / "data"))
-    monkeypatch.setenv("GROQ_API_KEY", "")
-    monkeypatch.setenv("GROQ_API_KEY_2", "")
-    monkeypatch.setenv("OPENAI_API_KEY", "")
-    monkeypatch.setenv("USE_LIGHT_EMBEDDINGS", "true")
+def settings(tmp_path: Path) -> Settings:
     get_settings.cache_clear()
-    from app.main import create_app
+    configured = Settings(
+        data_dir=tmp_path,
+        knowledge_base_dir=Path(__file__).resolve().parents[1] / "knowledge_base",
+        use_light_embeddings=True,
+        external_ai_enabled=False,
+        groq_api_key="",
+        groq_model="",
+        tesseract_cmd="",
+    )
+    configured.data_dir.mkdir(parents=True, exist_ok=True)
+    configured.uploads_dir.mkdir(parents=True, exist_ok=True)
+    configured.processed_dir.mkdir(parents=True, exist_ok=True)
+    configured.previews_dir.mkdir(parents=True, exist_ok=True)
+    configured.chroma_dir.mkdir(parents=True, exist_ok=True)
+    return configured
 
-    application = create_app()
-    with TestClient(application) as test_client:
+
+@pytest.fixture
+def container(settings: Settings):
+    return build_container(settings)
+
+
+@pytest.fixture
+def client(settings: Settings, container):
+    app = create_app()
+    app.state.container = container
+    with TestClient(app) as test_client:
         yield test_client
-    get_settings.cache_clear()

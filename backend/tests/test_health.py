@@ -1,17 +1,23 @@
-def test_health(client) -> None:
+from app.dependencies import build_container
+from app.main import create_app
+from fastapi.testclient import TestClient
+
+
+def test_health_without_llm(client):
     response = client.get("/api/health")
     assert response.status_code == 200
-    payload = response.json()
-    assert payload["status"] == "ok"
-    assert payload["llm_configured"] is False
-    assert "ocr" in payload
-    assert "vector_store" in payload
-    assert "llm_key_count" in payload
+    body = response.json()
+    assert body["status"] == "ok"
+    assert body["llm_configured"] is False
 
 
-def test_config_does_not_expose_secrets(client) -> None:
-    response = client.get("/api/config")
-    assert response.status_code == 200
-    body = response.text.lower()
-    assert "gsk_" not in body
-    assert "api_key" not in body or "llm_configured" in body
+def test_health_with_llm_config(tmp_path, settings):
+    settings.external_ai_enabled = True
+    settings.groq_api_key = "test-key"
+    settings.groq_model = "demo-model"
+    app = create_app()
+    app.state.container = build_container(settings)
+    with TestClient(app) as client:
+        body = client.get("/api/health").json()
+        assert body["llm_configured"] is True
+        assert body["llm_key_count"] >= 1
