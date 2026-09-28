@@ -68,6 +68,28 @@ def test_label_association():
     assert associated[0].label.lower().startswith("name")
 
 
+def test_label_stays_on_the_same_row():
+    image = dict(image_width=1000, image_height=1000)
+    field = DetectedField(
+        id="f1",
+        page_index=0,
+        label="",
+        field_type=FieldType.TEXT,
+        input_box=normalize_box(PixelBoundingBox(x=400, y=400, width=500, height=40, **image)),
+        confidence=0.7,
+    )
+    words = [
+        OCRWord(id="title", text="Demo", confidence=90, page_index=0, pixel=PixelBoundingBox(x=40, y=40, width=80, height=20, **image), line_id=1, block_id=1),
+        OCRWord(id="date", text="Date", confidence=90, page_index=0, pixel=PixelBoundingBox(x=40, y=200, width=60, height=20, **image), line_id=1, block_id=2),
+        OCRWord(id="student", text="Student", confidence=90, page_index=0, pixel=PixelBoundingBox(x=40, y=405, width=90, height=20, **image), line_id=1, block_id=3),
+        OCRWord(id="name", text="Name", confidence=90, page_index=0, pixel=PixelBoundingBox(x=140, y=405, width=70, height=20, **image), line_id=1, block_id=3),
+    ]
+    ocr = OCRResult(page_index=0, full_text="Demo Date Student Name", image_width=1000, image_height=1000, words=words)
+    associated = LabelAssociationService().associate([field], ocr)
+    assert associated[0].label == "Student Name"
+    assert associated[0].field_type == FieldType.TEXT
+
+
 def test_known_and_unknown_forms(container):
     from app.models.common import DocumentCategory
     from app.models.ocr import OCRResult

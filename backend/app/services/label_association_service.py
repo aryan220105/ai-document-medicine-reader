@@ -27,7 +27,8 @@ class LabelAssociationService:
             if field.field_type in {FieldType.CHECKBOX, FieldType.RADIO} and field.label:
                 field.options = [FieldOption(id=f"{field.id}-opt", label=field.label, box=field.input_box)]
         self._infer_colon_gaps(fields, ocr)
-        return [field for field in fields if self._keep(field, ocr)]
+        kept = [field for field in fields if self._keep(field, ocr)]
+        return self._suppress_overlaps(kept)
 
     def _keep(self, field: DetectedField, ocr: OCRResult) -> bool:
         inside = [
@@ -39,45 +40,64 @@ class LabelAssociationService:
             and word.box.x + word.box.width <= field.input_box.x + field.input_box.width
             and word.box.y + word.box.height <= field.input_box.y + field.input_box.height
         ]
+        if field.field_type in {FieldType.CHECKBOX, FieldType.RADIO}:
+            for word in ocr.words:
+                if word.page_index == field.page_index and self._contains(word.box, field.input_box):
+                    return False
         if len(inside) >= 4 and field.field_type not in {FieldType.MULTILINE}:
             return False
         return True
 
     def _nearest_label(self, field: DetectedField, words: list[OCRWord], used: set[str]) -> list[OCRWord]:
-        candidates: list[tuple[float, OCRWord]] = []
         box = field.input_box
+        left: list[OCRWord] = []
+        above: list[OCRWord] = []
+        box_mid_y = box.y + box.height / 2
         for word in words:
-            if word.id in used or fold(word.text) in {":", "-", "."}:
+            if word.id in used or word.page_index != field.page_index or fold(word.text) in {":", "-", ".", "|"}:
                 continue
-            same_page = word.page_index == field.page_index
-            if not same_page:
+            word_box = word.box
+            word_right = word_box.x + word_box.width
+            word_bottom = word_box.y + word_box.height
+            word_mid_y = word_box.y + word_box.height / 2
+            aligned = abs(word_mid_y - box_mid_y) <= max(box.height * 0.7, 0.018)
+            if word_right <= box.x + 0.02 and aligned and box.x - word_right <= 0.28:
+                left.append(word)
                 continue
-            left = word.box.x + word.box.width <= box.x + 0.02
-            above = word.box.y + word.box.height <= box.y + 0.015
-            if not (left or above):
-                continue
-            dx = abs((word.box.x + word.box.width) - box.x)
-            dy = abs((word.box.y + word.box.height) - box.y)
-            if left and abs(word.box.y - box.y) < 0.04:
-                score = dx + abs(word.box.y - box.y)
-            elif above and abs(word.box.x - box.x) < 0.2:
-                score = 0.4 + dy
-            else:
-                continue
-            candidates.append((score, word))
-        if not candidates:
+            gap = box.y - word_bottom
+            overlap = min(word_right, box.x + box.width) - max(word_box.x, box.x)
+            if -0.008 <= gap <= 0.035 and overlap >= min(word_box.width, box.width) * 0.2:
+                above.append(word)
+        if left:
+            return self._cluster_left(left)
+        return self._cluster_above(above)
+
+    @staticmethod
+    def _cluster_left(words: list[OCRWord]) -> list[OCRWord]:
+        ordered = sorted(words, key=lambda item: item.box.x)
+        chosen = [ordered[-1]]
+        for word in reversed(ordered[:-1]):
+            gap = chosen[0].box.x - (word.box.x + word.box.width)
+            if gap > 0.045:
+                break
+            chosen.insert(0, word)
+        return chosen
+
+    @staticmethod
+    def _cluster_above(words: list[OCRWord]) -> list[OCRWord]:
+        if not words:
             return []
-        candidates.sort(key=lambda item: item[0])
-        seed = candidates[0][1]
-        line = [word for word in words if word.line_id == seed.line_id and word.page_index == seed.page_index]
-        line.sort(key=lambda item: item.pixel.x)
-        return [word for word in line if word.id not in used][:8]
+        nearest = max(words, key=lambda item: item.box.y + item.box.height)
+        seed_y = nearest.box.y
+        line = [word for word in words if abs(word.box.y - seed_y) <= 0.012]
+        line.sort(key=lambda item: item.box.x)
+        return line
 
     def _refine_type(self, field: DetectedField) -> FieldType:
         label = fold(field.label)
-        if any(term in label for term in SIGNATURE_TERMS):
+        if self._has_term(label, SIGNATURE_TERMS):
             return FieldType.SIGNATURE
-        if any(term in label for term in DATE_TERMS):
+        if self._has_term(label, DATE_TERMS):
             return FieldType.DATE
         if any(term in label for term in ADDRESS_TERMS) or field.input_box.height > 0.06:
             if field.field_type not in {FieldType.CHECKBOX, FieldType.RADIO, FieldType.SIGNATURE}:
@@ -113,3 +133,46 @@ class LabelAssociationService:
                 )
             )
         fields.extend(extra)
+
+    @staticmethod
+    def _has_term(label: str, terms: tuple[str, ...]) -> bool:
+        for term in terms:
+            if len(term) <= 4:
+                if re.search(rf"\b{re.escape(term)}\b", label):
+                    return True
+            elif term in label:
+                return True
+        return False
+
+    @staticmethod
+    def _contains(outer, inner) -> bool:
+        return (
+            inner.x >= outer.x - 0.004
+            and inner.y >= outer.y - 0.004
+            and inner.x + inner.width <= outer.x + outer.width + 0.004
+            and inner.y + inner.height <= outer.y + outer.height + 0.004
+            and inner.width * inner.height <= outer.width * outer.height * 0.85
+        )
+
+    def _suppress_overlaps(self, fields: list[DetectedField]) -> list[DetectedField]:
+        ranked = sorted(fields, key=lambda item: (item.confidence, 1 if item.label else 0), reverse=True)
+        kept: list[DetectedField] = []
+        for field in ranked:
+            if any(self._same_target(field, other) for other in kept):
+                continue
+            kept.append(field)
+        kept.sort(key=lambda item: (item.page_index, item.input_box.y, item.input_box.x))
+        return kept
+
+    @staticmethod
+    def _same_target(candidate: DetectedField, kept: DetectedField) -> bool:
+        if iou(candidate.input_box, kept.input_box) >= 0.3:
+            return True
+        left = candidate.input_box
+        right = kept.input_box
+        overlap_x = min(left.x + left.width, right.x + right.width) - max(left.x, right.x)
+        if overlap_x <= 0:
+            return False
+        shared = overlap_x / max(min(left.width, right.width), 1e-6)
+        center_gap = abs((left.y + left.height / 2) - (right.y + right.height / 2))
+        return shared >= 0.5 and center_gap <= max(left.height, right.height)
