@@ -34,7 +34,7 @@ class FieldDetectionService:
         candidates = (
             self._boxes(gray, width, height, page_index)
             + self._underlines(gray, width, height, page_index)
-            + self._check_marks(gray, width, height, page_index)
+            + self._drop_glyph_rows(self._check_marks(gray, width, height, page_index))
         )
         merged = self._merge(self._prune(candidates, width, height))
         fields: list[DetectedField] = []
@@ -126,11 +126,54 @@ class FieldDetectionService:
             fill = cv2.contourArea(contour) / max(w * h, 1)
             if fill < 0.08 or fill > 0.95:
                 continue
+            if not self._hollow_mark(gray, x, y, w, h):
+                continue
             pixel = PixelBoundingBox(x=x, y=y, width=w, height=h, image_width=width, image_height=height, page_index=page_index)
             circularity = 4 * np.pi * cv2.contourArea(contour) / max((cv2.arcLength(contour, True) ** 2), 1)
-            field_type = FieldType.RADIO if circularity > 0.65 else FieldType.CHECKBOX
+            field_type = FieldType.RADIO if circularity > 0.85 else FieldType.CHECKBOX
             results.append(DetectionCandidate(field_type, pixel, 0.7, [field_type.value]))
         return results
+
+    @staticmethod
+    def _hollow_mark(gray: np.ndarray, x: int, y: int, w: int, h: int) -> bool:
+        roi = gray[y : y + h, x : x + w]
+        if roi.size == 0 or w < 8 or h < 8:
+            return False
+        inset = max(2, min(w, h) // 4)
+        center = roi[inset : h - inset, inset : w - inset]
+        if center.size == 0 or float(center.mean()) < 180:
+            return False
+        border = np.concatenate((roi[0, :], roi[-1, :], roi[:, 0], roi[:, -1]))
+        dark = float((border < 150).mean())
+        return dark >= 0.55
+
+    @staticmethod
+    def _drop_glyph_rows(candidates: list[DetectionCandidate]) -> list[DetectionCandidate]:
+        kept: list[DetectionCandidate] = []
+        for candidate in candidates:
+            cy = candidate.pixel.y + candidate.pixel.height / 2
+            neighbors = 0
+            for other in candidates:
+                oy = other.pixel.y + other.pixel.height / 2
+                if abs(oy - cy) <= max(candidate.pixel.height, 10) and abs(other.pixel.x - candidate.pixel.x) <= 100:
+                    neighbors += 1
+            if neighbors >= 4:
+                continue
+            kept.append(candidate)
+        return kept
+
+    @staticmethod
+    def _same_region(current: PixelBoundingBox, other: PixelBoundingBox, threshold: float) -> bool:
+        if iou(current, other) >= threshold:
+            return True
+        ax2, ay2 = current.x + current.width, current.y + current.height
+        bx2, by2 = other.x + other.width, other.y + other.height
+        overlap_x = max(0, min(ax2, bx2) - max(current.x, other.x))
+        if overlap_x <= 0:
+            return False
+        shared = overlap_x / max(min(current.width, other.width), 1)
+        center_gap = abs((current.y + current.height / 2) - (other.y + other.height / 2))
+        return shared >= 0.55 and center_gap <= max(current.height, other.height) * 0.8
 
     def _merge(self, candidates: list[DetectionCandidate]) -> list[DetectionCandidate]:
         remaining = sorted(candidates, key=lambda item: item.confidence, reverse=True)
@@ -140,7 +183,7 @@ class FieldDetectionService:
             current = remaining.pop(0)
             kept: list[DetectionCandidate] = []
             for other in remaining:
-                if iou(current.pixel, other.pixel) >= threshold:
+                if self._same_region(current.pixel, other.pixel, threshold):
                     current.reasons = list(dict.fromkeys(current.reasons + other.reasons))
                     current.confidence = max(current.confidence, other.confidence)
                 else:
