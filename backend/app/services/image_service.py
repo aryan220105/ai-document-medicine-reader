@@ -153,17 +153,33 @@ class ImageService:
         return cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
 
     def _deskew(self, gray: np.ndarray) -> np.ndarray:
-        inverted = cv2.bitwise_not(gray)
-        coords = np.column_stack(np.where(inverted > 0))
-        if coords.size == 0:
-            return gray
-        angle = cv2.minAreaRect(coords)[-1]
-        if angle < -45:
-            angle = -(90 + angle)
-        else:
-            angle = -angle
-        if abs(angle) < 0.4 or abs(angle) > 15:
+        angle = self._estimate_skew(gray)
+        if abs(angle) < 0.2:
             return gray
         height, width = gray.shape[:2]
         matrix = cv2.getRotationMatrix2D((width / 2, height / 2), angle, 1.0)
         return cv2.warpAffine(gray, matrix, (width, height), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+
+    @staticmethod
+    def _estimate_skew(gray: np.ndarray, max_angle: float = 15.0) -> float:
+        """Projection-profile skew search: text rows and form lines produce the sharpest
+        horizontal profile when the page is level. Scanned pages rarely contain pure white,
+        so ink is isolated with a local threshold instead of a global one."""
+        height, width = gray.shape[:2]
+        scale = min(1.0, 900 / float(max(height, width)))
+        small = cv2.resize(gray, (max(1, int(width * scale)), max(1, int(height * scale))), interpolation=cv2.INTER_AREA)
+        ink = cv2.adaptiveThreshold(small, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 31, 15)
+        if cv2.countNonZero(ink) < 50:
+            return 0.0
+        h, w = ink.shape[:2]
+        center = (w / 2, h / 2)
+
+        def score(angle: float) -> float:
+            matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+            rotated = cv2.warpAffine(ink, matrix, (w, h), flags=cv2.INTER_NEAREST, borderValue=0)
+            profile = rotated.sum(axis=1, dtype=np.float64)
+            return float(np.square(np.diff(profile)).sum())
+
+        coarse = max(np.arange(-max_angle, max_angle + 0.01, 0.5), key=score)
+        fine = max(np.arange(coarse - 0.5, coarse + 0.51, 0.1), key=score)
+        return float(round(fine, 2))
