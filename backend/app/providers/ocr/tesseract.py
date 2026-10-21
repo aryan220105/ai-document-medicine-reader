@@ -5,6 +5,8 @@ import shutil
 from collections import defaultdict
 from pathlib import Path
 
+import cv2
+import numpy as np
 import pytesseract
 from PIL import Image
 
@@ -32,7 +34,7 @@ class TesseractOCRProvider:
         image = Image.open(image_path)
         width, height = image.size
         lang = self._resolve_lang()
-        data = pytesseract.image_to_data(image, lang=lang, output_type=pytesseract.Output.DICT)
+        data = pytesseract.image_to_data(self._remove_rulings(image), lang=lang, output_type=pytesseract.Output.DICT)
         words: list[OCRWord] = []
         confidences: list[float] = []
         n = len(data.get("text", []))
@@ -76,6 +78,25 @@ class TesseractOCRProvider:
             words=words,
             lines=lines,
         )
+
+    @staticmethod
+    def _remove_rulings(image: Image.Image) -> Image.Image:
+        """Erase long horizontal/vertical form lines before OCR. Box borders next to a
+        label (especially broken, dashed-looking borders on noisy scans) make Tesseract's
+        layout analysis discard the label as non-text. Geometry is unchanged, so word
+        coordinates still line up with the processed page."""
+        try:
+            gray = np.array(image.convert("L"))
+            height, width = gray.shape[:2]
+            ink = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 25, 15)
+            horizontal = cv2.morphologyEx(ink, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (max(40, width // 30), 1)))
+            vertical = cv2.morphologyEx(ink, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (1, max(40, height // 45))))
+            mask = cv2.dilate(cv2.bitwise_or(horizontal, vertical), np.ones((5, 5), np.uint8))
+            gray[mask > 0] = 255
+            return Image.fromarray(gray)
+        except Exception:
+            logger.debug("Ruling-line removal skipped")
+            return image
 
     def _resolve_lang(self) -> str:
         requested = self.settings.tesseract_lang or "eng"

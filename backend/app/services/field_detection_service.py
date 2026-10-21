@@ -17,6 +17,7 @@ class DetectionCandidate:
     pixel: PixelBoundingBox
     confidence: float
     reasons: list[str]
+    line_y: int | None = None
 
 
 class FieldDetectionService:
@@ -31,11 +32,9 @@ class FieldDetectionService:
             return []
         height, width = image.shape[:2]
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        candidates = (
-            self._boxes(gray, width, height, page_index)
-            + self._underlines(gray, width, height, page_index)
-            + self._drop_glyph_rows(self._check_marks(gray, width, height, page_index))
-        )
+        boxes = self._boxes(gray, width, height, page_index)
+        underlines = self._drop_box_edges(self._underlines(gray, width, height, page_index), boxes)
+        candidates = boxes + underlines + self._drop_glyph_rows(self._check_marks(gray, width, height, page_index))
         merged = self._merge(self._prune(candidates, width, height))
         fields: list[DetectedField] = []
         for index, candidate in enumerate(merged):
@@ -84,6 +83,8 @@ class FieldDetectionService:
             aspect = w / max(h, 1)
             if aspect < 1.4:
                 continue
+            if not self._rectangular_frame(binary, x, y, w, h):
+                continue
             pixel = PixelBoundingBox(x=x, y=y, width=w, height=h, image_width=width, image_height=height, page_index=page_index)
             field_type = FieldType.MULTILINE if h > 48 else FieldType.TEXT
             results.append(DetectionCandidate(field_type, pixel, 0.72, ["rectangular_box"]))
@@ -109,7 +110,7 @@ class FieldDetectionService:
                 image_height=height,
                 page_index=page_index,
             )
-            results.append(DetectionCandidate(FieldType.TEXT, pixel, 0.64, ["underline"]))
+            results.append(DetectionCandidate(FieldType.TEXT, pixel, 0.64, ["underline"], line_y=y + h // 2))
         return results
 
     def _check_marks(self, gray: np.ndarray, width: int, height: int, page_index: int) -> list[DetectionCandidate]:
@@ -129,10 +130,50 @@ class FieldDetectionService:
             if not self._hollow_mark(gray, x, y, w, h):
                 continue
             pixel = PixelBoundingBox(x=x, y=y, width=w, height=h, image_width=width, image_height=height, page_index=page_index)
-            circularity = 4 * np.pi * cv2.contourArea(contour) / max((cv2.arcLength(contour, True) ** 2), 1)
-            field_type = FieldType.RADIO if circularity > 0.85 else FieldType.CHECKBOX
+            field_type = FieldType.RADIO if self._empty_corners(gray, x, y, w, h) else FieldType.CHECKBOX
             results.append(DetectionCandidate(field_type, pixel, 0.7, [field_type.value]))
         return results
+
+    @staticmethod
+    def _rectangular_frame(binary: np.ndarray, x: int, y: int, w: int, h: int) -> bool:
+        """A drawn input box has ink along all four sides; a run of merged text glyphs does not."""
+        roi = binary[y : y + h, x : x + w] > 0
+        band = max(3, min(w, h) // 8)
+        coverage = (
+            roi[:band, :].any(axis=0).mean(),
+            roi[-band:, :].any(axis=0).mean(),
+            roi[:, :band].any(axis=1).mean(),
+            roi[:, -band:].any(axis=1).mean(),
+        )
+        return min(coverage) >= 0.8
+
+    @staticmethod
+    def _drop_box_edges(underlines: list[DetectionCandidate], boxes: list[DetectionCandidate]) -> list[DetectionCandidate]:
+        """Horizontal-line detection also fires on the top and bottom edges of rectangles."""
+        kept: list[DetectionCandidate] = []
+        for line in underlines:
+            line_y = line.line_y if line.line_y is not None else line.pixel.y + line.pixel.height
+            on_edge = False
+            for box in boxes:
+                b = box.pixel
+                overlap = min(line.pixel.x + line.pixel.width, b.x + b.width) - max(line.pixel.x, b.x)
+                if overlap < min(line.pixel.width, b.width) * 0.8:
+                    continue
+                if abs(line_y - b.y) <= 6 or abs(line_y - (b.y + b.height)) <= 6:
+                    on_edge = True
+                    break
+            if not on_edge:
+                kept.append(line)
+        return kept
+
+    @staticmethod
+    def _empty_corners(gray: np.ndarray, x: int, y: int, w: int, h: int) -> bool:
+        """A circle leaves its bounding-box corners blank; a square has ink there. This is
+        steadier than contour circularity once a scan has been rotated and re-thresholded."""
+        size = max(2, min(w, h) // 6)
+        roi = gray[y : y + h, x : x + w] < 150
+        corners = (roi[:size, :size], roi[:size, -size:], roi[-size:, :size], roi[-size:, -size:])
+        return float(np.mean([corner.mean() for corner in corners])) < 0.25
 
     @staticmethod
     def _hollow_mark(gray: np.ndarray, x: int, y: int, w: int, h: int) -> bool:
@@ -143,9 +184,18 @@ class FieldDetectionService:
         center = roi[inset : h - inset, inset : w - inset]
         if center.size == 0 or float(center.mean()) < 180:
             return False
-        border = np.concatenate((roi[0, :], roi[-1, :], roi[:, 0], roi[:, -1]))
-        dark = float((border < 150).mean())
-        return dark >= 0.55
+        # Look for ink within a band along each side rather than on the exact outer
+        # pixel row: rotated or noisy scans shift the stroke inward by a pixel or two,
+        # and a radio circle only touches its bounding box at four tangent points.
+        ink = roi < 150
+        band = max(2, min(w, h) // 5)
+        coverage = [
+            float(ink[:band, :].any(axis=0).mean()),
+            float(ink[-band:, :].any(axis=0).mean()),
+            float(ink[:, :band].any(axis=1).mean()),
+            float(ink[:, -band:].any(axis=1).mean()),
+        ]
+        return min(coverage) >= 0.45 and sum(coverage) / 4 >= 0.5
 
     @staticmethod
     def _drop_glyph_rows(candidates: list[DetectionCandidate]) -> list[DetectionCandidate]:
@@ -172,8 +222,11 @@ class FieldDetectionService:
         if overlap_x <= 0:
             return False
         shared = overlap_x / max(min(current.width, other.width), 1)
-        center_gap = abs((current.y + current.height / 2) - (other.y + other.height / 2))
-        return shared >= 0.55 and center_gap <= max(current.height, other.height) * 0.8
+        # Measure vertical agreement against the smaller box so a tall box (e.g. an
+        # address area) cannot absorb a separate field stacked directly below it.
+        overlap_y = min(ay2, by2) - max(current.y, other.y)
+        shared_y = overlap_y / max(min(current.height, other.height), 1)
+        return shared >= 0.55 and shared_y >= 0.5
 
     def _merge(self, candidates: list[DetectionCandidate]) -> list[DetectionCandidate]:
         remaining = sorted(candidates, key=lambda item: item.confidence, reverse=True)
