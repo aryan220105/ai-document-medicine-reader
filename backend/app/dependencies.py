@@ -7,10 +7,16 @@ from app.providers.llm.disabled import DisabledLLMProvider
 from app.providers.llm.groq_provider import GroqProvider
 from app.providers.ocr.tesseract import TesseractOCRProvider
 from app.repositories.document_repository import DocumentRepository
+from app.repositories.field_dictionary_repository import FieldDictionaryRepository
 from app.repositories.form_knowledge_repository import FormKnowledgeRepository
 from app.repositories.vector_repository import VectorRepository
 from app.services.document_service import DocumentService
 from app.services.field_detection_service import FieldDetectionService
+from app.services.field_assembly_service import FieldAssemblyService
+from app.services.field_semantics_service import FieldSemanticsService
+from app.services.form_interpretation_service import FormInterpretationService
+from app.services.page_structure_service import PageStructureService
+from app.services.rate_limit_service import RateLimiter
 from app.services.form_identification_service import FormIdentificationService
 from app.services.guidance_service import GuidanceService
 from app.services.image_service import ImageService
@@ -30,6 +36,10 @@ class AppContainer:
     settings: Settings
     documents: DocumentRepository
     knowledge: FormKnowledgeRepository
+    dictionary: FieldDictionaryRepository
+    semantics: FieldSemanticsService
+    interpreter: FormInterpretationService
+    rate_limiter: RateLimiter
     vectors: VectorRepository
     ocr_service: OCRService
     llm_service: LLMService
@@ -42,13 +52,15 @@ def build_container(settings: Settings | None = None) -> AppContainer:
     storage = StorageService(settings)
     documents = DocumentRepository(settings)
     knowledge = FormKnowledgeRepository(settings)
+    dictionary = FieldDictionaryRepository(settings)
+    semantics = FieldSemanticsService(dictionary)
     embeddings = (
         HashingEmbeddingProvider()
         if settings.use_light_embeddings
         else SentenceTransformerEmbeddings(settings.embedding_model)
     )
     vectors = VectorRepository(settings, embeddings)  # type: ignore[arg-type]
-    retrieval = RetrievalService(knowledge, vectors)
+    retrieval = RetrievalService(knowledge, vectors, dictionary)
     ocr_service = OCRService(TesseractOCRProvider(settings))
     provider = (
         GroqProvider(settings.llm_api_keys(), settings.llm_models(), settings.groq_base_url, settings.groq_timeout_seconds)
@@ -56,11 +68,22 @@ def build_container(settings: Settings | None = None) -> AppContainer:
         else DisabledLLMProvider()
     )
     llm_service = LLMService(provider)
+    interpreter = FormInterpretationService(
+        provider if settings.llm_configured else None,
+        dictionary=dictionary,
+        classify_batch=settings.interpreter_classify_batch,
+        describe_batch=settings.interpreter_describe_batch,
+        web_search_model=settings.groq_web_search_model if settings.web_context_configured else "",
+    )
+    rate_limiter = RateLimiter(settings.upload_rate_limit, settings.upload_rate_window_seconds)
+    translation = TranslationService()
     guidance = GuidanceService(
         knowledge=knowledge,
+        dictionary=dictionary,
+        semantics=semantics,
         retrieval=retrieval,
         llm=llm_service,
-        translation=TranslationService(),
+        translation=translation,
         common_threshold=0.7,
         retrieval_threshold=settings.retrieval_min_score,
     )
@@ -72,17 +95,25 @@ def build_container(settings: Settings | None = None) -> AppContainer:
         pdf_service=PdfService(),
         ocr_service=ocr_service,
         field_detection=FieldDetectionService(settings),
-        label_association=LabelAssociationService(),
+        label_association=LabelAssociationService(semantics),
         form_identification=FormIdentificationService(knowledge, settings),
+        page_structure=PageStructureService(),
+        field_assembly=FieldAssemblyService(),
+        interpreter=interpreter,
+        semantics=semantics,
         guidance=guidance,
         preview=PreviewService(settings, PdfService()),
-        validation=ValidationService(),
+        validation=ValidationService(translation),
         llm_configured=settings.llm_configured,
     )
     return AppContainer(
         settings=settings,
         documents=documents,
         knowledge=knowledge,
+        dictionary=dictionary,
+        semantics=semantics,
+        interpreter=interpreter,
+        rate_limiter=rate_limiter,
         vectors=vectors,
         ocr_service=ocr_service,
         llm_service=llm_service,

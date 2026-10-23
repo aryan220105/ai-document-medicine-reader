@@ -32,7 +32,7 @@ class Settings(BaseSettings):
 
     max_upload_mb: int = 10
     max_pdf_pages: int = 5
-    tesseract_lang: str = "eng+hin+kan"
+    tesseract_lang: str = "eng+hin+kan+urd"
     tesseract_cmd: str = ""
 
     data_dir: Path = Field(default=PROJECT_ROOT / "data")
@@ -42,6 +42,22 @@ class Settings(BaseSettings):
     enable_lexical_retrieval_fallback: bool = True
     use_light_embeddings: bool = False
     persist_user_values: bool = False
+
+    # Interpreter batching. Smaller batches cost more requests but keep each reply
+    # inside the model's output budget; a reply that overruns is truncated and lost.
+    # Uploads are expensive (OCR per page, then model requests), so one client cannot be
+    # allowed to consume a shared deployment's whole provider quota.
+    upload_rate_limit: int = 12
+    upload_rate_window_seconds: int = 300
+
+    # Optional background lookup. Groq's "compound" models run a web search server-side;
+    # an ordinary chat model would answer from memory instead, which is not the same
+    # thing and is not acceptable here, so this is off unless a search model is named.
+    web_context_enabled: bool = False
+    groq_web_search_model: str = "groq/compound-mini"
+
+    interpreter_classify_batch: int = 10
+    interpreter_describe_batch: int = 5
 
     known_form_match_threshold: float = 0.42
     field_iou_merge: float = 0.45
@@ -103,6 +119,10 @@ class Settings(BaseSettings):
             if value and value not in models:
                 models.append(value)
         return models
+
+    @property
+    def web_context_configured(self) -> bool:
+        return bool(self.web_context_enabled and self.groq_web_search_model.strip() and self.llm_api_keys())
 
     @property
     def llm_configured(self) -> bool:

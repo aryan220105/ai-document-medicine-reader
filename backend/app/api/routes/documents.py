@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, BackgroundTasks, File, Form, Request, UploadFile
 from fastapi.responses import FileResponse
 
+from app.api.errors import too_many_requests
 from app.dependencies import AppContainer
 from app.models.common import DocumentCategory
 from app.models.document import DocumentResponse, KnownFormMatch
@@ -22,6 +23,16 @@ async def upload_document(
     category: DocumentCategory = Form(DocumentCategory.OTHER),
 ) -> DocumentResponse:
     container = _container(request)
+    client = request.client.host if request.client else "unknown"
+    allowed, retry_after = container.rate_limiter.check(client)
+    if not allowed:
+        # Each upload costs OCR on every page and, with the interpreter on, several model
+        # requests. One client must not be able to spend a shared deployment's quota.
+        raise too_many_requests(
+            "upload_rate_limited",
+            f"Too many uploads from this address. Try again in about {retry_after} seconds.",
+            retry_after,
+        )
     record = await container.document_service.create_from_upload(file, category=category)
     background_tasks.add_task(container.document_service.process, record.id)
     return container.document_service.to_response(record)

@@ -24,10 +24,17 @@ data/previews/*
 data/chroma/*
 data/app.db
 evaluation_results.json
+unknown_flow_results.json
 !data/uploads/.gitkeep
 !data/processed/.gitkeep
 !data/previews/.gitkeep
 !data/chroma/.gitkeep
+
+backend/data/uploads/*
+backend/data/processed/*
+backend/data/previews/*
+backend/data/chroma/*
+backend/data/app.db
 
 backend/.venv/
 backend/.pytest_cache/

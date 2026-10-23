@@ -4,6 +4,8 @@ const LABELS: Record<GuidanceSource, string> = {
   known_form_knowledge_base: "Known Form Knowledge Base",
   common_field_dictionary: "Common Field Dictionary",
   printed_form_text: "Printed Form Text",
+  label_pattern_heuristic: "Inferred From Printed Label",
+  page_interpretation: "Read From This Page",
   general_ai_guidance: "General AI Guidance",
   unavailable: "Guidance unavailable",
 };

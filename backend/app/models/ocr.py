@@ -34,6 +34,13 @@ class OCRResult(BaseModel):
     words: list[OCRWord] = Field(default_factory=list)
     lines: list[OCRLine] = Field(default_factory=list)
 
+    # Which script the page turned out to be printed in, and which Tesseract models were
+    # used to read it. Reported so the interface can offer a sensible default explanation
+    # language; the form's own text is never translated.
+    script: str = "unknown"
+    languages_used: list[str] = Field(default_factory=list)
+    rtl: bool = False
+
     @property
     def has_useful_text(self) -> bool:
         return len(" ".join(self.full_text.split())) >= 8 and len(self.words) >= 2

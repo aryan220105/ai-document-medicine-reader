@@ -1,0 +1,134 @@
+{
+  "form_id": null,
+  "language": "kn",
+  "rtl": false,
+  "fields": [
+    {
+      "field_id": "full_name",
+      "label": "ಪೂರ್ಣ ಹೆಸರು",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 184,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "father_name",
+      "label": "ತಂದೆಯ ಹೆಸರು",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 294,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "date_of_birth",
+      "label": "ಜನ್ಮ ದಿನಾಂಕ",
+      "type": "date",
+      "pixel": {
+        "x": 484,
+        "y": 406,
+        "width": 300,
+        "height": 38,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "mobile_number",
+      "label": "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 514,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "bank_account_number",
+      "label": "ಬ್ಯಾಂಕ್ ಖಾತೆ ಸಂಖ್ಯೆ",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 624,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "pincode",
+      "label": "ಪಿನ್ ಕೋಡ್",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 734,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "address",
+      "label": "ವಿಳಾಸ",
+      "type": "multiline",
+      "pixel": {
+        "x": 64,
+        "y": 890,
+        "width": 1112,
+        "height": 110,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "occupation",
+      "label": "ವೃತ್ತಿ",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 1034,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "signature",
+      "label": "ಸಹಿ",
+      "type": "signature",
+      "pixel": {
+        "x": 484,
+        "y": 1144,
+        "width": 420,
+        "height": 86,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    }
+  ],
+  "image": "demo_unknown_kn_grama.png"
+}
