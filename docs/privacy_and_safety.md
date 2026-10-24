@@ -20,6 +20,15 @@ Deletion removes these artifacts for that document.
 - Is reached only after every offline source has been tried. An unknown form in any supported language is fully usable with external AI switched off; the test suite asserts that no network call is attempted in that mode.
 - A reply is discarded if it is not written in the script that was requested, so a romanised answer cannot be presented as a Hindi, Kannada, or Urdu translation.
 
+## Read-aloud
+
+When `ELEVENLABS_API_KEY` is set, the Listen button sends one guidance sentence to ElevenLabs and plays the audio that comes back.
+
+- Sent: the explanation for the selected field, in the language the user chose.
+- Never sent: typed answers, the page image, the uploaded file, or other fields.
+- Known forms and unknown forms use the same path. The language of the explanation is what is spoken.
+- If the speech service is not configured or cannot be reached, the browser's own voice is used instead, and the written guidance stays on screen.
+
 ## The page interpreter
 
 When external AI is enabled, an unknown form's printed structure is sent to the model so

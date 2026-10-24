@@ -46,11 +46,12 @@ export function UploadZone({
         <p className="text-sm uppercase tracking-wide text-teal-800">Academic demonstration</p>
         <h1 className="mt-1 font-serif text-3xl text-slate-900">FormSathi</h1>
         <p className="mt-2 text-slate-700">
-          Upload a form, see where each answer belongs, and hear simple guidance in English, Hindi, or Kannada.
+          Upload a form, see where each answer belongs, and hear the explanation in English, Hindi, Kannada, or Urdu.
+          Known forms and forms the app has never seen are both read aloud.
         </p>
       </header>
       <div
-        className={`rounded-lg border-2 border-dashed px-6 py-10 text-center ${drag ? "border-teal-700 bg-teal-50" : "border-slate-300 bg-white"}`}
+        className={`rounded-xl border-2 border-dashed px-6 py-12 text-center shadow-sm ${drag ? "border-teal-700 bg-teal-50" : "border-slate-300 bg-white"}`}
         onDragOver={(event) => {
           event.preventDefault();
           setDrag(true);

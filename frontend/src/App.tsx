@@ -28,7 +28,7 @@ import type {
   MultilingualFieldGuidance,
   PreviewResult,
 } from "./types";
-import { isSupported, nativeNameFor, scriptLabel } from "./utils/languages";
+import { isSupported, nativeNameFor, scriptLabel, textForSpeech } from "./utils/languages";
 import { validateUpload } from "./utils/validation";
 
 const LANGUAGE_KEY = "formsathi.language";
@@ -57,7 +57,7 @@ export default function App() {
   const [askAnswer, setAskAnswer] = useState("");
   const [preview, setPreview] = useState<PreviewResult | null>(null);
   const { easyRead, setEasyRead } = useEasyRead();
-  const speech = useSpeech(language);
+  const speech = useSpeech(language, Boolean(config?.speech_configured));
 
   useEffect(() => {
     let cancelled = false;
@@ -261,10 +261,10 @@ export default function App() {
 
   return (
     <div className={`min-h-screen ${easyRead ? "easy-read" : ""}`}>
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-300 bg-white px-4 py-3">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 shadow-sm">
         <div>
           <p className="font-serif text-xl text-slate-900">FormSathi</p>
-          <p className="text-sm text-slate-600">AI-powered multilingual form assistant</p>
+          <p className="text-sm text-slate-600">English, Hindi, Kannada, and Urdu guidance for the form in front of you</p>
         </div>
         <div className="flex flex-wrap items-end gap-3">
           <LanguageSelector value={language} onChange={chooseLanguage} compact />
@@ -308,8 +308,8 @@ export default function App() {
             </button>
           </div>
         ) : (
-          <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)_340px]">
-            <div className="hidden lg:block">
+          <div className="grid items-start gap-4 lg:grid-cols-[240px_minmax(0,1fr)_360px]">
+            <div className="hidden rounded-xl border border-slate-200 bg-white p-3 lg:block">
               <FieldNavigator
                 fields={document.fields.filter((field) => !excluded.has(field.id) || field.id === selectedId)}
                 selectedId={selectedId}
@@ -344,7 +344,7 @@ export default function App() {
               onSelect={setSelectedId}
               onPage={setPageIndex}
             />
-            <div>
+            <div className="rounded-xl border border-slate-200 bg-white">
               <div className="px-4 text-sm text-slate-600" data-testid="form-status">
                 {unknownForm ? (
                   <p>
@@ -382,10 +382,16 @@ export default function App() {
                 onLanguage={chooseLanguage}
                 value={selected ? answers[selected.id] ?? "" : ""}
                 onChange={(value) => selected && setAnswers((current) => ({ ...current, [selected.id]: value }))}
-                onPlay={() => guidance && speech.speak(`${guidance.simple_label}. ${guidance.what_to_enter}`)}
+                onPlay={() =>
+                  guidance && speech.speak(textForSpeech(guidance.simple_label, guidance.what_to_enter, language))
+                }
                 onStop={speech.stop}
                 speaking={speech.speaking}
-                available={typeof window !== "undefined" && "speechSynthesis" in window}
+                loading={speech.loading}
+                error={speech.error}
+                provider={speech.provider}
+                configured={Boolean(config?.speech_configured)}
+                available={speech.available}
                 hasLanguageVoice={speech.hasLanguageVoice}
                 canSpeak={speech.canSpeak}
                 voiceLanguage={speech.voiceLanguage}

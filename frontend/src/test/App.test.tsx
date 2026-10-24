@@ -417,6 +417,7 @@ describe("workspace widgets", () => {
         speaking={false}
         available
         hasLanguageVoice={false}
+        canSpeak={false}
         language="kn"
       />,
     );
@@ -453,6 +454,7 @@ describe("answer validation", () => {
 
   it("validates dates", () => {
     expect(validateAnswer({ ...field, field_type: "date", confidence: 0.9 }, "99")).toMatch(/date/i);
+    expect(validateAnswer({ ...field, field_type: "date", confidence: 0.9 }, "99/99/1998")).toMatch(/real calendar/);
     expect(validateAnswer({ ...field, field_type: "date", confidence: 0.9 }, "15/08/1998")).toBeNull();
   });
 

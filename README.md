@@ -78,7 +78,7 @@ Users remain responsible for verifying official instructions. Avoid highly sensi
 
 ### Using the form
 
-- English, Hindi, Kannada, and **Urdu** stored guidance and browser text-to-speech
+- English, Hindi, Kannada, and **Urdu** stored guidance, read aloud with ElevenLabs (browser voice is the fallback)
 - **On-the-go explanation language switching**: all four languages arrive in one request, so changing language is instant, works offline, and provably leaves the form and the typed answers untouched
 - Right-to-left rendering for Urdu guidance, applied per element so the form's own labels keep their own direction
 - **Per-field validation rules** for unknown forms too: dates, mobile numbers, PIN codes, Aadhaar, PAN, IFSC, bank accounts, email, amounts, years, and names, with messages in the chosen language
@@ -86,12 +86,11 @@ Users remain responsible for verifying official instructions. Avoid highly sensi
 - **Worked examples in the reader's own script**: a name shown beside Kannada guidance is
   written in Kannada, not Latin letters. Values that read the same everywhere — a date, a
   PIN code, an IFSC — stay identical across the four languages
-- **Read-aloud works in all four languages, whatever voices the device has**: a Windows
-  machine usually ships English only, and the play button used to disable itself for
-  Kannada and Urdu. It now reads with the closest installed voice — Kannada through
-  Telugu, Tamil, Malayalam or Hindi, Urdu through Arabic, Persian or Hindi — and names the
-  substitute, so approximate pronunciation is not mistaken for a bad translation. The
-  voice list loads asynchronously, so it is watched rather than read once
+- **Read-aloud uses ElevenLabs for English, Hindi, Kannada, and Urdu**, on known forms and
+  on forms the app has not seen before. Set `ELEVENLABS_API_KEY`. Only the guidance
+  sentence is sent. If the key is missing or the service cannot be reached, the browser
+  voice is used and the panel says so. Kannada and Urdu need the `eleven_v3` model;
+  multilingual v2 does not speak them
 - Non-destructive answer overlay and Completed Reference Preview PDF, with HarfBuzz shaping so answers typed in any of the four scripts render correctly
 - Delete and start-over cleanup
 

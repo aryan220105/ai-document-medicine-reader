@@ -90,6 +90,28 @@ def test_label_stays_on_the_same_row():
     assert associated[0].field_type == FieldType.TEXT
 
 
+def test_known_form_urdu_guidance_is_in_urdu_script(container):
+    """Known forms used to fall back to English, so Urdu read-aloud spoke English."""
+    from app.utils.text_normalization import dominant_script
+
+    box = normalize_box(PixelBoundingBox(x=1, y=1, width=10, height=10, image_width=100, image_height=100))
+    nominee = DetectedField(
+        id="n", page_index=0, label="Nominee", field_type=FieldType.TEXT, input_box=box, confidence=0.9
+    )
+    bundle = container.document_service.guidance.bundle_for_field(
+        nominee, "demo_bank_account_opening_v1", []
+    )
+    assert dominant_script(bundle.languages[Language.URDU].what_to_enter) == "arabic"
+    assert dominant_script(bundle.languages[Language.URDU].example or "") == "arabic"
+    ward = DetectedField(
+        id="w", page_index=0, label="Ward Number", field_type=FieldType.TEXT, input_box=box, confidence=0.9
+    )
+    civic = container.document_service.guidance.bundle_for_field(
+        ward, "demo_government_service_v1", []
+    )
+    assert dominant_script(civic.languages[Language.URDU].what_to_enter) == "arabic"
+
+
 def test_known_and_unknown_forms(container):
     from app.models.common import DocumentCategory
     from app.models.ocr import OCRResult

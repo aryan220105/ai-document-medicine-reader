@@ -19,7 +19,7 @@ from app.services.field_semantics_service import FieldSemanticsService, Semantic
 from app.services.llm_service import LLMService
 from app.services.retrieval_service import RetrievalService
 from app.services.translation_service import TranslationService
-from app.utils.text_normalization import fold
+from app.utils.text_normalization import dominant_script, fold
 
 logger = logging.getLogger(__name__)
 
@@ -482,6 +482,30 @@ class _ConceptResolution(_Resolution):
         )
 
 
+# Known-form ids that are the same concept as a dictionary entry under another name.
+_KNOWN_DICTIONARY_IDS = {
+    "contact_number": "mobile_number",
+    "nominee": "nominee_name",
+    "relationship": "nominee_relation",
+    "institution": "institution_name",
+    "marks": "marks_percentage",
+    "declaration": "declaration_consent",
+    "acknowledgement": "declaration_consent",
+    "policyholder_name": "full_name",
+}
+
+_SCRIPT_FOR_LANGUAGE = {
+    Language.ENGLISH: "latin",
+    Language.HINDI: "devanagari",
+    Language.KANNADA: "kannada",
+    Language.URDU: "arabic",
+}
+
+
+def _in_script(text: str, language: Language) -> bool:
+    return bool(text) and dominant_script(text) == _SCRIPT_FOR_LANGUAGE[language]
+
+
 class _KnownResolution(_Resolution):
     source = GuidanceSource.KNOWN_FORM
     confidence = 0.93
@@ -493,17 +517,53 @@ class _KnownResolution(_Resolution):
 
     def render(self, service, field, language, highlights) -> FieldGuidance:
         item = self.item
-        what = item.get("what_to_enter", {})
-        text = what.get(language.value) or what.get(Language.ENGLISH.value) or service.translation.unavailable_message(language)
-        why = item.get("why_needed", {})
+        code = language.value
+        what = item.get("what_to_enter", {}) or {}
+        why = item.get("why_needed", {}) or {}
+        labels = item.get("simple_label", {}) or {}
+        local_text = (what.get(code) or "").strip()
+        local_why = (why.get(code) or "").strip()
+        local_label = (labels.get(code) or "").strip()
+        # Known-form files were authored in English, with Hindi and Kannada stored in
+        # Latin letters. Reading those with an Urdu, Hindi, or Kannada voice sounds like
+        # the wrong language. Prefer a sentence that is actually in the requested script.
+        field_id = str(item.get("field_id") or "")
+        entry = service.dictionary.get(field_id) or service.dictionary.get(_KNOWN_DICTIONARY_IDS.get(field_id, ""))
+        text = local_text if _in_script(local_text, language) else ""
+        why_text = local_why if _in_script(local_why, language) else ""
+        label = local_label if _in_script(local_label, language) else ""
+        if entry is not None:
+            if not text:
+                candidate = (entry.what_to_enter.get(code) or "").strip()
+                if _in_script(candidate, language):
+                    text = candidate
+            if not why_text:
+                candidate = (entry.why_needed.get(code) or "").strip()
+                if _in_script(candidate, language):
+                    why_text = candidate
+            if not label:
+                candidate = (entry.simple_label.get(code) or "").strip()
+                if _in_script(candidate, language):
+                    label = candidate
+        if not text:
+            text = local_text or (what.get(Language.ENGLISH.value) or "").strip() or service.translation.unavailable_message(language)
+        if not why_text:
+            why_text = local_why or (why.get(Language.ENGLISH.value) or "").strip()
+        if not label:
+            label = local_label or field.label or field_id
+        example = (item.get("example") or "").strip()
+        if entry is not None and not _in_script(example, language):
+            candidate = (entry.example_for(language) or "").strip()
+            if candidate and (language is Language.ENGLISH or _in_script(candidate, language)):
+                example = candidate
         return self._base(
             field,
             language,
             highlights,
-            simple_label=field.label or item.get("field_id", ""),
+            simple_label=label,
             what_to_enter=text,
-            why_needed=why.get(language.value) or why.get(Language.ENGLISH.value),
-            example=item.get("example"),
+            why_needed=why_text or None,
+            example=example or None,
             format_hint=item.get("validation", {}).get("format"),
             validation_rule=service.semantics.validation_rule(item.get("validation", {})),
             source=self.source,

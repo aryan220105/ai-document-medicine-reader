@@ -36,10 +36,30 @@ function digitsOnly(value: string): string {
 }
 
 const CHECKS: Record<string, (value: string) => string | null> = {
-  date: (value) =>
-    /^\d{2}[/\-.]\d{2}[/\-.]\d{4}$/.test(value) || /^\d{4}-\d{2}-\d{2}$/.test(value)
-      ? null
-      : "Use a date such as DD/MM/YYYY.",
+  date: (value) => {
+    const folded = foldDigits(value).trim();
+    const dayFirst = folded.match(/^(\d{2})[/\-.](\d{2})[/\-.](\d{4})$/);
+    const yearFirst = folded.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const match = dayFirst ?? yearFirst;
+    if (!match) {
+      return "Use a date such as DD/MM/YYYY.";
+    }
+    const year = Number(yearFirst ? match[1] : match[3]);
+    const month = Number(match[2]);
+    const day = Number(yearFirst ? match[3] : match[1]);
+    const date = new Date(year, month - 1, day);
+    if (
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      date.getFullYear() !== year ||
+      date.getMonth() !== month - 1 ||
+      date.getDate() !== day
+    ) {
+      return "That is not a real calendar date.";
+    }
+    return null;
+  },
   year: (value) => (/^\d{4}$/.test(value) ? null : "Write a four-digit year, such as 2024."),
   mobile_in: (value) => {
     let digits = digitsOnly(value);

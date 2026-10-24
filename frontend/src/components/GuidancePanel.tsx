@@ -22,6 +22,10 @@ interface Props {
   hasLanguageVoice: boolean;
   canSpeak?: boolean;
   voiceLanguage?: string;
+  provider?: "elevenlabs" | "browser";
+  configured?: boolean;
+  loading?: boolean;
+  error?: string | null;
   question: string;
   onQuestion: (value: string) => void;
   onAsk: () => void;
@@ -43,6 +47,10 @@ export function GuidancePanel({
   hasLanguageVoice,
   canSpeak,
   voiceLanguage,
+  provider,
+  configured,
+  loading,
+  error,
   question,
   onQuestion,
   onAsk,
@@ -108,7 +116,7 @@ export function GuidancePanel({
           ) : null}
           {guidance.example ? (
             <p className="text-sm">
-              <strong>Example (fictional):</strong> <span dir="ltr">{guidance.example}</span>
+              <strong>Example (fictional):</strong> <span dir="auto">{guidance.example}</span>
             </p>
           ) : null}
           {guidance.format_hint ? (
@@ -132,6 +140,10 @@ export function GuidancePanel({
               language={language}
               canSpeak={canSpeak}
               voiceLanguage={voiceLanguage}
+              provider={provider}
+              configured={configured}
+              loading={loading}
+              error={error}
             />
           </div>
         </div>
