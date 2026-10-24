@@ -12,6 +12,9 @@ class OCRWord(BaseModel):
     pixel: PixelBoundingBox
     line_id: int = 0
     block_id: int = 0
+    # Set when the source already lists words in reading order. PDF text layers do.
+    # Their x positions are not a safe sort key for Urdu.
+    reading_index: int | None = None
 
     @property
     def box(self) -> NormalizedBoundingBox:

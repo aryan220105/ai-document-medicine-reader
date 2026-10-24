@@ -18,6 +18,7 @@ arranged. Meaning is assigned later, by the dictionary or by the interpreter.
 from __future__ import annotations
 
 import logging
+import unicodedata
 from dataclasses import dataclass, field as dataclass_field
 
 import cv2
@@ -25,7 +26,7 @@ import numpy as np
 
 from app.models.common import PixelBoundingBox
 from app.models.ocr import OCRResult, OCRWord
-from app.utils.text_normalization import fold, is_rtl
+from app.utils.text_normalization import dominant_script, fold, is_rtl
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +43,8 @@ MIN_BLANK_H = 16
 INLINE_BLANK_RATIO = 0.35
 
 # A caption that invites an answer is short. Anything longer is prose.
-MAX_CAPTION_WORDS = 6
-MAX_CAPTION_CHARS = 48
+MAX_CAPTION_WORDS = 12
+MAX_CAPTION_CHARS = 80
 
 # A signature or attestation caption runs a little longer than an inline one
 # ("Signature/Left Thumb Impression of Elector with date").
@@ -100,6 +101,98 @@ ATTESTATION_TERMS = (
 )
 
 
+def word_lines(words: list[OCRWord]) -> list[list[OCRWord]]:
+    """Group words into visual lines. Order inside a line is decided later."""
+    lines: list[list[OCRWord]] = []
+    for word in sorted(words, key=lambda item: (item.pixel.y, item.pixel.x)):
+        placed = False
+        for line in lines:
+            ref = line[0].pixel
+            overlap = min(word.pixel.y + word.pixel.height, ref.y + ref.height) - max(word.pixel.y, ref.y)
+            if overlap > min(word.pixel.height, ref.height) * 0.45:
+                line.append(word)
+                placed = True
+                break
+        if not placed:
+            lines.append([word])
+    return lines
+
+
+def reading_text(words: list[OCRWord]) -> str:
+    """Join words in reading order.
+
+    Tesseract reports Urdu words at their true coordinates, so left-to-right order is
+    the reverse of how the line is read. Captions built that way came out backwards and
+    the colon sat at the start, which made a row of questions look like a table header
+    and dropped the voter's name, EPIC number, and address on the Urdu form.
+    """
+    parts: list[str] = []
+    for line in word_lines(words):
+        if all(item.reading_index is not None for item in line):
+            ordered = sorted(line, key=lambda item: item.reading_index or 0)
+        else:
+            ordered = sorted(line, key=lambda item: item.pixel.x)
+            raw = " ".join(item.text for item in ordered).strip()
+            if raw and dominant_script(raw) == "arabic":
+                ordered = list(reversed(ordered))
+        text = _tidy_caption(" ".join(item.text for item in ordered).strip())
+        if text:
+            parts.append(text)
+    return " ".join(parts).strip()
+
+
+_KEPT_LATIN = {"epic", "sir", "blo", "ac", "no", "dob"}
+
+
+def _tidy_caption(text: str) -> str:
+    """Drop a repeated token and a stray Latin scrap inside a regional caption.
+
+    A second OCR pass of the same ink produces "حصہ حصہ" and "کا کا". A Latin
+    scrap such as "cou" inside an Urdu line is not a word of that line. Real
+    abbreviations printed on these forms are kept.
+    """
+    collapsed: list[str] = []
+    for part in text.split():
+        if collapsed and collapsed[-1] == part:
+            continue
+        collapsed.append(part)
+    if dominant_script(text) == "latin":
+        return " ".join(collapsed)
+    kept: list[str] = []
+    for part in collapsed:
+        # A right-to-left mark glued to "cou" kept the scrap, because the token
+        # was no longer plain ASCII. Format characters are not letters.
+        core = "".join(ch for ch in part if unicodedata.category(ch) != "Cf")
+        core = core.strip("()[]:/.,").strip()
+        if core.isascii() and core.isalpha() and len(core) <= 3 and core.lower() not in _KEPT_LATIN:
+            continue
+        kept.append(part)
+    return " ".join(kept)
+
+
+def question_caption(text: str) -> str | None:
+    """The label of a line that invites an answer, without the colon.
+
+    Urdu OCR sometimes leaves the colon on the left of the phrase even after the words
+    are ordered. Both ends count.
+    """
+    stripped = text.strip()
+    for mark in (":", "："):
+        if stripped.endswith(mark):
+            caption = stripped[: -len(mark)].strip()
+            return caption or None
+        if stripped.startswith(mark):
+            caption = stripped[len(mark) :].strip()
+            return caption or None
+    return None
+
+
+def _is_short_caption(line: TextLine, widest: float) -> bool:
+    if question_caption(line.text) is None:
+        return False
+    return widest > 0 and line.width < widest * PROSE_CAPTION_WIDTH
+
+
 @dataclass
 class Cell:
     """One rectangle of a ruled grid."""
@@ -124,8 +217,7 @@ class Cell:
 
     @property
     def text(self) -> str:
-        ordered = sorted(self.words, key=lambda item: (item.pixel.y, item.pixel.x))
-        return " ".join(item.text for item in ordered).strip()
+        return reading_text(self.words)
 
     @property
     def is_blank(self) -> bool:
@@ -234,18 +326,22 @@ class PageLayout:
         # Paragraphs fill their measure, so most lines sit close to the widest; a form's
         # captions are far shorter than its longest element.
         median = widths[len(widths) // 2]
-        if median / widest < PROSE_LINE_SHARE:
-            return False
 
         # A page with several short captions ending in a colon is a form, whatever the
         # rest of its text looks like. Declarations and footnotes on a real form run long
         # enough to look like prose on their own.
-        captions = sum(
-            1
-            for line in self.text_lines
-            if line.text.strip().endswith(":") and line.width < widest * PROSE_CAPTION_WIDTH
-        )
-        return captions < PROSE_MIN_CAPTIONS
+        captions = sum(1 for line in self.text_lines if _is_short_caption(line, widest))
+        if captions >= PROSE_MIN_CAPTIONS:
+            return False
+        if median / widest >= PROSE_LINE_SHARE:
+            return True
+        # An instruction sheet mixes full-width paragraphs with short bullets, so the
+        # median line is short and the test above misses it. The English information
+        # page was classified as a form for that reason and the shape detector then
+        # drew answer boxes on the instructions. Several lines that span the page,
+        # and almost no captions, is still an instruction sheet.
+        long_lines = sum(1 for line in self.text_lines if line.width >= self.image_width * 0.42)
+        return long_lines >= 4
 
 
 class PageStructureService:
@@ -271,6 +367,11 @@ class PageStructureService:
                 continue
             blank.nearby_text = self._nearby(layout, blank)
             blank.section = self._section_above(layout, blank, None)
+            # A tick under a declaration sentence, with no short option beside it,
+            # is the reader marking the paper. It is not a question, and reading the
+            # empty space beside it only invents a caption.
+            if self._is_declaration_mark(blank):
+                continue
             candidates.append(blank)
 
         # A page with a crowd of tick boxes is a page where the detector is misfiring:
@@ -317,11 +418,19 @@ class PageStructureService:
         # it by hand on paper. Offering an answer box for it, while a real signature line
         # goes undetected, is the wrong way round. A genuine tick box belongs to a short
         # option line, not to a paragraph.
-        widest = max((line.width for line in layout.text_lines), default=0)
         for line in layout.text_lines:
             if abs(line.y + line.height / 2 - centre_y) > max(blank.height, 14):
                 continue
-            if widest and line.width > widest * MARK_LINE_WIDTH:
+            # Judged against the page, not the longest line. A title can be the longest
+            # thing on a form, and a paragraph then looks "short" beside it. That let a
+            # crowd of false tick boxes through and the real declaration box was thrown
+            # out with them.
+            if line.width > layout.image_width * MARK_LINE_WIDTH:
+                return False
+            # A tick box at the end of a sentence is part of the declaration, not a
+            # separate question. Kannada draws that sentence shorter than the page,
+            # so width alone did not reject it.
+            if len(line.text) > 48 or len(line.text.split()) > 8:
                 return False
 
         # A tick box with nothing written beside it is not asking anything.
@@ -330,6 +439,18 @@ class PageStructureService:
                 continue
             if abs(line.x - (blank.x + blank.width)) <= 260 or abs(blank.x - (line.x + line.width)) <= 260:
                 return True
+        return False
+
+    @staticmethod
+    def _is_declaration_mark(blank: Blank) -> bool:
+        """A tick under a declaration, with no short option beside it, is not a field."""
+        section = (blank.section or "").strip()
+        nearby = (blank.nearby_text or "").strip()
+        long_section = len(section) > 40 and len(section.split()) >= 6
+        if long_section and len(nearby) < 2:
+            return True
+        if len(nearby) > 48 or len(nearby.split()) > 8:
+            return True
         return False
 
     def analyse(self, image_path: str, ocr: OCRResult, page_index: int = 0) -> PageLayout:
@@ -486,7 +607,7 @@ class PageStructureService:
                 # form the row under the header reads "Elector Name: ____ | Name: ____",
                 # which is every bit as "all text" as the header above it. Reading that
                 # row as a header costs its two fields and mislabels everything below.
-                if any(cell.text.rstrip().endswith(":") for cell in row):
+                if any(question_caption(cell.text) is not None for cell in row):
                     break
                 table.header_rows.append(row_index)
 
@@ -509,7 +630,7 @@ class PageStructureService:
             bottom = max(word.pixel.y + word.pixel.height for word in words)
             lines.append(
                 TextLine(
-                    text=" ".join(w.text for w in sorted(words, key=lambda i: i.pixel.x)).strip(),
+                    text=reading_text(words),
                     x=left,
                     y=top,
                     width=right - left,
@@ -518,7 +639,40 @@ class PageStructureService:
                 )
             )
         lines.sort(key=lambda item: (item.y, item.x))
-        return lines
+        return PageStructureService._drop_double_readings(lines)
+
+    @staticmethod
+    def _drop_double_readings(lines: list[TextLine]) -> list[TextLine]:
+        """Two OCR passes of one printed line were becoming two fields.
+
+        The Kannada mobile number was read twice, a few pixels apart, and both
+        readings were offered. Side-by-side captions in a comparison row do not
+        overlap horizontally, so they both stay.
+        """
+        kept: list[TextLine] = []
+        for line in lines:
+            replaced = False
+            for index, other in enumerate(kept):
+                overlap_y = min(line.bottom, other.bottom) - max(line.y, other.y)
+                if overlap_y <= min(line.height, other.height) * 0.55:
+                    continue
+                overlap_x = min(line.x + line.width, other.x + other.width) - max(line.x, other.x)
+                if overlap_x <= min(line.width, other.width) * 0.5:
+                    continue
+                if PageStructureService._line_score(line) > PageStructureService._line_score(other):
+                    kept[index] = line
+                replaced = True
+                break
+            if not replaced:
+                kept.append(line)
+        kept.sort(key=lambda item: (item.y, item.x))
+        return kept
+
+    @staticmethod
+    def _line_score(line: TextLine) -> float:
+        confidences = [word.confidence for word in line.words if word.confidence > 0]
+        mean = sum(confidences) / len(confidences) if confidences else 0.0
+        return mean + min(len(line.text), 40) * 0.15
 
     # --- blanks ------------------------------------------------------------------
 
@@ -543,6 +697,10 @@ class PageStructureService:
                                 column=cell.column,
                             )
                         )
+                    continue
+                stacked = self._stacked_blanks(cell, layout)
+                if stacked:
+                    blanks.extend(stacked)
                     continue
                 if self._has_blank_sibling(table, cell, layout.rtl):
                     # The row already provides a separate empty cell for the answer, so
@@ -659,22 +817,137 @@ class PageStructureService:
         """
         free = PageStructureService._inline_blank(cell, rtl)
         free_width = free[2] if free else 0
+        own_header = PageStructureService._header_text(table, cell)
         for other in table.cells:
             if other.row != cell.row or not other.is_blank:
                 continue
             if other.width < MIN_BLANK_W or other.height < MIN_BLANK_H:
                 continue
             after = other.x < cell.x if rtl else other.x > cell.x
-            if not after or other.width <= free_width * SIBLING_VALUE_MARGIN:
+            other_header = PageStructureService._header_text(table, other)
+            parallel = bool(own_header and other_header and fold(own_header) != fold(other_header))
+            if parallel and not after:
                 continue
-            if abs(other.width - cell.width) <= cell.width * SIBLING_SAME_WIDTH:
-                # Same width as the cell holding this caption: a matching column in a
-                # comparison table ("in the roll" beside "as claimed"), empty only because
-                # OCR missed its own caption. The elector's-name rows went undetected this
-                # way -- the half that was read was cancelled by the half that was not.
-                continue
+            if parallel:
+                # Same width as the cell holding this caption, under a different column
+                # heading: the other half of a comparison table, empty only because OCR
+                # missed its own caption. Cancelling this side would turn two questions
+                # into one.
+                if abs(other.width - cell.width) <= cell.width * SIBLING_SAME_WIDTH:
+                    continue
+                if free_width and other.width <= free_width * SIBLING_VALUE_MARGIN:
+                    continue
+            # No separate heading. Hindi, Kannada, and Urdu enumeration tables use equal
+            # columns for the label and the blank. The empty cell is the answer; the gap
+            # beside the label is padding, and keeping both draws two boxes for one field.
             return True
         return False
+
+    @staticmethod
+    def _header_text(table: Table, cell: Cell) -> str:
+        if not table.header_rows:
+            return ""
+        centre = cell.x + cell.width / 2
+        best = ""
+        for row_index in table.header_rows:
+            for other in table.cells:
+                if other.row != row_index:
+                    continue
+                if other.x - 4 <= centre <= other.right + 4 and other.text:
+                    best = other.text
+        return best
+
+    @staticmethod
+    def _stacked_blanks(cell: Cell, layout: PageLayout) -> list[Blank]:
+        """One writing space per caption when several questions share a cell.
+
+        On the Hindi and Urdu enumeration forms the top band is a single ruled cell
+        holding "name", "EPIC", and "address" on three lines. Treating the cell as one
+        field kept one of them and lost the other two.
+        """
+        raw_lines = []
+        for line in word_lines(cell.words):
+            text = reading_text(line)
+            if text.strip():
+                raw_lines.append((text, line))
+        # "विधानसभा/संसदीय निर्वाचन" / "क्षेत्र का नाम :" is one wrapped label.
+        # A line with no colon followed by a line that has one is the wrap, not
+        # a second question. Lines that all lost their colons stay separate.
+        merged_lines: list[tuple[str, list]] = []
+        index = 0
+        while index < len(raw_lines):
+            text, line = raw_lines[index]
+            if (
+                question_caption(text) is None
+                and index + 1 < len(raw_lines)
+                and question_caption(raw_lines[index + 1][0]) is not None
+            ):
+                next_text, next_line = raw_lines[index + 1]
+                merged_lines.append((f"{text.strip()} {next_text.strip()}", list(line) + list(next_line)))
+                index += 2
+                continue
+            merged_lines.append((text, line))
+            index += 1
+        questions = []
+        for text, line in merged_lines:
+            caption = question_caption(text)
+            # The Urdu top band often loses its colons in OCR. Several short lines
+            # stacked in one tall cell are still one question each, as long as the
+            # line does not itself fill the cell the way a wrapped sentence does.
+            if caption is None:
+                stripped = text.strip().strip(":：").strip()
+                width = 0
+                if line:
+                    width = max(word.pixel.x + word.pixel.width for word in line) - min(word.pixel.x for word in line)
+                if not stripped or width > cell.width * 0.72:
+                    continue
+                caption = stripped
+            if len(caption.split()) > MAX_CAPTION_WORDS or len(caption) > MAX_CAPTION_CHARS:
+                continue
+            questions.append((caption, line))
+        # "نئی تصویر" / "چسپاں کریں" is one photo instruction, not two questions.
+        # A cell of three colon-less lines is still three questions.
+        if (
+            len(questions) == 2
+            and all(question_caption(text) is None for text, _line in merged_lines)
+            and len(questions[0][0].split()) <= 3
+            and len(questions[1][0].split()) <= 2
+        ):
+            return []
+        if len(questions) < 2:
+            return []
+        blanks: list[Blank] = []
+        for index, (caption, line) in enumerate(questions):
+            top = min(word.pixel.y for word in line)
+            bottom = max(word.pixel.y + word.pixel.height for word in line)
+            height = max(MIN_BLANK_H, bottom - top)
+            if layout.rtl:
+                text_left = min(word.pixel.x for word in line)
+                free = text_left - cell.x
+                if free < MIN_BLANK_W:
+                    continue
+                box = (cell.x + 2, max(cell.y, top - 2), free - 8, height)
+            else:
+                text_right = max(word.pixel.x + word.pixel.width for word in line)
+                free = cell.right - text_right
+                if free < MIN_BLANK_W:
+                    continue
+                box = (text_right + 6, max(cell.y, top - 2), free - 8, height)
+            blanks.append(
+                Blank(
+                    id=f"p{layout.page_index}-{cell.id}s{index}",
+                    x=box[0],
+                    y=box[1],
+                    width=box[2],
+                    height=box[3],
+                    origin="inline_cell",
+                    caption=caption,
+                    table_index=cell.table,
+                    row=cell.row,
+                    column=cell.column,
+                )
+            )
+        return blanks
 
     @staticmethod
     def _inline_blank(cell: Cell, rtl: bool = False) -> tuple[int, int, int, int] | None:
@@ -691,14 +964,44 @@ class PageStructureService:
         if rtl:
             text_left = min(word.pixel.x for word in cell.words)
             free = text_left - cell.x
-            if free < MIN_BLANK_W or free < cell.width * INLINE_BLANK_RATIO:
+            if not PageStructureService._free_is_a_blank(cell, free):
                 return None
             return (cell.x + 2, cell.y + 2, free - 8, cell.height - 4)
         text_right = max(word.pixel.x + word.pixel.width for word in cell.words)
         free = cell.right - text_right
-        if free < MIN_BLANK_W or free < cell.width * INLINE_BLANK_RATIO:
+        if not PageStructureService._free_is_a_blank(cell, free):
             return None
         return (text_right + 6, cell.y + 2, free - 8, cell.height - 4)
+
+    @staticmethod
+    def _free_is_a_blank(cell: Cell, free: float) -> bool:
+        """Whether the empty part of a caption cell is somewhere to write.
+
+        A short label needs a large share of the cell, otherwise a heading with a
+        little padding becomes a field. A long label in a wide cell -- the Kannada
+        EPIC line fills most of a 500px cell and still leaves a writing gap -- is a
+        field when that gap can hold an answer, even if it is under a third of the cell.
+        """
+        if free < MIN_BLANK_W:
+            return False
+        # A section heading has no colon and runs to a sentence. The gap beside
+        # it is padding. A label, even a long Kannada one, is shorter than that.
+        caption = question_caption(cell.text)
+        if caption is None and len(cell.text.split()) > 8:
+            return False
+        # A real question can leave only a narrow gap. The last row of the Hindi
+        # enumeration form puts "constituency number :" in a 270px cell.
+        if (
+            caption is not None
+            and len(caption.split()) <= MAX_CAPTION_WORDS
+            and len(caption) <= MAX_CAPTION_CHARS
+        ):
+            return True
+        if free >= cell.width * INLINE_BLANK_RATIO:
+            return True
+        caption = question_caption(cell.text) or cell.text.strip()
+        long_label = len(caption) >= 24
+        return long_label and free >= 100
 
     def _free_blanks(self, layout: PageLayout, gray: np.ndarray) -> list[Blank]:
         """Captions outside any table that end in a colon and are followed by space.
@@ -710,15 +1013,19 @@ class PageStructureService:
         page_right = int(layout.image_width * 0.93)
         page_left = int(layout.image_width * 0.07)
         for index, line in enumerate(layout.text_lines):
-            text = line.text.strip()
-            if not text.endswith(":"):
+            caption = question_caption(line.text)
+            if caption is None:
                 continue
-            caption = text.rstrip(":").strip()
             # A caption is short. A sentence of prose that happens to end in a colon --
             # "provide the documents based upon the following categories:" -- is not an
             # invitation to write, and treating it as one invents fields on an
             # instruction sheet.
             if len(caption.split()) > MAX_CAPTION_WORDS or len(caption) > MAX_CAPTION_CHARS:
+                continue
+            # A declaration clause that happens to end in a colon is not a label.
+            # On the Kannada form, "not included in any other constituency" was
+            # short of the page width, so the width test let it through.
+            if len(caption) > 42 and len(caption.split()) >= 4:
                 continue
             # A caption shares its line with the space someone writes in, so it occupies
             # a fraction of the page. A wrapped paragraph whose last line happens to end
@@ -768,6 +1075,9 @@ class PageStructureService:
                 blank.row_header = self._row_caption(table, blank, layout.rtl)
             blank.section = self._section_above(layout, blank, table)
             blank.nearby_text = self._nearby(layout, blank)
+            # A digital Urdu export glues the colon to the front of the first word.
+            if blank.caption[:1] in ":：":
+                blank.caption = blank.caption[1:].strip()
 
     @staticmethod
     def _sub_header(table: Table, blank: Blank, rtl: bool = False) -> str:
@@ -824,17 +1134,22 @@ class PageStructureService:
                 for cell in table.cells
                 if cell.row == blank.row and cell.x >= blank.x + blank.width - 6 and not cell.is_blank
             ]
-            if not candidates:
-                return ""
-            return min(candidates, key=lambda cell: cell.x).text
-        candidates = [
-            cell
-            for cell in table.cells
-            if cell.row == blank.row and cell.right <= blank.x + 6 and not cell.is_blank
-        ]
-        if not candidates:
-            return ""
-        return max(candidates, key=lambda cell: cell.x).text
+            if candidates:
+                return min(candidates, key=lambda cell: cell.x).text
+        else:
+            candidates = [
+                cell
+                for cell in table.cells
+                if cell.row == blank.row and cell.right <= blank.x + 6 and not cell.is_blank
+            ]
+            if candidates:
+                return max(candidates, key=lambda cell: cell.x).text
+        # One label in the row, on the other side from the one the script predicted.
+        # Urdu value cells were left unnamed when the blank sat to the right of its caption.
+        labelled = [cell for cell in table.cells if cell.row == blank.row and not cell.is_blank and cell.text]
+        if len(labelled) == 1:
+            return labelled[0].text
+        return ""
 
     @staticmethod
     def _section_above(layout: PageLayout, blank: Blank, table: Table | None) -> str:

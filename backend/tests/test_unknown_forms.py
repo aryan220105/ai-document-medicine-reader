@@ -108,6 +108,9 @@ def test_fuzzy_sequence_tolerates_ocr_errors_but_not_different_words():
     assert fuzzy_sequence_match(["dato", "of", "birlh"], ["date", "of", "birth"]) > 0
     # 'brother' and 'mother' share a suffix but are different words.
     assert fuzzy_sequence_match(["brother"], ["mother"]) == 0.0
+    # A short particle is not a near-miss of a longer word.
+    assert fuzzy_sequence_match(["کا"], ["کام"]) == 0.0
+    assert fuzzy_sequence_match(["دار", "کا", "نام"], ["ادارے", "کا", "نام"]) == 0.0
 
 
 # --- dictionary resolution ----------------------------------------------------------
@@ -177,6 +180,11 @@ def test_a_generic_token_does_not_claim_a_qualified_label(container):
     assert container.semantics.resolve("Bank Account Number", None).entry.id == "bank_account_number"
     assert container.semantics.resolve("Brother Name", None).entry.id == "relative_name"
     assert container.semantics.resolve("Bank Name", None).entry.id == "bank_name"
+    # These printed SIR captions used to fuzzy-match "occupation" and "employer name"
+    # because Urdu "کا" is one letter away from "کام".
+    assert container.semantics.resolve("ووٹر کا نام", None).entry.id == "full_name"
+    assert container.semantics.resolve("رشتہ دار کا نام", None).entry.id == "relative_name"
+    assert container.semantics.resolve("اسمبلی انتخابی حلقے کا نام", None) is None
 
 
 def test_unrecognised_label_falls_back_to_a_pattern_not_a_guess(container):
@@ -482,6 +490,8 @@ def test_plausible_label_rejects_noise_but_keeps_regional_text(container):
     assert not check("೨,")
     assert not check("ًالالاەئەه۔-۔۔-۔+,ص,مص+۸۰-ص")
     assert not check("|")
+    assert not check("gtonimensetonlnthe/Eteste fl Roll through Form 8")
+    assert check("Parliamentary Constituency")
 
 
 def test_ask_refuses_to_invent_an_answer_in_every_language(container):

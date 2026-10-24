@@ -15,7 +15,7 @@ from app.models.common import ALL_LANGUAGES, Language, PixelBoundingBox
 from app.models.interpretation import ClassifiedField, ClassifiedPage, FilledBy, InterpretedPage
 from app.models.ocr import OCRLine, OCRResult, OCRWord
 from app.services.form_interpretation_service import FormInterpretationService, _Breaker
-from app.services.page_structure_service import PageStructureService
+from app.services.page_structure_service import PageStructureService, TextLine
 
 WIDTH, HEIGHT = 1200, 900
 IMAGE = dict(image_width=WIDTH, image_height=HEIGHT)
@@ -926,6 +926,218 @@ def test_an_urdu_cell_puts_its_blank_left_of_the_caption(tmp_path):
     assert ltr is None
 
 
+def test_a_long_caption_in_a_wide_cell_still_leaves_a_blank():
+    """The Kannada EPIC label fills most of a wide cell. The writing gap is real
+    and under a third of the cell, so a share-of-width rule dropped that column."""
+    from app.services.page_structure_service import Cell
+
+    words = [
+        OCRWord(
+            id="w1",
+            text="ಮತದಾರರ ಭಾವಚಿತ್ರ ಗುರುತಿನ ಚೀಟಿ ಸಂಖ್ಯೆ (ಲಭ್ಯವಿದ್ದರೆ)",
+            confidence=90,
+            page_index=0,
+            pixel=PixelBoundingBox(x=80, y=210, width=411, height=24, **IMAGE),
+            line_id=1,
+        )
+    ]
+    cell = Cell(id="c", x=75, y=200, width=536, height=46, words=words)
+    blank = PageStructureService._inline_blank(cell, rtl=False)
+    assert blank is not None
+    assert blank[2] >= 100
+
+
+def test_a_tall_cell_splits_short_lines_that_lost_their_colons():
+    """The Urdu name band is one cell. OCR often drops the colons, and the three
+    labels were kept as a single unreadable field."""
+    from app.services.page_structure_service import Cell, PageLayout
+
+    words = []
+    for index, text in enumerate(("ووٹر کا نام", "ای پی آئی سی", "پتہ")):
+        words.append(
+            OCRWord(
+                id=f"w{index}",
+                text=text,
+                confidence=80,
+                page_index=0,
+                pixel=PixelBoundingBox(x=420, y=80 + index * 30, width=90, height=18, **IMAGE),
+                line_id=index + 1,
+            )
+        )
+    cell = Cell(id="top", x=40, y=70, width=500, height=110, words=words)
+    layout = PageLayout(page_index=0, image_width=800, image_height=1200, rtl=True)
+    blanks = PageStructureService()._stacked_blanks(cell, layout)
+    assert [blank.caption for blank in blanks] == ["ووٹر کا نام", "ای پی آئی سی", "پتہ"]
+
+
+def test_a_photo_instruction_is_one_caption():
+    from app.services.page_structure_service import Cell, PageLayout
+
+    words = [
+        OCRWord(
+            id="w0",
+            text="नवीन फोटो",
+            confidence=99,
+            page_index=0,
+            pixel=PixelBoundingBox(x=360, y=80, width=90, height=18, **IMAGE),
+            line_id=1,
+        ),
+        OCRWord(
+            id="w1",
+            text="चिपकाएं",
+            confidence=99,
+            page_index=0,
+            pixel=PixelBoundingBox(x=370, y=108, width=70, height=18, **IMAGE),
+            line_id=2,
+        ),
+    ]
+    cell = Cell(id="photo", x=300, y=70, width=220, height=80, words=words)
+    layout = PageLayout(page_index=0, image_width=800, image_height=1200)
+    assert PageStructureService()._stacked_blanks(cell, layout) == []
+
+
+def test_a_two_word_photo_instruction_is_one_caption():
+    """Urdu prints the paste instruction as two words, under the photo caption."""
+    from app.services.page_structure_service import Cell, PageLayout
+
+    words = [
+        OCRWord(
+            id="w0",
+            text="نئی تصویر",
+            confidence=80,
+            page_index=0,
+            pixel=PixelBoundingBox(x=360, y=80, width=90, height=18, **IMAGE),
+            line_id=1,
+        ),
+        OCRWord(
+            id="w1",
+            text="چسپاں",
+            confidence=80,
+            page_index=0,
+            pixel=PixelBoundingBox(x=360, y=108, width=40, height=18, **IMAGE),
+            line_id=2,
+        ),
+        OCRWord(
+            id="w2",
+            text="کریں",
+            confidence=80,
+            page_index=0,
+            pixel=PixelBoundingBox(x=410, y=108, width=36, height=18, **IMAGE),
+            line_id=2,
+        ),
+    ]
+    cell = Cell(id="photo", x=300, y=70, width=220, height=80, words=words)
+    layout = PageLayout(page_index=0, image_width=800, image_height=1200, rtl=True)
+    assert PageStructureService()._stacked_blanks(cell, layout) == []
+
+
+def test_a_repeated_token_and_a_latin_scrap_are_dropped():
+    from app.services.page_structure_service import reading_text
+
+    words = [
+        OCRWord(id="w0", text="حصہ", confidence=80, page_index=0,
+                pixel=PixelBoundingBox(x=80, y=40, width=30, height=16, **IMAGE), line_id=1),
+        OCRWord(id="w1", text="حصہ", confidence=70, page_index=0,
+                pixel=PixelBoundingBox(x=120, y=40, width=30, height=16, **IMAGE), line_id=1),
+        OCRWord(id="w2", text="نمبر", confidence=80, page_index=0,
+                pixel=PixelBoundingBox(x=160, y=40, width=30, height=16, **IMAGE), line_id=1),
+        OCRWord(id="w3", text="cou\u200f", confidence=40, page_index=0,
+                pixel=PixelBoundingBox(x=200, y=40, width=24, height=16, **IMAGE), line_id=1),
+        OCRWord(id="w4", text="EPIC", confidence=90, page_index=0,
+                pixel=PixelBoundingBox(x=240, y=40, width=36, height=16, **IMAGE), line_id=1),
+    ]
+    assert reading_text(words) == "EPIC نمبر حصہ"
+
+
+def test_two_readings_of_one_line_become_one_line():
+    strong = TextLine(text="ಮೊಬೈಲ್ ಸಂಖ್ಯೆ", x=80, y=200, width=400, height=24, words=[
+        OCRWord(id="a", text="ಮೊಬೈಲ್ ಸಂಖ್ಯೆ", confidence=90, page_index=0,
+                pixel=PixelBoundingBox(x=80, y=200, width=180, height=24, **IMAGE), line_id=1),
+    ])
+    weak = TextLine(text="ತೊಬೆಲ್ ಸಂಖೆ", x=80, y=202, width=400, height=18, words=[
+        OCRWord(id="b", text="ತೊಬೆಲ್ ಸಂಖೆ", confidence=40, page_index=0,
+                pixel=PixelBoundingBox(x=80, y=202, width=160, height=18, **IMAGE), line_id=2),
+    ])
+    kept = PageStructureService._drop_double_readings([strong, weak])
+    assert [line.text for line in kept] == ["ಮೊಬೈಲ್ ಸಂಖ್ಯೆ"]
+
+
+def test_a_wrapped_label_stays_one_question():
+    """The constituency name wraps onto a second line that carries the colon.
+    Those two lines are one caption."""
+    from app.services.page_structure_service import Cell, PageLayout
+
+    words = [
+        OCRWord(
+            id="w0",
+            text="विधानसभा/संसदीय निर्वाचन",
+            confidence=99,
+            page_index=0,
+            pixel=PixelBoundingBox(x=80, y=80, width=180, height=18, **IMAGE),
+            line_id=1,
+        ),
+        OCRWord(
+            id="w1",
+            text="क्षेत्र का नाम :",
+            confidence=99,
+            page_index=0,
+            pixel=PixelBoundingBox(x=80, y=110, width=140, height=18, **IMAGE),
+            line_id=2,
+        ),
+        OCRWord(
+            id="w2",
+            text="राज्य का नाम :",
+            confidence=99,
+            page_index=0,
+            pixel=PixelBoundingBox(x=80, y=140, width=120, height=18, **IMAGE),
+            line_id=3,
+        ),
+    ]
+    cell = Cell(id="top", x=40, y=70, width=500, height=110, words=words)
+    layout = PageLayout(page_index=0, image_width=800, image_height=1200)
+    blanks = PageStructureService()._stacked_blanks(cell, layout)
+    assert [blank.caption for blank in blanks] == [
+        "विधानसभा/संसदीय निर्वाचन क्षेत्र का नाम",
+        "राज्य का नाम",
+    ]
+
+
+def test_a_section_heading_is_not_a_writing_gap():
+    from app.services.page_structure_service import Cell
+
+    words = [
+        OCRWord(
+            id="w1",
+            text="पिछले एसआईआर की मतदाता सूची में मतदाता का विवरण",
+            confidence=99,
+            page_index=0,
+            pixel=PixelBoundingBox(x=80, y=210, width=280, height=24, **IMAGE),
+            line_id=1,
+        )
+    ]
+    cell = Cell(id="c", x=75, y=200, width=536, height=46, words=words)
+    assert PageStructureService._inline_blank(cell, rtl=False) is None
+
+
+def test_a_colon_label_in_a_narrow_cell_is_still_a_field():
+    from app.services.page_structure_service import Cell
+
+    words = [
+        OCRWord(
+            id="w1",
+            text="विधान सभा निर्वाचन क्षेत्र की संख्या :",
+            confidence=99,
+            page_index=0,
+            pixel=PixelBoundingBox(x=80, y=210, width=190, height=24, **IMAGE),
+            line_id=1,
+        )
+    ]
+    cell = Cell(id="c", x=73, y=200, width=270, height=36, words=words)
+    blank = PageStructureService._inline_blank(cell, rtl=False)
+    assert blank is not None
+    assert blank[2] >= 40
+
+
 def test_an_urdu_row_caption_is_read_from_the_right(tmp_path):
     from app.services.page_structure_service import Blank, Cell, Table
 
@@ -948,8 +1160,8 @@ def test_an_urdu_row_caption_is_read_from_the_right(tmp_path):
                   height=blank_cell.height, origin="table_cell", row=0)
 
     assert PageStructureService._row_caption(table, blank, rtl=True) == "والد کا نام"
-    # Reading the wrong side finds nothing, which is how Urdu rows ended up unlabelled.
-    assert PageStructureService._row_caption(table, blank, rtl=False) == ""
+    # A row with only one label still names the blank when the side guess is wrong.
+    assert PageStructureService._row_caption(table, blank, rtl=False) == "والد کا نام"
 
 
 # --- worked examples -------------------------------------------------------------------
@@ -1034,6 +1246,27 @@ def test_a_tick_box_inside_a_sentence_is_not_a_field(tmp_path):
     service.add_marks(layout, [mark(int(ocr.words[0].pixel.x + ocr.words[0].pixel.width + 10), 300)])
     assert len(layout.blanks) == before, "a box beside a paragraph is not a field"
 
+    # Kannada draws the same declaration well short of the page width. Word count
+    # still marks it as a sentence, so it must not become a field either.
+    narrow = _ocr([("one two three four five six seven eight nine", 60, 300)])
+    narrow_layout = PageStructureService().analyse(str(path), narrow, 0)
+    before = len(narrow_layout.blanks)
+    service.add_marks(
+        narrow_layout,
+        [mark(int(narrow.words[0].pixel.x + narrow.words[0].pixel.width + 10), 300)],
+    )
+    assert len(narrow_layout.blanks) == before, "a short-width sentence is still a sentence"
+
+    # The box sits under the sentence rather than on its line, which is how the
+    # English enumeration form's declaration tick survived. It still is not a field.
+    under = _ocr([(sentence, 60, 240), ("Savings", 60, 500)])
+    under_layout = PageStructureService().analyse(str(path), under, 0)
+    before = len(under_layout.blanks)
+    service.add_marks(under_layout, [mark(700, 300)])
+    assert len(under_layout.blanks) == before, "a tick under a declaration is not a field"
+    service.add_marks(under_layout, [mark(200, 500)])
+    assert len(under_layout.blanks) == before + 1, "a tick beside a short option stays"
+
 
 # --- signature areas -------------------------------------------------------------------
 
@@ -1074,18 +1307,33 @@ def test_one_column_losing_its_caption_does_not_cancel_the_other(tmp_path):
     column that *was* read, so a row asking two questions produced one."""
     from app.services.page_structure_service import Cell, Table
 
+    left_header = Cell(id="hl", x=100, y=40, width=400, height=30)
+    left_header.row = 0
+    left_header.words = [
+        OCRWord(id="hlw", text="Details of the Elector", confidence=90, page_index=0,
+                pixel=PixelBoundingBox(x=110, y=44, width=200, height=20, **IMAGE), line_id=1)
+    ]
+    right_header = Cell(id="hr", x=520, y=40, width=400, height=30)
+    right_header.row = 0
+    right_header.words = [
+        OCRWord(id="hrw", text="Details of the Relative", confidence=90, page_index=0,
+                pixel=PixelBoundingBox(x=530, y=44, width=200, height=20, **IMAGE), line_id=1)
+    ]
     read = Cell(id="a", x=100, y=100, width=400, height=40)
-    read.row = 0
+    read.row = 1
     read.words = [
         OCRWord(id="w", text="Name:", confidence=90, page_index=0,
                 pixel=PixelBoundingBox(x=110, y=108, width=90, height=22, **IMAGE), line_id=1)
     ]
     unread = Cell(id="b", x=520, y=100, width=400, height=40)
-    unread.row = 0
-    table = Table(index=0, x=100, y=100, width=820, height=40, cells=[read, unread])
+    unread.row = 1
+    table = Table(
+        index=0, x=100, y=40, width=820, height=100,
+        cells=[left_header, right_header, read, unread], header_rows=[0],
+    )
 
-    # The empty neighbour is the same width as the cell holding the caption, so it is
-    # the matching column of a comparison table, not a dedicated answer box.
+    # Same width, under a different column heading: the other half of a comparison
+    # table, not the answer box for this caption.
     assert PageStructureService._has_blank_sibling(table, read) is False
 
 
@@ -1103,6 +1351,45 @@ def test_a_label_and_value_table_still_suppresses_the_padding(tmp_path):
     value.row = 0
     table = Table(index=0, x=100, y=100, width=910, height=40, cells=[label, value])
     assert PageStructureService._has_blank_sibling(table, label) is True
+
+
+def test_equal_width_label_and_value_is_still_one_answer_cell():
+    """Hindi, Kannada, and Urdu enumeration tables split a row into two equal columns.
+    The empty column is the answer. Keeping the gap beside the label as well drew two
+    boxes for one question."""
+    from app.services.page_structure_service import Cell, Table
+
+    label = Cell(id="a", x=100, y=100, width=400, height=40)
+    label.row = 0
+    label.words = [
+        OCRWord(id="w", text="Father Name", confidence=90, page_index=0,
+                pixel=PixelBoundingBox(x=110, y=108, width=160, height=22, **IMAGE), line_id=1)
+    ]
+    value = Cell(id="b", x=500, y=100, width=400, height=40)
+    value.row = 0
+    table = Table(index=0, x=100, y=100, width=800, height=40, cells=[label, value])
+    assert PageStructureService._has_blank_sibling(table, label) is True
+
+
+def test_an_instruction_sheet_of_bullets_is_not_a_form(tmp_path):
+    """Short bullets pull the median line width down, which used to make the English
+    information page look like a form and grow two answer boxes."""
+    path = tmp_path / "bullets.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    lines = [
+        "Applicants can check their name and the name of the concerned relative in the previous roll",
+        "For help applicants can connect with the concerned booth level officers from the office",
+        "ERO will issue notices to those applicants whose previous details do not match the database",
+        "Upon receipt of notice the applicant should provide the documents from the printed list",
+        "Passport",
+        "Birth certificate",
+        "Ration card",
+        "Any land allotment certificate issued by the competent authority of the state",
+    ]
+    ocr = _ocr([(text, 80, 80 + index * 36) for index, text in enumerate(lines)])
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    assert layout.looks_like_prose is True
+    assert layout.blanks == []
 
 
 def test_only_the_first_row_can_be_a_top_header(tmp_path):

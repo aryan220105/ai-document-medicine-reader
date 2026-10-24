@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import shutil
 from collections import defaultdict
 from pathlib import Path
@@ -10,7 +11,7 @@ import numpy as np
 import pytesseract
 from PIL import Image
 
-from app.config import Settings
+from app.config import BACKEND_DIR, Settings
 from app.models.common import PixelBoundingBox
 from app.models.ocr import OCRLine, OCRResult, OCRWord
 from app.utils.bounding_boxes import iou, union_boxes
@@ -55,6 +56,11 @@ class TesseractOCRProvider:
         self.settings = settings
         if settings.tesseract_cmd:
             pytesseract.pytesseract.tesseract_cmd = settings.tesseract_cmd
+        # Hindi, Kannada, and Urdu models live beside the backend when the system
+        # install only has English. Tesseract looks for traineddata inside this directory.
+        bundled = BACKEND_DIR / "tessdata"
+        if (bundled / "hin.traineddata").is_file() and (bundled / "kan.traineddata").is_file() and (bundled / "urd.traineddata").is_file():
+            os.environ["TESSDATA_PREFIX"] = str(bundled)
 
     def available(self) -> bool:
         configured = (self.settings.tesseract_cmd or "").strip()
@@ -374,8 +380,11 @@ class TesseractOCRProvider:
             # gives Urdu words their true coordinates, so ascending x is visual order --
             # the reverse of reading order for a right-to-left script, which would leave
             # every Urdu line in `full_text` backwards.
-            line_rtl = dominant_script(" ".join(item.text for item in words_in_line)) == "arabic"
-            ordered = sorted(words_in_line, key=lambda item: item.pixel.x, reverse=line_rtl)
+            if all(item.reading_index is not None for item in words_in_line):
+                ordered = sorted(words_in_line, key=lambda item: item.reading_index or 0)
+            else:
+                line_rtl = dominant_script(" ".join(item.text for item in words_in_line)) == "arabic"
+                ordered = sorted(words_in_line, key=lambda item: item.pixel.x, reverse=line_rtl)
             text = " ".join(item.text for item in ordered).strip()
             if not text:
                 continue

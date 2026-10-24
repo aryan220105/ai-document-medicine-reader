@@ -176,6 +176,12 @@ class ImageService:
 
     def _enhance_for_ocr(self, image: np.ndarray) -> np.ndarray:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # A rendered or cleanly scanned page is already black ink on white paper.
+        # Denoising and a second threshold break Urdu and Hindi strokes; Tesseract
+        # reads the grayscale page itself far more accurately. Photographs of a
+        # form on a desk are darker and still take the cleanup below.
+        if float((gray > 200).mean()) > 0.85:
+            return cv2.cvtColor(self._deskew(gray), cv2.COLOR_GRAY2BGR)
         denoised = cv2.fastNlMeansDenoising(gray, None, 15, 7, 21)
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
         contrasted = clahe.apply(denoised)

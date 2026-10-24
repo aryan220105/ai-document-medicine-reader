@@ -86,7 +86,9 @@ class FieldSemanticsService:
                 continue
             if best is None or self._better(candidate, best):
                 best = candidate
-        if best is None or best.score < PLAUSIBLE:
+        if best is None or best.score < PLAUSIBLE or best.how == "weak_token":
+            # A lone generic word such as "name" or "کام" does not identify the field.
+            # The pattern layer describes the shape of the answer without naming the wrong one.
             return None
         return best
 

@@ -167,7 +167,13 @@ def fuzzy_sequence_match(
         window = haystack_tokens[start : start + span]
         ratios: list[float] = []
         for left, right in zip(window, needle_tokens):
-            if abs(len(left) - len(right)) > 2:
+            # A one- or two-letter particle is a different word from anything merely
+            # nearby: Urdu "کا" was scoring as "کام" and every "… کا نام" line became
+            # an occupation. A dropped character in a longer word is still allowed.
+            if min(len(left), len(right)) <= 2 and left != right:
+                ratios = []
+                break
+            if abs(len(left) - len(right)) > 1:
                 ratios = []
                 break
             ratios.append(1.0 if left == right else SequenceMatcher(None, left, right).ratio())
