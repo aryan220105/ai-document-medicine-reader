@@ -19,7 +19,7 @@ import logging
 
 from app.models.common import FieldType
 from app.models.fields import DetectedField
-from app.services.page_structure_service import Blank, PageLayout
+from app.services.page_structure_service import Blank, PageLayout, PageStructureService
 from app.utils.bounding_boxes import iou, normalize_box
 
 logger = logging.getLogger(__name__)
@@ -41,17 +41,31 @@ class FieldAssemblyService:
     def build(
         self,
         layout: PageLayout,
-        marks: list[DetectedField],
         legacy: list[DetectedField],
         page_index: int,
     ) -> list[DetectedField]:
+        """Tick boxes are not passed here; they reach the layout through
+        `PageStructureService.add_marks`, which is where an implausible set is rejected.
+        """
         fields = [self._from_blank(blank, layout, page_index) for blank in layout.blanks]
         if not layout.tables:
             # The shape detector earns its place on an unruled form, where there is no
             # grid to read. On a ruled one it only adds noise: run against a government
             # form whose structure was already understood, it contributed twenty-two
             # spurious boxes, most of them slices of the title text.
-            fields.extend(self._merge_in(legacy, fields))
+            #
+            # Even here, anything it proposes on top of printed words is discarded. A
+            # blank is somewhere to write, so it cannot be somewhere already written: its
+            # underline detector finds rules inside dense paragraphs and those became
+            # answer boxes drawn across the form's own sentences.
+            usable = [field for field in legacy if not self._covers_text(field, layout)]
+            if len(usable) < len(legacy):
+                logger.debug(
+                    "page %s: dropped %s shape candidates that lay over text",
+                    page_index,
+                    len(legacy) - len(usable),
+                )
+            fields.extend(self._merge_in(usable, fields))
         else:
             logger.debug("page %s is ruled; shape detector results not merged", page_index)
         fields.sort(key=lambda item: (item.page_index, item.input_box.y, item.input_box.x))
@@ -83,6 +97,11 @@ class FieldAssemblyService:
             section_hint=blank.section,
             structure_origin=blank.origin,
         )
+
+    @staticmethod
+    def _covers_text(field: DetectedField, layout: PageLayout) -> bool:
+        pixel = field.input_box.to_pixel(layout.image_width, layout.image_height)
+        return PageStructureService.covers_text(layout, pixel.x, pixel.y, pixel.width, pixel.height)
 
     @staticmethod
     def _merge_in(extra: list[DetectedField], existing: list[DetectedField]) -> list[DetectedField]:

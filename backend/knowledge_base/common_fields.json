@@ -71,6 +71,12 @@
       "ur": "فارم اسی نام سے آپ کی شناخت کرتا ہے اور آپ کی دیگر دستاویزات سے مطابقت کرتا ہے۔"
     },
     "example": "Ananya Rao",
+    "example_by_language": {
+      "en": "Ananya Rao",
+      "hi": "अनन्या राव",
+      "kn": "ಅನನ್ಯಾ ರಾವ್",
+      "ur": "انانیا راؤ"
+    },
     "format_hint": {
       "en": "Given name followed by family name",
       "hi": "पहले नाम, फिर कुलनाम",
@@ -150,6 +156,12 @@
       "ur": "ایک جیسے نام والے افراد میں فرق کرنے کے لیے والدین کا نام لیا جاتا ہے۔"
     },
     "example": "Mahesh Rao",
+    "example_by_language": {
+      "en": "Mahesh Rao",
+      "hi": "महेश राव",
+      "kn": "ಮಹೇಶ್ ರಾವ್",
+      "ur": "مہیش راؤ"
+    },
     "format_hint": {},
     "validation": {
       "kind": "person_name",
@@ -216,6 +228,12 @@
     },
     "why_needed": {},
     "example": "Lakshmi Rao",
+    "example_by_language": {
+      "en": "Lakshmi Rao",
+      "hi": "लक्ष्मी राव",
+      "kn": "ಲಕ್ಷ್ಮಿ ರಾವ್",
+      "ur": "لکشمی راؤ"
+    },
     "format_hint": {},
     "validation": {
       "kind": "person_name",
@@ -288,6 +306,12 @@
     },
     "why_needed": {},
     "example": "Rohit Sharma",
+    "example_by_language": {
+      "en": "Rohit Sharma",
+      "hi": "रोहित शर्मा",
+      "kn": "ರೋಹಿತ್ ಶರ್ಮಾ",
+      "ur": "روہت شرما"
+    },
     "format_hint": {},
     "validation": {
       "kind": "person_name",
@@ -385,6 +409,12 @@
       "ur": "چھپا لیبل غور سے پڑھیں: یہ خانہ آپ کے بارے میں نہیں، کسی رشتہ دار کے بارے میں ہے۔"
     },
     "example": "Rohit Rao",
+    "example_by_language": {
+      "en": "Rohit Rao",
+      "hi": "रोहित राव",
+      "kn": "ರೋಹಿತ್ ರಾವ್",
+      "ur": "روہت راؤ"
+    },
     "format_hint": {},
     "validation": {
       "kind": "person_name",
@@ -458,6 +488,7 @@
       "ur": "عمر سے طے ہوتا ہے کہ درخواست پر کون سے قواعد اور اقسام لاگو ہوں گے۔"
     },
     "example": "15/08/1998",
+    "example_by_language": {},
     "format_hint": {
       "en": "DD/MM/YYYY",
       "hi": "DD/MM/YYYY",
@@ -528,6 +559,7 @@
     },
     "why_needed": {},
     "example": "27",
+    "example_by_language": {},
     "format_hint": {
       "en": "Whole number of years",
       "hi": "पूर्ण वर्षों की संख्या",
@@ -597,6 +629,7 @@
     },
     "why_needed": {},
     "example": "Female",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "choice"
@@ -658,6 +691,7 @@
     },
     "why_needed": {},
     "example": "Single",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "choice"
@@ -718,6 +752,12 @@
     },
     "why_needed": {},
     "example": "Indian",
+    "example_by_language": {
+      "en": "Indian",
+      "hi": "भारतीय",
+      "kn": "ಭಾರತೀಯ",
+      "ur": "بھارتی"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -775,6 +815,12 @@
     },
     "why_needed": {},
     "example": "Not disclosed",
+    "example_by_language": {
+      "en": "Not disclosed",
+      "hi": "घोषित नहीं",
+      "kn": "ಘೋಷಿಸಿಲ್ಲ",
+      "ur": "ظاہر نہیں کیا"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -854,6 +900,12 @@
       "ur": "کچھ اسکیموں میں درجے کی بنیاد پر نشستیں مخصوص ہوتی ہیں۔ یہ عمومی معلومات ہیں؛ سرکاری قواعد فارم پر درج ہیں۔"
     },
     "example": "General",
+    "example_by_language": {
+      "en": "General",
+      "hi": "सामान्य",
+      "kn": "ಸಾಮಾನ್ಯ",
+      "ur": "عام"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -911,6 +963,7 @@
     },
     "why_needed": {},
     "example": "O+",
+    "example_by_language": {},
     "format_hint": {
       "en": "Such as A+, B-, O+, AB+",
       "hi": "जैसे A+, B-, O+, AB+",
@@ -998,6 +1051,12 @@
       "ur": "دفتر اسی پتے پر خطوط اور دستاویزات بھیجتا ہے۔"
     },
     "example": "12 Lotus Lane, Demo Nagar, Bengaluru",
+    "example_by_language": {
+      "en": "12 Lotus Lane, Demo Nagar, Bengaluru",
+      "hi": "12 कमल मार्ग, डेमो नगर, बेंगलुरु",
+      "kn": "12 ಕಮಲ ರಸ್ತೆ, ಡೆಮೊ ನಗರ, ಬೆಂಗಳೂರು",
+      "ur": "12 کمل روڈ، ڈیمو نگر، بنگلورو"
+    },
     "format_hint": {
       "en": "House number, street, locality, town",
       "hi": "मकान संख्या, गली, मोहल्ला, नगर",
@@ -1069,6 +1128,12 @@
     },
     "why_needed": {},
     "example": "4 Temple Road, Demo Village, Mysuru",
+    "example_by_language": {
+      "en": "4 Temple Road, Demo Village, Mysuru",
+      "hi": "4 मंदिर मार्ग, डेमो गाँव, मैसूर",
+      "kn": "4 ದೇವಾಲಯ ರಸ್ತೆ, ಡೆಮೊ ಹಳ್ಳಿ, ಮೈಸೂರು",
+      "ur": "4 مندر روڈ، ڈیمو گاؤں، میسور"
+    },
     "format_hint": {},
     "validation": {
       "kind": "multiline",
@@ -1145,6 +1210,12 @@
     },
     "why_needed": {},
     "example": "Bengaluru",
+    "example_by_language": {
+      "en": "Bengaluru",
+      "hi": "बेंगलुरु",
+      "kn": "ಬೆಂಗಳೂರು",
+      "ur": "بنگلورو"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -1215,6 +1286,12 @@
     },
     "why_needed": {},
     "example": "Bengaluru Urban",
+    "example_by_language": {
+      "en": "Bengaluru Urban",
+      "hi": "बेंगलुरु शहरी",
+      "kn": "ಬೆಂಗಳೂರು ನಗರ",
+      "ur": "بنگلورو شہری"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -1279,6 +1356,12 @@
     },
     "why_needed": {},
     "example": "Karnataka",
+    "example_by_language": {
+      "en": "Karnataka",
+      "hi": "कर्नाटक",
+      "kn": "ಕರ್ನಾಟಕ",
+      "ur": "کرناٹک"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -1349,6 +1432,7 @@
     },
     "why_needed": {},
     "example": "560001",
+    "example_by_language": {},
     "format_hint": {
       "en": "6 digits",
       "hi": "6 अंक",
@@ -1441,6 +1525,7 @@
       "ur": "دفتر اس نمبر پر آپ کی درخواست کی اطلاعات بھیجتا ہے۔"
     },
     "example": "9876500000",
+    "example_by_language": {},
     "format_hint": {
       "en": "10 digits",
       "hi": "10 अंक",
@@ -1513,6 +1598,7 @@
     },
     "why_needed": {},
     "example": "ananya.demo@example.com",
+    "example_by_language": {},
     "format_hint": {
       "en": "name@example.com",
       "hi": "name@example.com",
@@ -1590,6 +1676,7 @@
     },
     "why_needed": {},
     "example": "08012345678",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "phone",
@@ -1663,6 +1750,7 @@
       "ur": "دفاتر اس نمبر سے سرکاری ریکارڈ میں آپ کی شناخت جانچتے ہیں۔"
     },
     "example": "9999 8888 7777",
+    "example_by_language": {},
     "format_hint": {
       "en": "12 digits",
       "hi": "12 अंक",
@@ -1732,6 +1820,7 @@
     },
     "why_needed": {},
     "example": "ABCDE1234F",
+    "example_by_language": {},
     "format_hint": {
       "en": "5 letters, 4 digits, 1 letter",
       "hi": "5 अक्षर, 4 अंक, 1 अक्षर",
@@ -1806,6 +1895,7 @@
     },
     "why_needed": {},
     "example": "DEM1234567",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "alphanumeric",
@@ -1866,6 +1956,7 @@
     },
     "why_needed": {},
     "example": "Z1234567",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "alphanumeric",
@@ -1930,6 +2021,7 @@
     },
     "why_needed": {},
     "example": "DEM0001234",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "alphanumeric",
@@ -1995,6 +2087,7 @@
     },
     "why_needed": {},
     "example": "KA0120110001234",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "alphanumeric",
@@ -2077,6 +2170,7 @@
     },
     "why_needed": {},
     "example": "APP/2026/000123",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "alphanumeric",
@@ -2137,6 +2231,12 @@
     },
     "why_needed": {},
     "example": "Demo National Bank",
+    "example_by_language": {
+      "en": "Demo National Bank",
+      "hi": "डेमो नेशनल बैंक",
+      "kn": "ಡೆಮೊ ನ್ಯಾಷನಲ್ ಬ್ಯಾಂಕ್",
+      "ur": "ڈیمو نیشنل بینک"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -2200,6 +2300,12 @@
     },
     "why_needed": {},
     "example": "Demo Nagar Branch",
+    "example_by_language": {
+      "en": "Demo Nagar Branch",
+      "hi": "डेमो नगर शाखा",
+      "kn": "ಡೆಮೊ ನಗರ ಶಾಖೆ",
+      "ur": "ڈیمو نگر برانچ"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -2271,6 +2377,7 @@
       "ur": "آپ جو اکاؤنٹ یہاں لکھتے ہیں اسی میں رقم جمع ہوتی ہے، اس لیے ایک ہندسہ غلط ہونے پر رقم غلط جگہ جا سکتی ہے۔"
     },
     "example": "000123456789",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "bank_account",
@@ -2331,6 +2438,7 @@
     },
     "why_needed": {},
     "example": "DEMO0001234",
+    "example_by_language": {},
     "format_hint": {
       "en": "4 letters, 0, then 6 characters",
       "hi": "4 अक्षर, 0, फिर 6 वर्ण",
@@ -2401,6 +2509,7 @@
     },
     "why_needed": {},
     "example": "Savings",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "choice"
@@ -2477,6 +2586,12 @@
       "ur": "نامزد شخص وہ ہے جسے کھاتہ دار کی وفات پر رقم ملتی ہے۔ یہ عمومی رہنمائی ہے، قانونی مشورہ نہیں۔"
     },
     "example": "Rohit Sharma",
+    "example_by_language": {
+      "en": "Rohit Sharma",
+      "hi": "रोहित शर्मा",
+      "kn": "ರೋಹಿತ್ ಶರ್ಮಾ",
+      "ur": "روہت شرما"
+    },
     "format_hint": {},
     "validation": {
       "kind": "person_name",
@@ -2546,6 +2661,12 @@
     },
     "why_needed": {},
     "example": "Brother",
+    "example_by_language": {
+      "en": "Brother",
+      "hi": "भाई",
+      "kn": "ಸಹೋದರ",
+      "ur": "بھائی"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -2613,6 +2734,7 @@
     },
     "why_needed": {},
     "example": "240000",
+    "example_by_language": {},
     "format_hint": {
       "en": "Amount in rupees",
       "hi": "राशि रुपये में",
@@ -2693,6 +2815,7 @@
     },
     "why_needed": {},
     "example": "5000",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "amount"
@@ -2765,6 +2888,12 @@
     },
     "why_needed": {},
     "example": "School teacher",
+    "example_by_language": {
+      "en": "School teacher",
+      "hi": "विद्यालय शिक्षक",
+      "kn": "ಶಾಲಾ ಶಿಕ್ಷಕ",
+      "ur": "اسکول ٹیچر"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -2841,6 +2970,12 @@
     },
     "why_needed": {},
     "example": "Demo Public School",
+    "example_by_language": {
+      "en": "Demo Public School",
+      "hi": "डेमो पब्लिक स्कूल",
+      "kn": "ಡೆಮೊ ಪಬ್ಲಿಕ್ ಶಾಲೆ",
+      "ur": "ڈیمو پبلک اسکول"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -2907,6 +3042,12 @@
     },
     "why_needed": {},
     "example": "Assistant Teacher",
+    "example_by_language": {
+      "en": "Assistant Teacher",
+      "hi": "सहायक शिक्षक",
+      "kn": "ಸಹಾಯಕ ಶಿಕ್ಷಕ",
+      "ur": "اسسٹنٹ ٹیچر"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -2973,6 +3114,12 @@
     },
     "why_needed": {},
     "example": "B.Sc. Mathematics",
+    "example_by_language": {
+      "en": "B.Sc. Mathematics",
+      "hi": "बी.एससी. गणित",
+      "kn": "ಬಿ.ಎಸ್ಸಿ. ಗಣಿತ",
+      "ur": "بی ایس سی ریاضی"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -3052,6 +3199,12 @@
     },
     "why_needed": {},
     "example": "Demo Government College",
+    "example_by_language": {
+      "en": "Demo Government College",
+      "hi": "डेमो सरकारी महाविद्यालय",
+      "kn": "ಡೆಮೊ ಸರ್ಕಾರಿ ಕಾಲೇಜು",
+      "ur": "ڈیمو سرکاری کالج"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -3128,6 +3281,12 @@
     },
     "why_needed": {},
     "example": "Second year B.Sc.",
+    "example_by_language": {
+      "en": "Second year B.Sc.",
+      "hi": "द्वितीय वर्ष बी.एससी.",
+      "kn": "ಎರಡನೇ ವರ್ಷ ಬಿ.ಎಸ್ಸಿ.",
+      "ur": "دوسرا سال بی ایس سی"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -3203,6 +3362,7 @@
     },
     "why_needed": {},
     "example": "2DM21CS001",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "alphanumeric",
@@ -3275,6 +3435,7 @@
     },
     "why_needed": {},
     "example": "78.4",
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "decimal",
@@ -3344,6 +3505,7 @@
     },
     "why_needed": {},
     "example": "2024",
+    "example_by_language": {},
     "format_hint": {
       "en": "YYYY",
       "hi": "YYYY",
@@ -3421,6 +3583,7 @@
       "ur": "آپ کے دستخط ہی فارم پر دیے گئے اعلان کو آپ پر لازم بناتے ہیں۔"
     },
     "example": null,
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "signature"
@@ -3488,6 +3651,7 @@
     },
     "why_needed": {},
     "example": null,
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "signature"
@@ -3558,6 +3722,7 @@
     },
     "why_needed": {},
     "example": null,
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "attachment"
@@ -3620,6 +3785,12 @@
     },
     "why_needed": {},
     "example": "Bengaluru",
+    "example_by_language": {
+      "en": "Bengaluru",
+      "hi": "बेंगलुरु",
+      "kn": "ಬೆಂಗಳೂರು",
+      "ur": "بنگلورو"
+    },
     "format_hint": {},
     "validation": {
       "kind": "text",
@@ -3688,6 +3859,7 @@
     },
     "why_needed": {},
     "example": "21/10/2026",
+    "example_by_language": {},
     "format_hint": {
       "en": "DD/MM/YYYY",
       "hi": "DD/MM/YYYY",
@@ -3765,6 +3937,12 @@
     },
     "why_needed": {},
     "example": "Required for school admission",
+    "example_by_language": {
+      "en": "Required for school admission",
+      "hi": "विद्यालय प्रवेश हेतु आवश्यक",
+      "kn": "ಶಾಲಾ ಪ್ರವೇಶಕ್ಕೆ ಅಗತ್ಯ",
+      "ur": "اسکول داخلے کے لیے ضروری"
+    },
     "format_hint": {},
     "validation": {
       "kind": "multiline",
@@ -3834,6 +4012,12 @@
     },
     "why_needed": {},
     "example": "None",
+    "example_by_language": {
+      "en": "None",
+      "hi": "कुछ नहीं",
+      "kn": "ಏನೂ ಇಲ್ಲ",
+      "ur": "کچھ نہیں"
+    },
     "format_hint": {},
     "validation": {
       "kind": "multiline",
@@ -3917,6 +4101,7 @@
       "ur": "اس خانے پر نشان لگانا یہ کہتا ہے کہ آپ کے جوابات سچ ہیں۔ دستخط سے پہلے اسے پڑھیں۔"
     },
     "example": null,
+    "example_by_language": {},
     "format_hint": {},
     "validation": {
       "kind": "choice"
@@ -3985,6 +4170,12 @@
     },
     "why_needed": {},
     "example": "Aadhaar copy, marksheet copy",
+    "example_by_language": {
+      "en": "Aadhaar copy, marksheet copy",
+      "hi": "आधार प्रति, अंकतालिका प्रति",
+      "kn": "ಆಧಾರ್ ಪ್ರತಿ, ಅಂಕಪಟ್ಟಿ ಪ್ರತಿ",
+      "ur": "آدھار کاپی، مارک شیٹ کاپی"
+    },
     "format_hint": {},
     "validation": {
       "kind": "multiline",

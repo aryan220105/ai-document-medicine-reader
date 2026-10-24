@@ -92,6 +92,12 @@ ENTRIES = [
             "جہاں آپ فارم بھر رہے اور دستخط کر رہے ہیں اس شہر کا نام لکھیں۔",
         ),
         example="Bengaluru",
+        example_by_language={
+            "en": "Bengaluru",
+            "hi": "बेंगलुरु",
+            "kn": "ಬೆಂಗಳೂರು",
+            "ur": "بنگلورو",
+        },
         validation={"kind": "text", "max_length": 60},
     ),
     entry(
@@ -133,6 +139,12 @@ ENTRIES = [
             "آپ کو یہ خدمت یا دستاویز کیوں درکار ہے، یہ اپنے الفاظ میں لکھیں۔ عام طور پر ایک یا دو سادہ جملے کافی ہوتے ہیں۔",
         ),
         example="Required for school admission",
+        example_by_language={
+            "en": "Required for school admission",
+            "hi": "विद्यालय प्रवेश हेतु आवश्यक",
+            "kn": "ಶಾಲಾ ಪ್ರವೇಶಕ್ಕೆ ಅಗತ್ಯ",
+            "ur": "اسکول داخلے کے لیے ضروری",
+        },
         validation={"kind": "multiline", "max_length": 240},
     ),
     entry(
@@ -153,6 +165,12 @@ ENTRIES = [
             "دفتر کو جو مزید بتانا چاہیں وہ لکھیں۔ اگر کچھ شامل نہیں کرنا تو اسے خالی چھوڑ سکتے ہیں۔",
         ),
         example="None",
+        example_by_language={
+            "en": "None",
+            "hi": "कुछ नहीं",
+            "kn": "ಏನೂ ಇಲ್ಲ",
+            "ur": "کچھ نہیں",
+        },
         validation={"kind": "multiline", "max_length": 240, "optional": True},
     ),
     entry(
@@ -199,6 +217,12 @@ ENTRIES = [
             "فارم کے ساتھ آپ جو نقول لگا رہے ہیں ان کی فہرست لکھیں۔ صرف وہی لگائیں جو چھپی ہدایات میں مانگا گیا ہے۔",
         ),
         example="Aadhaar copy, marksheet copy",
+        example_by_language={
+            "en": "Aadhaar copy, marksheet copy",
+            "hi": "आधार प्रति, अंकतालिका प्रति",
+            "kn": "ಆಧಾರ್ ಪ್ರತಿ, ಅಂಕಪಟ್ಟಿ ಪ್ರತಿ",
+            "ur": "آدھار کاپی، مارک شیٹ کاپی",
+        },
         validation={"kind": "multiline", "max_length": 240, "optional": True},
     ),
 ]

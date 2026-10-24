@@ -387,6 +387,8 @@ export default function App() {
                 speaking={speech.speaking}
                 available={typeof window !== "undefined" && "speechSynthesis" in window}
                 hasLanguageVoice={speech.hasLanguageVoice}
+                canSpeak={speech.canSpeak}
+                voiceLanguage={speech.voiceLanguage}
                 question={question}
                 onQuestion={setQuestion}
                 onAsk={async () => {

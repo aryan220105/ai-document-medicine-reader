@@ -29,6 +29,12 @@ ENTRIES = [
             "دفتر اسی پتے پر خطوط اور دستاویزات بھیجتا ہے۔",
         ),
         example="12 Lotus Lane, Demo Nagar, Bengaluru",
+        example_by_language={
+            "en": "12 Lotus Lane, Demo Nagar, Bengaluru",
+            "hi": "12 कमल मार्ग, डेमो नगर, बेंगलुरु",
+            "kn": "12 ಕಮಲ ರಸ್ತೆ, ಡೆಮೊ ನಗರ, ಬೆಂಗಳೂರು",
+            "ur": "12 کمل روڈ، ڈیمو نگر، بنگلورو",
+        },
         format_hint=t("House number, street, locality, town", "मकान संख्या, गली, मोहल्ला, नगर", "ಮನೆ ಸಂಖ್ಯೆ, ರಸ್ತೆ, ಬಡಾವಣೆ, ಊರು", "مکان نمبر، گلی، محلہ، شہر"),
         validation={"kind": "multiline", "max_length": 240},
         priority=1.05,
@@ -51,6 +57,12 @@ ENTRIES = [
             "اپنا مستقل گھر کا پتہ لکھیں۔ اگر یہ اوپر دیے گئے پتے جیسا ہی ہے تو 'بالائی پتے کے مطابق' لکھیں۔",
         ),
         example="4 Temple Road, Demo Village, Mysuru",
+        example_by_language={
+            "en": "4 Temple Road, Demo Village, Mysuru",
+            "hi": "4 मंदिर मार्ग, डेमो गाँव, मैसूर",
+            "kn": "4 ದೇವಾಲಯ ರಸ್ತೆ, ಡೆಮೊ ಹಳ್ಳಿ, ಮೈಸೂರು",
+            "ur": "4 مندر روڈ، ڈیمو گاؤں، میسور",
+        },
         validation={"kind": "multiline", "max_length": 240},
     ),
     entry(
@@ -71,6 +83,12 @@ ENTRIES = [
             "اپنے پتے میں آنے والے شہر یا گاؤں کا نام لکھیں۔",
         ),
         example="Bengaluru",
+        example_by_language={
+            "en": "Bengaluru",
+            "hi": "बेंगलुरु",
+            "kn": "ಬೆಂಗಳೂರು",
+            "ur": "بنگلورو",
+        },
         validation={"kind": "text", "max_length": 60},
     ),
     entry(
@@ -91,6 +109,12 @@ ENTRIES = [
             "آپ کا پتہ جس ضلع میں آتا ہے وہ لکھیں، جیسا آپ کے پتے کے ثبوت پر چھپا ہے۔",
         ),
         example="Bengaluru Urban",
+        example_by_language={
+            "en": "Bengaluru Urban",
+            "hi": "बेंगलुरु शहरी",
+            "kn": "ಬೆಂಗಳೂರು ನಗರ",
+            "ur": "بنگلورو شہری",
+        },
         validation={"kind": "text", "max_length": 60},
     ),
     entry(
@@ -111,6 +135,12 @@ ENTRIES = [
             "اپنے پتے کی ریاست یا مرکزی علاقہ لکھیں۔",
         ),
         example="Karnataka",
+        example_by_language={
+            "en": "Karnataka",
+            "hi": "कर्नाटक",
+            "kn": "ಕರ್ನಾಟಕ",
+            "ur": "کرناٹک",
+        },
         validation={"kind": "text", "max_length": 60},
     ),
     entry(

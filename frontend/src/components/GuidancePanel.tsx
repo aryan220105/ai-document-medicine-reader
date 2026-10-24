@@ -6,7 +6,6 @@ import { SourceBadge } from "./SourceBadge";
 import { VoiceButton } from "./VoiceButton";
 import type { DetectedField, FieldGuidance, Language, MultilingualFieldGuidance } from "../types";
 import { fieldTitle } from "./FieldNavigator";
-import { nativeNameFor } from "../utils/languages";
 
 interface Props {
   field: DetectedField | null;
@@ -21,6 +20,8 @@ interface Props {
   speaking: boolean;
   available: boolean;
   hasLanguageVoice: boolean;
+  canSpeak?: boolean;
+  voiceLanguage?: string;
   question: string;
   onQuestion: (value: string) => void;
   onAsk: () => void;
@@ -40,6 +41,8 @@ export function GuidancePanel({
   speaking,
   available,
   hasLanguageVoice,
+  canSpeak,
+  voiceLanguage,
   question,
   onQuestion,
   onAsk,
@@ -126,12 +129,10 @@ export function GuidancePanel({
               speaking={speaking}
               available={available}
               hasLanguageVoice={hasLanguageVoice}
+              language={language}
+              canSpeak={canSpeak}
+              voiceLanguage={voiceLanguage}
             />
-            {available && !hasLanguageVoice ? (
-              <p className="mt-1 text-xs text-slate-600">
-                This device has no {nativeNameFor(language)} voice installed, so the reading may use another voice.
-              </p>
-            ) : null}
           </div>
         </div>
       ) : (

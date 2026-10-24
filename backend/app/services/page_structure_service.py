@@ -25,7 +25,7 @@ import numpy as np
 
 from app.models.common import PixelBoundingBox
 from app.models.ocr import OCRResult, OCRWord
-from app.utils.text_normalization import fold
+from app.utils.text_normalization import fold, is_rtl
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +52,28 @@ SIGNATURE_CAPTION_WORDS = 10
 # More tick boxes than this on one page means the mark detector is misfiring, not that
 # the form really asks that many questions.
 MAX_PLAUSIBLE_MARKS = 8
+
+# Recognising an instruction sheet. Paragraphs run close to the full measure of the page;
+# form captions are short with space beside them.
+PROSE_MIN_LINES = 8
+# How close a typical line must sit to the widest one for the page to read as paragraphs.
+PROSE_LINE_SHARE = 0.6
+# A caption is markedly shorter than the page's longest line.
+PROSE_CAPTION_WIDTH = 0.45
+# This many short captions ending in a colon mean it is a form, not an instruction sheet.
+PROSE_MIN_CAPTIONS = 2
+
+# A caption and its writing space share a line, so the caption cannot fill the measure.
+CAPTION_LINE_WIDTH = 0.6
+
+# A tick box belongs to a short option line. One beside a paragraph is printed text.
+MARK_LINE_WIDTH = 0.6
+
+# A dedicated value cell is clearly wider than the padding beside a caption.
+SIBLING_VALUE_MARGIN = 1.3
+# Two cells of near-equal width in one row are two columns of the same question, not a
+# label and its answer box.
+SIBLING_SAME_WIDTH = 0.15
 
 # Wording that marks a place to sign, thumb-print, or attest, in the four supported
 # languages. A writing area is proposed under such a caption and nowhere else: a looser
@@ -179,18 +201,51 @@ class PageLayout:
     tables: list[Table] = dataclass_field(default_factory=list)
     text_lines: list[TextLine] = dataclass_field(default_factory=list)
     blanks: list[Blank] = dataclass_field(default_factory=list)
+    # Reading direction of the page. Everything that reasons about "before" and "after"
+    # a caption depends on it, so it is decided once and passed down.
+    rtl: bool = False
 
     @property
     def looks_like_prose(self) -> bool:
         """True when the page is instructions rather than a form to fill.
 
-        The second page of the ECI declaration form is an information sheet with no
-        fields at all. Inventing fields there is worse than finding none, so a page with
-        no grid and no caption-and-gap pattern is reported as prose and left alone.
+        Judged from the writing itself, not from whether anything happened to look like a
+        blank. The earlier version asked "no tables and no blanks", which meant a single
+        sentence ending in a colon was enough to classify an instruction sheet as a form:
+        on the Kannada information page, two wrapped paragraph lines ending in ':' turned
+        into two fields drawn over the text.
+
+        An instruction sheet is recognisable before any blank is looked for. It has no
+        ruled grid, and most of its lines are long, running close to the full measure of
+        the page, because that is what paragraphs do. A form's lines are short captions
+        with space beside them.
         """
-        if self.tables or self.blanks:
+        if self.tables:
             return False
-        return len(self.text_lines) >= 8
+        if len(self.text_lines) < PROSE_MIN_LINES:
+            return False
+        widths = sorted(line.width for line in self.text_lines)
+        widest = widths[-1]
+        if widest <= 0:
+            return False
+
+        # Measured against the widest line rather than the page, so the test does not
+        # depend on margins or on how much of the sheet the text happens to occupy.
+        # Paragraphs fill their measure, so most lines sit close to the widest; a form's
+        # captions are far shorter than its longest element.
+        median = widths[len(widths) // 2]
+        if median / widest < PROSE_LINE_SHARE:
+            return False
+
+        # A page with several short captions ending in a colon is a form, whatever the
+        # rest of its text looks like. Declarations and footnotes on a real form run long
+        # enough to look like prose on their own.
+        captions = sum(
+            1
+            for line in self.text_lines
+            if line.text.strip().endswith(":") and line.width < widest * PROSE_CAPTION_WIDTH
+        )
+        return captions < PROSE_MIN_CAPTIONS
 
 
 class PageStructureService:
@@ -258,6 +313,17 @@ class PageStructureService:
             if other.x <= centre_x <= other.x + other.width and other.y <= centre_y <= other.y + other.height:
                 return False
 
+        # A box sitting inside a sentence is part of the printed text: the reader ticks
+        # it by hand on paper. Offering an answer box for it, while a real signature line
+        # goes undetected, is the wrong way round. A genuine tick box belongs to a short
+        # option line, not to a paragraph.
+        widest = max((line.width for line in layout.text_lines), default=0)
+        for line in layout.text_lines:
+            if abs(line.y + line.height / 2 - centre_y) > max(blank.height, 14):
+                continue
+            if widest and line.width > widest * MARK_LINE_WIDTH:
+                return False
+
         # A tick box with nothing written beside it is not asking anything.
         for line in layout.text_lines:
             if abs(line.y + line.height / 2 - centre_y) > max(blank.height, 14):
@@ -276,10 +342,11 @@ class PageStructureService:
         height, width = image.shape[:2]
         layout = PageLayout(page_index=page_index, image_width=width, image_height=height)
 
+        layout.rtl = ocr.rtl or is_rtl(ocr.full_text)
         horizontal, vertical = self._rules(image)
         layout.tables = self._tables(horizontal, vertical, width, height)
         self._assign_words(layout.tables, ocr, width, height)
-        self._index_cells(layout.tables)
+        self._index_cells(layout.tables, layout.rtl)
         layout.text_lines = self._text_lines(ocr, layout.tables, width, height)
         layout.blanks = self._blanks(layout, horizontal, image)
         self._attach_context(layout)
@@ -387,7 +454,7 @@ class PageStructureService:
                 break
 
     @staticmethod
-    def _index_cells(tables: list[Table]) -> None:
+    def _index_cells(tables: list[Table], rtl: bool = False) -> None:
         """Give every cell a row and column index, and find the header rows."""
         for table in tables:
             rows: list[list[Cell]] = []
@@ -401,7 +468,7 @@ class PageStructureService:
                 else:
                     rows.append([cell])
             for row_index, row in enumerate(rows):
-                for column_index, cell in enumerate(sorted(row, key=lambda item: item.x)):
+                for column_index, cell in enumerate(sorted(row, key=lambda item: item.x, reverse=rtl)):
                     cell.row = row_index
                     cell.column = column_index
             # A header row is a top row whose cells are all text *and* leave no room to
@@ -411,7 +478,7 @@ class PageStructureService:
             # free space to tell them apart stops the header being read as "Elector Name"
             # and losing that row's two fields.
             for row_index, row in enumerate(rows):
-                if row_index > 1 or len(row) < 2:
+                if row_index > 0 or len(row) < 2:
                     break
                 if any(cell.is_blank for cell in row):
                     break
@@ -477,11 +544,11 @@ class PageStructureService:
                             )
                         )
                     continue
-                if self._has_blank_sibling(table, cell):
+                if self._has_blank_sibling(table, cell, layout.rtl):
                     # The row already provides a separate empty cell for the answer, so
                     # the leftover space beside this caption is just padding.
                     continue
-                inline = self._inline_blank(cell)
+                inline = self._inline_blank(cell, layout.rtl)
                 if inline is not None:
                     blanks.append(
                         Blank(
@@ -497,6 +564,12 @@ class PageStructureService:
                             column=cell.column,
                         )
                     )
+        if layout.looks_like_prose:
+            # An instruction sheet. A sentence that happens to end in a colon is not an
+            # invitation to write, and a field drawn over a paragraph is worse than no
+            # field at all.
+            logger.debug("page %s reads as prose; not looking for free blanks", layout.page_index)
+            return blanks
         blanks.extend(self._free_blanks(layout, gray))
         blanks.extend(self._space_below_captions(layout))
         return blanks
@@ -518,7 +591,15 @@ class PageStructureService:
                 continue
             following = lines[index + 1] if index + 1 < len(lines) else None
             gap = (following.y - line.bottom) if following else (layout.image_height - line.bottom)
-            if gap < line.height * 1.8 or gap < MIN_BLANK_H * 2:
+            # A signature line is a place to sign whether or not the form left much room
+            # under it. Requiring a wide gap found the officer's signature block at the
+            # foot of the page, where there is nothing below, and missed the elector's own
+            # a few lines above, where the next paragraph follows closely -- the one place
+            # on the form the applicant certainly has to write.
+            if gap < max(line.height * 0.8, MIN_BLANK_H):
+                continue
+            height = max(MIN_BLANK_H, min(int(gap) - 6, 90))
+            if self.covers_text(layout, line.x, line.bottom + 4, max(MIN_BLANK_W, line.width), height):
                 continue
             if any(self._overlaps(blank, line) for blank in layout.blanks):
                 continue
@@ -526,14 +607,36 @@ class PageStructureService:
                 Blank(
                     id=f"p{layout.page_index}-under{index}",
                     x=line.x,
-                    y=line.bottom + 6,
+                    y=line.bottom + 4,
                     width=max(MIN_BLANK_W, line.width),
-                    height=min(int(gap) - 10, 90),
+                    height=height,
                     origin="space_below",
                     caption=caption,
                 )
             )
         return blanks
+
+    @staticmethod
+    def covers_text(layout: PageLayout, x: int, y: int, width: int, height: int) -> bool:
+        """Whether a proposed writing area lands on top of printed words.
+
+        A blank is somewhere to write, which means somewhere nothing is already written.
+        Anything overlapping a line of text is a misreading -- a rule inside a paragraph,
+        a gap between wrapped lines -- and drawing a field there puts an answer box over
+        the form's own sentences.
+        """
+        right, bottom = x + width, y + height
+        for line in layout.text_lines:
+            for word in line.words:
+                pixel = word.pixel
+                if (
+                    pixel.x < right
+                    and pixel.x + pixel.width > x
+                    and pixel.y < bottom
+                    and pixel.y + pixel.height > y
+                ):
+                    return True
+        return False
 
     @staticmethod
     def _overlaps(blank: Blank, line: TextLine) -> bool:
@@ -545,22 +648,52 @@ class PageStructureService:
         )
 
     @staticmethod
-    def _has_blank_sibling(table: Table, cell: Cell) -> bool:
-        return any(
-            other.row == cell.row and other.x > cell.x and other.is_blank
-            and other.width >= MIN_BLANK_W and other.height >= MIN_BLANK_H
-            for other in table.cells
-        )
+    def _has_blank_sibling(table: Table, cell: Cell, rtl: bool = False) -> bool:
+        """Whether this row already provides a separate cell to write the answer in.
+
+        Only a dedicated value cell counts, which means one clearly wider than the space
+        left over beside this caption. Treating any empty neighbour as the answer cell
+        breaks a two-column comparison table: when OCR misses one column's caption that
+        cell reads as empty, and it then cancels the *other* column's field too, so a row
+        that asks two questions produces one.
+        """
+        free = PageStructureService._inline_blank(cell, rtl)
+        free_width = free[2] if free else 0
+        for other in table.cells:
+            if other.row != cell.row or not other.is_blank:
+                continue
+            if other.width < MIN_BLANK_W or other.height < MIN_BLANK_H:
+                continue
+            after = other.x < cell.x if rtl else other.x > cell.x
+            if not after or other.width <= free_width * SIBLING_VALUE_MARGIN:
+                continue
+            if abs(other.width - cell.width) <= cell.width * SIBLING_SAME_WIDTH:
+                # Same width as the cell holding this caption: a matching column in a
+                # comparison table ("in the roll" beside "as claimed"), empty only because
+                # OCR missed its own caption. The elector's-name rows went undetected this
+                # way -- the half that was read was cancelled by the half that was not.
+                continue
+            return True
+        return False
 
     @staticmethod
-    def _inline_blank(cell: Cell) -> tuple[int, int, int, int] | None:
+    def _inline_blank(cell: Cell, rtl: bool = False) -> tuple[int, int, int, int] | None:
         """A caption and its blank sharing one cell: `Elector Name: ______`.
 
-        The right-hand part of the cell is free space the applicant writes into, and it is
-        a field in its own right even though the cell is not empty.
+        The free part of the cell is where the applicant writes, and it is a field in its
+        own right even though the cell is not empty. Which part is free depends on the
+        script: after the caption in reading order, so to its right on a left-to-right
+        page and to its **left** on an Urdu one. Measuring it the wrong way round put
+        every Urdu inline blank on top of its own caption.
         """
         if not cell.words:
             return None
+        if rtl:
+            text_left = min(word.pixel.x for word in cell.words)
+            free = text_left - cell.x
+            if free < MIN_BLANK_W or free < cell.width * INLINE_BLANK_RATIO:
+                return None
+            return (cell.x + 2, cell.y + 2, free - 8, cell.height - 4)
         text_right = max(word.pixel.x + word.pixel.width for word in cell.words)
         free = cell.right - text_right
         if free < MIN_BLANK_W or free < cell.width * INLINE_BLANK_RATIO:
@@ -573,7 +706,9 @@ class PageStructureService:
         `Applicant's Name:` has no box around it; the blank is simply the rest of the line.
         """
         blanks: list[Blank] = []
+        rtl = layout.rtl
         page_right = int(layout.image_width * 0.93)
+        page_left = int(layout.image_width * 0.07)
         for index, line in enumerate(layout.text_lines):
             text = line.text.strip()
             if not text.endswith(":"):
@@ -585,18 +720,31 @@ class PageStructureService:
             # instruction sheet.
             if len(caption.split()) > MAX_CAPTION_WORDS or len(caption) > MAX_CAPTION_CHARS:
                 continue
-            free = page_right - (line.x + line.width)
+            # A caption shares its line with the space someone writes in, so it occupies
+            # a fraction of the page. A wrapped paragraph whose last line happens to end
+            # in a colon runs most of the way across. Word counts do not separate the two
+            # in an agglutinative language -- a five-word Kannada sentence fills a line --
+            # but the geometry does. Measured against the page, not against the longest
+            # line, because on a page of nothing but captions the longest line is one.
+            if line.width > layout.image_width * CAPTION_LINE_WIDTH:
+                continue
+            # The writing space follows the caption in reading order, which on an Urdu
+            # page runs the other way: from the caption's left edge to the left margin.
+            free = (line.x - page_left) if rtl else (page_right - (line.x + line.width))
             if free < MIN_BLANK_W:
+                continue
+            start_x = page_left if rtl else line.x + line.width + 8
+            if self.covers_text(layout, start_x, line.y - 2, free - 8, max(MIN_BLANK_H, line.height + 6)):
                 continue
             blanks.append(
                 Blank(
                     id=f"p{layout.page_index}-line{index}",
-                    x=line.x + line.width + 8,
+                    x=start_x,
                     y=line.y - 2,
                     width=free - 8,
                     height=max(MIN_BLANK_H, line.height + 6),
                     origin="colon_gap",
-                    caption=text.rstrip(":").strip(),
+                    caption=caption,
                 )
             )
         return blanks
@@ -614,15 +762,15 @@ class PageStructureService:
             table = next((item for item in layout.tables if item.index == blank.table_index), None)
             if table is not None:
                 blank.column_header = self._column_header(table, blank)
-                blank.sub_header = self._sub_header(table, blank)
+                blank.sub_header = self._sub_header(table, blank, layout.rtl)
                 if not blank.caption:
-                    blank.caption = self._row_caption(table, blank)
-                blank.row_header = self._row_caption(table, blank)
+                    blank.caption = self._row_caption(table, blank, layout.rtl)
+                blank.row_header = self._row_caption(table, blank, layout.rtl)
             blank.section = self._section_above(layout, blank, table)
             blank.nearby_text = self._nearby(layout, blank)
 
     @staticmethod
-    def _sub_header(table: Table, blank: Blank) -> str:
+    def _sub_header(table: Table, blank: Blank, rtl: bool = False) -> str:
         """The nearest all-text row above this one, for tables with nested headings.
 
         The ECI form ends with a band of six narrow cells under their own
@@ -637,7 +785,7 @@ class PageStructureService:
             row = [cell for cell in table.cells if cell.row == row_index]
             if not row or any(cell.is_blank for cell in row):
                 continue
-            if any(PageStructureService._inline_blank(cell) is not None for cell in row):
+            if any(PageStructureService._inline_blank(cell, rtl) is not None for cell in row):
                 # A row of "Caption: ____" cells is data, not a heading for what follows.
                 return ""
             if row_index in table.header_rows:
@@ -663,8 +811,22 @@ class PageStructureService:
         return best
 
     @staticmethod
-    def _row_caption(table: Table, blank: Blank) -> str:
-        """The caption to the left of a blank, within its own row."""
+    def _row_caption(table: Table, blank: Blank, rtl: bool = False) -> str:
+        """The caption that precedes a blank in reading order, within its own row.
+
+        On a left-to-right page that is the cell to its left; on an Urdu page it is the
+        cell to its right. Reading the wrong side gives every Urdu row the caption
+        belonging to the next field along.
+        """
+        if rtl:
+            candidates = [
+                cell
+                for cell in table.cells
+                if cell.row == blank.row and cell.x >= blank.x + blank.width - 6 and not cell.is_blank
+            ]
+            if not candidates:
+                return ""
+            return min(candidates, key=lambda cell: cell.x).text
         candidates = [
             cell
             for cell in table.cells

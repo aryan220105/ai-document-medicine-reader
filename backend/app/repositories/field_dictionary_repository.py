@@ -34,6 +34,7 @@ class DictionaryEntry:
     what_to_enter: dict[str, str]
     why_needed: dict[str, str] = dataclass_field(default_factory=dict)
     example: str | None = None
+    example_by_language: dict[str, str] = dataclass_field(default_factory=dict)
     format_hint: dict[str, str] = dataclass_field(default_factory=dict)
     validation: dict[str, Any] = dataclass_field(default_factory=dict)
     source_reference: str = ""
@@ -41,6 +42,16 @@ class DictionaryEntry:
     def text(self, key: str, language: Language) -> str | None:
         mapping = getattr(self, key, None) or {}
         return mapping.get(language.value) or mapping.get(Language.ENGLISH.value) or None
+
+    def example_for(self, language: Language) -> str | None:
+        """The worked example, in the reader's own script where that matters.
+
+        A date or a PIN code reads the same in every language, so one string serves. A
+        person's name does not: showing "Ananya Rao" in Latin letters beside Kannada
+        guidance asks the reader to switch script mid-sentence for no reason.
+        """
+        localised = (self.example_by_language or {}).get(language.value)
+        return localised or self.example
 
 
 @dataclass
@@ -113,6 +124,7 @@ class FieldDictionaryRepository:
             what_to_enter=raw.get("what_to_enter", {}) or {},
             why_needed=raw.get("why_needed", {}) or {},
             example=raw.get("example"),
+            example_by_language=raw.get("example_by_language", {}) or {},
             format_hint=raw.get("format_hint", {}) or {},
             validation=raw.get("validation", {}) or {},
             source_reference=raw.get("source_reference", ""),

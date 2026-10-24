@@ -405,6 +405,33 @@ describe("workspace widgets", () => {
     render(<VoiceButton onPlay={vi.fn()} onStop={vi.fn()} speaking={false} available={false} hasLanguageVoice={false} />);
     expect(screen.getByText(/Voice is not available/)).toBeInTheDocument();
   });
+
+  it("disables play when no voice can read the language, and names it", () => {
+    // The engine returns silence rather than an error when nothing can read the
+    // language, so a button left enabled would simply never do anything.
+    const onPlay = vi.fn();
+    render(
+      <VoiceButton
+        onPlay={onPlay}
+        onStop={vi.fn()}
+        speaking={false}
+        available
+        hasLanguageVoice={false}
+        language="kn"
+      />,
+    );
+    const play = screen.getByLabelText("Play guidance");
+    expect(play).toBeDisabled();
+    expect(screen.getByTestId("no-voice-notice")).toHaveTextContent("ಕನ್ನಡ");
+  });
+
+  it("enables play when a voice is installed", () => {
+    render(
+      <VoiceButton onPlay={vi.fn()} onStop={vi.fn()} speaking={false} available hasLanguageVoice language="en" />,
+    );
+    expect(screen.getByLabelText("Play guidance")).toBeEnabled();
+    expect(screen.queryByTestId("no-voice-notice")).not.toBeInTheDocument();
+  });
 });
 
 describe("answer validation", () => {

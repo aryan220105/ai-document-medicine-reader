@@ -156,7 +156,7 @@ class DocumentService:
                 legacy = self.label_association.associate(
                     self.field_detection.detect(preprocess.processed_path, index), ocr
                 )
-                page_fields = self.field_assembly.build(layout, [], legacy, index)
+                page_fields = self.field_assembly.build(layout, legacy, index)
                 recovered = self.recover_missing_labels(page_fields, preprocess.processed_path, ocr)
                 if recovered:
                     logger.info("Recovered %s label(s) by region re-read on page %s", recovered, index)

@@ -23,6 +23,12 @@ ENTRIES = [
             "آپ روزی کے لیے جو کرتے ہیں وہ لکھیں۔ اگر آپ نہیں کماتے تو جو لاگو ہو وہی لکھیں: طالب علم، خاتونِ خانہ یا ریٹائرڈ۔",
         ),
         example="School teacher",
+        example_by_language={
+            "en": "School teacher",
+            "hi": "विद्यालय शिक्षक",
+            "kn": "ಶಾಲಾ ಶಿಕ್ಷಕ",
+            "ur": "اسکول ٹیچر",
+        },
         validation={"kind": "text", "max_length": 60},
     ),
     entry(
@@ -43,6 +49,12 @@ ENTRIES = [
             "جہاں آپ کام کرتے ہیں یا پڑھتے ہیں اس دفتر، کمپنی یا ادارے کا نام لکھیں۔",
         ),
         example="Demo Public School",
+        example_by_language={
+            "en": "Demo Public School",
+            "hi": "डेमो पब्लिक स्कूल",
+            "kn": "ಡೆಮೊ ಪಬ್ಲಿಕ್ ಶಾಲೆ",
+            "ur": "ڈیمو پبلک اسکول",
+        },
         validation={"kind": "text", "max_length": 100},
     ),
     entry(
@@ -63,6 +75,12 @@ ENTRIES = [
             "اس ادارے میں آپ جو عہدہ رکھتے ہیں وہ لکھیں۔",
         ),
         example="Assistant Teacher",
+        example_by_language={
+            "en": "Assistant Teacher",
+            "hi": "सहायक शिक्षक",
+            "kn": "ಸಹಾಯಕ ಶಿಕ್ಷಕ",
+            "ur": "اسسٹنٹ ٹیچر",
+        },
         validation={"kind": "text", "max_length": 60},
     ),
     entry(
@@ -83,6 +101,12 @@ ENTRIES = [
             "آپ نے جو سب سے اعلیٰ کورس مکمل کیا ہے وہ لکھیں، جیسا آپ کے سرٹیفکیٹ پر درج ہے۔",
         ),
         example="B.Sc. Mathematics",
+        example_by_language={
+            "en": "B.Sc. Mathematics",
+            "hi": "बी.एससी. गणित",
+            "kn": "ಬಿ.ಎಸ್ಸಿ. ಗಣಿತ",
+            "ur": "بی ایس سی ریاضی",
+        },
         validation={"kind": "text", "max_length": 80},
     ),
     entry(
@@ -103,6 +127,12 @@ ENTRIES = [
             "اسکول یا کالج کا پورا نام لکھیں، جیسا آپ کی مارک شیٹ پر درج ہے۔",
         ),
         example="Demo Government College",
+        example_by_language={
+            "en": "Demo Government College",
+            "hi": "डेमो सरकारी महाविद्यालय",
+            "kn": "ಡೆಮೊ ಸರ್ಕಾರಿ ಕಾಲೇಜು",
+            "ur": "ڈیمو سرکاری کالج",
+        },
         validation={"kind": "text", "max_length": 120},
     ),
     entry(
@@ -123,6 +153,12 @@ ENTRIES = [
             "آپ جس کورس یا جماعت میں ہیں، یا جس کے لیے درخواست دے رہے ہیں، وہ لکھیں۔",
         ),
         example="Second year B.Sc.",
+        example_by_language={
+            "en": "Second year B.Sc.",
+            "hi": "द्वितीय वर्ष बी.एससी.",
+            "kn": "ಎರಡನೇ ವರ್ಷ ಬಿ.ಎಸ್ಸಿ.",
+            "ur": "دوسرا سال بی ایس سی",
+        },
         validation={"kind": "text", "max_length": 80},
     ),
     entry(

@@ -18,6 +18,7 @@ from app.services.form_interpretation_service import FormInterpretationService, 
 from app.services.page_structure_service import PageStructureService
 
 WIDTH, HEIGHT = 1200, 900
+IMAGE = dict(image_width=WIDTH, image_height=HEIGHT)
 
 
 def _page(path, rows, two_columns=True):
@@ -854,3 +855,329 @@ def test_office_fields_are_marked():
 def test_empty_pages_parse_to_nothing():
     assert ClassifiedPage().fields == []
     assert InterpretedPage().by_id() == {}
+
+
+# --- page cropping ------------------------------------------------------------------
+
+
+def test_a_table_is_not_mistaken_for_the_page_edge(tmp_path):
+    """Cropping to an interior rectangle deletes the rest of the document.
+
+    A form is full of large four-sided shapes. When the page-edge detector accepted any
+    quad covering 18% of the image, the two-column table on a Kannada electoral form won
+    and the processed page lost its title, its first three fields and its whole lower
+    half -- which then looked like a field-detection failure rather than a cropping one.
+    """
+    from app.services.image_service import ImageService
+
+    page = np.full((1400, 1000, 3), 255, np.uint8)
+    # A bold table occupying the middle third of the page, and nothing else.
+    cv2.rectangle(page, (120, 500), (880, 900), (0, 0, 0), 4)
+    for offset in range(1, 4):
+        y = 500 + offset * 100
+        cv2.line(page, (120, y), (880, y), (0, 0, 0), 3)
+    path = tmp_path / "page.png"
+    cv2.imencode(".png", page)[1].tofile(str(path))
+
+    assert ImageService()._largest_document_contour(page) is None
+
+
+def test_a_photographed_page_on_a_background_is_still_cropped(tmp_path):
+    """The feature this guard protects must keep working."""
+    from app.services.image_service import ImageService
+
+    photo = np.full((1400, 1000, 3), 40, np.uint8)  # dark desk
+    cv2.rectangle(photo, (60, 70), (940, 1330), (255, 255, 255), -1)  # the sheet
+    cv2.rectangle(photo, (60, 70), (940, 1330), (10, 10, 10), 3)
+    contour = ImageService()._largest_document_contour(photo)
+    assert contour is not None, "a page lying on a background should still be found"
+
+
+# --- right-to-left pages --------------------------------------------------------------
+
+
+def test_an_urdu_cell_puts_its_blank_left_of_the_caption(tmp_path):
+    """Reading order decides which half of a cell is the writing space.
+
+    Measured the left-to-right way on an Urdu form, every inline blank landed on top of
+    its own caption.
+    """
+    from app.services.page_structure_service import Cell
+
+    words = [
+        OCRWord(
+            id="w1",
+            text="نام",
+            confidence=90,
+            page_index=0,
+            pixel=PixelBoundingBox(x=700, y=210, width=180, height=24, **IMAGE),
+            line_id=1,
+        )
+    ]
+    cell = Cell(id="c", x=200, y=200, width=700, height=44, words=words)
+
+    rtl = PageStructureService._inline_blank(cell, rtl=True)
+    ltr = PageStructureService._inline_blank(cell, rtl=False)
+    assert rtl is not None
+    # The blank starts at the cell's left edge and stops before the caption.
+    assert rtl[0] < 700
+    assert rtl[0] + rtl[2] <= 700
+    # Left-to-right would have found nothing here, because the caption runs to the edge.
+    assert ltr is None
+
+
+def test_an_urdu_row_caption_is_read_from_the_right(tmp_path):
+    from app.services.page_structure_service import Blank, Cell, Table
+
+    caption_cell = Cell(id="c1", x=600, y=100, width=300, height=40)
+    caption_cell.words = [
+        OCRWord(
+            id="w1",
+            text="والد کا نام",
+            confidence=90,
+            page_index=0,
+            pixel=PixelBoundingBox(x=620, y=108, width=260, height=24, **IMAGE),
+            line_id=1,
+        )
+    ]
+    caption_cell.row = 0
+    blank_cell = Cell(id="c2", x=200, y=100, width=390, height=40)
+    blank_cell.row = 0
+    table = Table(index=0, x=200, y=100, width=700, height=40, cells=[caption_cell, blank_cell])
+    blank = Blank(id="b", x=blank_cell.x, y=blank_cell.y, width=blank_cell.width,
+                  height=blank_cell.height, origin="table_cell", row=0)
+
+    assert PageStructureService._row_caption(table, blank, rtl=True) == "والد کا نام"
+    # Reading the wrong side finds nothing, which is how Urdu rows ended up unlabelled.
+    assert PageStructureService._row_caption(table, blank, rtl=False) == ""
+
+
+# --- worked examples -------------------------------------------------------------------
+
+
+def test_examples_follow_the_reader_s_script(container):
+    """A name shown in Latin letters beside Kannada guidance makes the reader switch
+    script mid-sentence. Script-neutral values stay the same in every language."""
+    from app.utils.text_normalization import dominant_script
+
+    name = container.dictionary.get("full_name")
+    assert dominant_script(name.example_for(Language.KANNADA)) == "kannada"
+    assert dominant_script(name.example_for(Language.HINDI)) == "devanagari"
+    assert dominant_script(name.example_for(Language.URDU)) == "arabic"
+    assert dominant_script(name.example_for(Language.ENGLISH)) == "latin"
+
+    # A date reads the same everywhere and keeps one example.
+    born = container.dictionary.get("date_of_birth")
+    assert born.example_for(Language.KANNADA) == born.example
+
+
+def test_a_plain_string_example_from_the_model_still_works():
+    """Older replies, and models that ignore the per-language shape, must not break."""
+    from app.models.interpretation import InterpretedField
+
+    field = InterpretedField.model_validate({"id": "x", "example": "15/08/1998"})
+    assert field.example_for(Language.KANNADA) == "15/08/1998"
+    assert field.example_for(Language.ENGLISH) == "15/08/1998"
+    empty = InterpretedField.model_validate({"id": "y", "example": None})
+    assert empty.example_for(Language.ENGLISH) is None
+
+
+# --- blanks must not land on printed text ---------------------------------------------
+
+
+def test_a_paragraph_ending_in_a_colon_is_not_a_field(tmp_path):
+    """Word counts do not separate a caption from a sentence in an agglutinative
+    language: a five-word Kannada sentence fills a line. The geometry does."""
+    path = tmp_path / "prose.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    # A line that runs most of the way across the page and happens to end in a colon.
+    long_caption = "x" * 90
+    ocr = _ocr([(f"{long_caption}:", 60, 200), ("Applicant Name:", 60, 260)])
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    captions = {blank.caption for blank in layout.blanks}
+    assert "Applicant Name" in captions
+    assert not any(caption.startswith("x" * 10) for caption in captions)
+
+
+def test_nothing_is_proposed_on_top_of_words(tmp_path):
+    path = tmp_path / "p.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    ocr = _ocr([("Some printed words here", 100, 300)])
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    word = ocr.words[0].pixel
+    assert PageStructureService.covers_text(layout, word.x + 5, word.y + 5, 40, 20) is True
+    assert PageStructureService.covers_text(layout, word.x, word.y + 200, 40, 20) is False
+
+
+def test_a_tick_box_inside_a_sentence_is_not_a_field(tmp_path):
+    """A box printed at the end of a declaration is punctuation the reader ticks by hand.
+    Offering an answer box for it while a real signature line goes undetected is the
+    wrong way round."""
+    from app.models.common import FieldType, PixelBoundingBox
+    from app.models.fields import DetectedField
+    from app.utils.bounding_boxes import normalize_box
+
+    path = tmp_path / "p.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    sentence = "I am applying for inclusion in the Electoral Roll through Form 6 and my name is not included"
+    ocr = _ocr([(sentence, 60, 300), ("Savings", 60, 500)])
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+
+    def mark(x: int, y: int) -> DetectedField:
+        pixel = PixelBoundingBox(x=x, y=y, width=18, height=18, **IMAGE)
+        return DetectedField(id=f"m{x}", page_index=0, label="", field_type=FieldType.CHECKBOX,
+                             input_box=normalize_box(pixel), confidence=0.7)
+
+    service = PageStructureService()
+    before = len(layout.blanks)
+    # Beside the long declaration sentence: printed text.
+    service.add_marks(layout, [mark(int(ocr.words[0].pixel.x + ocr.words[0].pixel.width + 10), 300)])
+    assert len(layout.blanks) == before, "a box beside a paragraph is not a field"
+
+
+# --- signature areas -------------------------------------------------------------------
+
+
+def test_a_signature_line_is_found_even_with_little_room_under_it(tmp_path):
+    """The officer's block at the foot of the page was found and the elector's own, a few
+    lines above, was not -- the one place on the form the applicant certainly must write.
+    A signature line is a signature line whatever follows it."""
+    path = tmp_path / "p.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    ocr = _ocr(
+        [
+            ("Signature of Elector with date", 600, 300),
+            ("BLO undertaking I have verified", 60, 360),
+            ("BLO Signature", 600, 600),
+        ]
+    )
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    captions = {blank.caption for blank in layout.blanks if blank.origin == "space_below"}
+    assert "Signature of Elector with date" in captions
+    assert "BLO Signature" in captions
+
+
+def test_a_kannada_signature_caption_is_recognised(tmp_path):
+    path = tmp_path / "p.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    ocr = _ocr([("ಮತದಾರರ ಸಹಿ ಮತ್ತು ದಿನಾಂಕ", 600, 300), ("next line", 60, 420)])
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    assert any(blank.origin == "space_below" for blank in layout.blanks)
+
+
+# --- two-column comparison tables --------------------------------------------------------
+
+
+def test_one_column_losing_its_caption_does_not_cancel_the_other(tmp_path):
+    """In a two-column comparison table, a cell whose caption OCR missed reads as empty.
+    Treating any empty neighbour as "the answer cell" then cancelled the field in the
+    column that *was* read, so a row asking two questions produced one."""
+    from app.services.page_structure_service import Cell, Table
+
+    read = Cell(id="a", x=100, y=100, width=400, height=40)
+    read.row = 0
+    read.words = [
+        OCRWord(id="w", text="Name:", confidence=90, page_index=0,
+                pixel=PixelBoundingBox(x=110, y=108, width=90, height=22, **IMAGE), line_id=1)
+    ]
+    unread = Cell(id="b", x=520, y=100, width=400, height=40)
+    unread.row = 0
+    table = Table(index=0, x=100, y=100, width=820, height=40, cells=[read, unread])
+
+    # The empty neighbour is the same width as the cell holding the caption, so it is
+    # the matching column of a comparison table, not a dedicated answer box.
+    assert PageStructureService._has_blank_sibling(table, read) is False
+
+
+def test_a_label_and_value_table_still_suppresses_the_padding(tmp_path):
+    """The behaviour the sibling rule exists for must survive."""
+    from app.services.page_structure_service import Cell, Table
+
+    label = Cell(id="a", x=100, y=100, width=300, height=40)
+    label.row = 0
+    label.words = [
+        OCRWord(id="w", text="Father Name", confidence=90, page_index=0,
+                pixel=PixelBoundingBox(x=105, y=108, width=180, height=22, **IMAGE), line_id=1)
+    ]
+    value = Cell(id="b", x=410, y=100, width=600, height=40)
+    value.row = 0
+    table = Table(index=0, x=100, y=100, width=910, height=40, cells=[label, value])
+    assert PageStructureService._has_blank_sibling(table, label) is True
+
+
+def test_only_the_first_row_can_be_a_top_header(tmp_path):
+    """Letting row 1 qualify risked swallowing a whole row of real fields."""
+    path = tmp_path / "hdr.png"
+    top, row_h, left, split = _page(path, ["hdr", "second", "third"])
+    ocr = _ocr(
+        [
+            ("Details of the Elector in the Roll", left + 12, top + 18),
+            ("Details of the Relative in the Roll", split + 12, top + 18),
+            ("Elector Name", left + 12, top + row_h + 18),
+            ("Relative Name", split + 12, top + row_h + 18),
+        ]
+    )
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    assert layout.tables[0].header_rows in ([], [0])
+    assert 1 not in layout.tables[0].header_rows
+
+
+# --- field assembly --------------------------------------------------------------------
+
+
+def _legacy_field(pixel: PixelBoundingBox, name: str = "legacy"):
+    from app.models.common import FieldType
+    from app.models.fields import DetectedField
+    from app.utils.bounding_boxes import normalize_box
+
+    return DetectedField(
+        id=name,
+        page_index=0,
+        label="",
+        field_type=FieldType.TEXT,
+        input_box=normalize_box(pixel),
+        confidence=0.6,
+    )
+
+
+def test_an_unruled_page_merges_the_shape_detector_in(tmp_path):
+    """The table-less branch of assembly was never exercised by a test, and a wrong
+    argument count in it failed every upload of an unruled form with "I could not process
+    this form" -- a message that blames the scan for a bug in the code."""
+    from app.services.field_assembly_service import FieldAssemblyService
+
+    path = tmp_path / "plain.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    ocr = _ocr([("Applicant Name:", 60, 200)])
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    assert layout.tables == []
+
+    clear = PixelBoundingBox(x=100, y=600, width=300, height=40, **IMAGE)
+    fields = FieldAssemblyService().build(layout, [_legacy_field(clear)], 0)
+    assert any(field.id == "legacy" for field in fields)
+
+
+def test_a_shape_candidate_over_printed_words_is_dropped(tmp_path):
+    from app.services.field_assembly_service import FieldAssemblyService
+
+    path = tmp_path / "plain.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    ocr = _ocr([("Some printed sentence of the form", 60, 400)])
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    word = ocr.words[0].pixel
+    on_text = PixelBoundingBox(x=word.x, y=word.y, width=word.width, height=word.height, **IMAGE)
+    fields = FieldAssemblyService().build(layout, [_legacy_field(on_text)], 0)
+    assert not any(field.id == "legacy" for field in fields)
+
+
+def test_a_ruled_page_ignores_the_shape_detector(tmp_path):
+    from app.services.field_assembly_service import FieldAssemblyService
+
+    path = tmp_path / "ruled.png"
+    top, row_h, left, split = _page(path, ["a", "b"])
+    ocr = _ocr([("Father Name", left + 12, top + 18)])
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    assert layout.tables, "fixture should be a ruled page"
+    clear = PixelBoundingBox(x=100, y=800, width=300, height=40, **IMAGE)
+    fields = FieldAssemblyService().build(layout, [_legacy_field(clear)], 0)
+    assert not any(field.id == "legacy" for field in fields)

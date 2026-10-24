@@ -8,6 +8,8 @@ RULES
 5. If the meaning is ambiguous, say that it is ambiguous and ask the user to verify against the form's official instructions.
 6. General background must be labelled as general guidance, not content printed on the form.
 7. Examples must use obviously fictional data.
+7a. Write each language as a speaker of it would rather than as a word-for-word
+   rendering of the English, in plain everyday words, with short sentences.
 8. Provide a value for EVERY language code listed in "Languages required". Write each one natively in that language's own script:
    - en = English, Latin script
    - hi = Hindi, Devanagari script

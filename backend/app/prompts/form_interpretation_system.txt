@@ -49,6 +49,18 @@ RULES
    Do not transliterate into Latin letters and do not leave a language as English text.
    Keep abbreviations, numbers, and formats (such as DD/MM/YYYY) unchanged across
    languages.
+9a. Write each language as a speaker of it would, not as a word-for-word rendering of the
+   English. Translating the English sentence clause by clause produces something that is
+   grammatical and still reads as foreign; say the same thing the way the language says
+   it, in plain words an ordinary person uses. Prefer everyday vocabulary over official
+   register, keep sentences short, and use the term the language actually uses for a
+   thing rather than a calque of the English one. The English is a brief, not a source
+   text.
+9b. "example" is per language. Give a name, place or phrase that belongs in that
+   language's script: an example in Latin letters beside Kannada guidance makes the
+   reader switch script mid-sentence. Values that read the same everywhere -- a date, a
+   PIN code, an IFSC, an amount -- stay identical across the four. Examples must be
+   obviously fictional.
 10. Do not translate, rewrite, or restate the form's own printed content. You describe
     what each blank asks for; you never alter the document.
 11. Return every blank you were given, keyed by the same id. Return valid JSON only, with
@@ -65,7 +77,7 @@ OUTPUT SCHEMA
       "label":          {"en": "...", "hi": "...", "kn": "...", "ur": "..."},
       "what_to_enter":  {"en": "...", "hi": "...", "kn": "...", "ur": "..."},
       "why_needed":     {"en": "...", "hi": "...", "kn": "...", "ur": "..."},
-      "example": "clearly fictional example, or null",
+      "example":        {"en": "...", "hi": "...", "kn": "...", "ur": "..."},
       "format_hint":    {"en": "...", "hi": "...", "kn": "...", "ur": "..."},
       "validation": "person_name",
       "confidence": 0.9

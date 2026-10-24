@@ -236,7 +236,10 @@ class InterpretedField(BaseModel):
     label: dict[str, str] = Field(default_factory=dict)
     what_to_enter: dict[str, str] = Field(default_factory=dict)
     why_needed: dict[str, str] = Field(default_factory=dict)
-    example: str | None = None
+    # A worked example per language. A date or a code reads the same everywhere, but a
+    # name does not: Latin letters beside Kannada guidance ask the reader to switch
+    # script mid-sentence. A plain string is still accepted and used for every language.
+    example: dict[str, str] = Field(default_factory=dict)
     format_hint: dict[str, str] = Field(default_factory=dict)
     validation: str = "text"
     confidence: float = 0.5
@@ -261,6 +264,17 @@ class InterpretedField(BaseModel):
         if isinstance(value, str) and value.strip().lower() in {item.value for item in FilledBy}:
             return value.strip().lower()
         return FilledBy.APPLICANT
+
+    @field_validator("example", mode="before")
+    @classmethod
+    def _example_per_language(cls, value: object) -> object:
+        if isinstance(value, str):
+            text = value.strip()
+            return {language.value: text for language in ALL_LANGUAGES} if text else {}
+        return value if isinstance(value, dict) else {}
+
+    def example_for(self, language: Language) -> str | None:
+        return (self.example or {}).get(language.value) or (self.example or {}).get(Language.ENGLISH.value)
 
     def languages_present(self) -> list[Language]:
         return [language for language in ALL_LANGUAGES if (self.what_to_enter.get(language.value) or "").strip()]

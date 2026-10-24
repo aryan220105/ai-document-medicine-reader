@@ -29,6 +29,12 @@ ENTRIES = [
             "فارم اسی نام سے آپ کی شناخت کرتا ہے اور آپ کی دیگر دستاویزات سے مطابقت کرتا ہے۔",
         ),
         example="Ananya Rao",
+        example_by_language={
+            "en": "Ananya Rao",
+            "hi": "अनन्या राव",
+            "kn": "ಅನನ್ಯಾ ರಾವ್",
+            "ur": "انانیا راؤ",
+        },
         format_hint=t("Given name followed by family name", "पहले नाम, फिर कुलनाम", "ಮೊದಲು ಹೆಸರು, ನಂತರ ಕುಲನಾಮ", "پہلے نام، پھر خاندانی نام"),
         validation={"kind": "person_name", "max_length": 80},
         priority=1.1,
@@ -57,6 +63,12 @@ ENTRIES = [
             "ایک جیسے نام والے افراد میں فرق کرنے کے لیے والدین کا نام لیا جاتا ہے۔",
         ),
         example="Mahesh Rao",
+        example_by_language={
+            "en": "Mahesh Rao",
+            "hi": "महेश राव",
+            "kn": "ಮಹೇಶ್ ರಾವ್",
+            "ur": "مہیش راؤ",
+        },
         validation={"kind": "person_name", "max_length": 80},
     ),
     entry(
@@ -77,6 +89,12 @@ ENTRIES = [
             "اپنی والدہ کا پورا نام ویسے ہی لکھیں جیسے آپ کی شناختی دستاویز یا اسکول کے ریکارڈ میں درج ہے۔",
         ),
         example="Lakshmi Rao",
+        example_by_language={
+            "en": "Lakshmi Rao",
+            "hi": "लक्ष्मी राव",
+            "kn": "ಲಕ್ಷ್ಮಿ ರಾವ್",
+            "ur": "لکشمی راؤ",
+        },
         validation={"kind": "person_name", "max_length": 80},
     ),
     entry(
@@ -97,6 +115,12 @@ ENTRIES = [
             "اگر آپ شادی شدہ ہیں تو اپنے شوہر یا بیوی کا پورا نام لکھیں۔ اگر یہ سوال آپ پر لاگو نہیں ہوتا تو خالی چھوڑ دیں یا 'لاگو نہیں' لکھیں۔",
         ),
         example="Rohit Sharma",
+        example_by_language={
+            "en": "Rohit Sharma",
+            "hi": "रोहित शर्मा",
+            "kn": "ರೋಹಿತ್ ಶರ್ಮಾ",
+            "ur": "روہت شرما",
+        },
         validation={"kind": "person_name", "max_length": 80, "optional": True},
     ),
     entry(
@@ -128,6 +152,12 @@ ENTRIES = [
             "چھپا لیبل غور سے پڑھیں: یہ خانہ آپ کے بارے میں نہیں، کسی رشتہ دار کے بارے میں ہے۔",
         ),
         example="Rohit Rao",
+        example_by_language={
+            "en": "Rohit Rao",
+            "hi": "रोहित राव",
+            "kn": "ರೋಹಿತ್ ರಾವ್",
+            "ur": "روہت راؤ",
+        },
         validation={"kind": "person_name", "max_length": 80},
     ),
     entry(
@@ -237,6 +267,12 @@ ENTRIES = [
             "جس ملک کے آپ شہری ہیں اس کا نام لکھیں، جیسا آپ کے پاسپورٹ یا دیگر ثبوت میں درج ہے۔",
         ),
         example="Indian",
+        example_by_language={
+            "en": "Indian",
+            "hi": "भारतीय",
+            "kn": "ಭಾರತೀಯ",
+            "ur": "بھارتی",
+        },
         validation={"kind": "text", "max_length": 40},
     ),
     entry(
@@ -257,6 +293,12 @@ ENTRIES = [
             "اگر فارم پوچھتا ہے تو اپنا مذہب لکھیں۔ بہت سے فارموں میں اسے خالی چھوڑنا یا 'ظاہر نہیں کیا' لکھنا قابل قبول ہوتا ہے۔",
         ),
         example="Not disclosed",
+        example_by_language={
+            "en": "Not disclosed",
+            "hi": "घोषित नहीं",
+            "kn": "ಘೋಷಿಸಿಲ್ಲ",
+            "ur": "ظاہر نہیں کیا",
+        },
         validation={"kind": "text", "max_length": 40, "optional": True},
     ),
     entry(
@@ -283,6 +325,12 @@ ENTRIES = [
             "کچھ اسکیموں میں درجے کی بنیاد پر نشستیں مخصوص ہوتی ہیں۔ یہ عمومی معلومات ہیں؛ سرکاری قواعد فارم پر درج ہیں۔",
         ),
         example="General",
+        example_by_language={
+            "en": "General",
+            "hi": "सामान्य",
+            "kn": "ಸಾಮಾನ್ಯ",
+            "ur": "عام",
+        },
         validation={"kind": "text", "max_length": 40},
     ),
     entry(

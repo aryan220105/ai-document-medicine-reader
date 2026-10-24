@@ -38,8 +38,21 @@ Users remain responsible for verifying official instructions. Avoid highly sensi
   them derived, and OCR words assigned to cells, so every row of a government table
   becomes a field. Handles a caption and its blank sharing one cell
   (`Elector Name: ______`), nested column headings, and tables inside tables
-- **Instruction pages are recognised and left alone**: a page with no grid and no
-  caption-and-gap pattern yields zero fields rather than invented ones
+- **Instruction pages are recognised and left alone**: judged from the writing itself,
+  before any blank is looked for, so a sentence that happens to end in a colon cannot
+  turn an information sheet into a form
+- **Nothing is proposed on top of printed text**: a blank is somewhere to write, so every
+  candidate is checked against the words already read and discarded where it overlaps one.
+  A line wider than half the page is prose even when it ends in a colon, which is the only
+  test that works in a language where five words fill a line
+- **Both columns of a comparison table are fields**: a row that asks for the elector's name
+  in the roll and as claimed produces two blanks, and a column whose caption OCR missed no
+  longer cancels the column that was read
+- **Signature and attestation lines are found wherever they sit**: the elector's own
+  signature line in the middle of a page, not just the officer's block at the foot of it
+- **The page is only cropped when it is a photograph on a background**: a candidate edge
+  must cover most of the frame and reach all four sides, so a ruled table can no longer
+  be mistaken for the page and silently delete the rest of the form
 - Page rendering, preprocessing, Tesseract OCR with word coordinates
 - **Script-aware OCR**: the page's script is detected, then read with that language model plus English, instead of loading every alphabet at once
 - **Two readings of every page** (rules erased and rules intact), merged word by word, so a label that one pass misses the other recovers
@@ -70,6 +83,15 @@ Users remain responsible for verifying official instructions. Avoid highly sensi
 - Right-to-left rendering for Urdu guidance, applied per element so the form's own labels keep their own direction
 - **Per-field validation rules** for unknown forms too: dates, mobile numbers, PIN codes, Aadhaar, PAN, IFSC, bank accounts, email, amounts, years, and names, with messages in the chosen language
 - Devanagari, Kannada, and Arabic-Indic digits accepted wherever a number is expected
+- **Worked examples in the reader's own script**: a name shown beside Kannada guidance is
+  written in Kannada, not Latin letters. Values that read the same everywhere — a date, a
+  PIN code, an IFSC — stay identical across the four languages
+- **Read-aloud works in all four languages, whatever voices the device has**: a Windows
+  machine usually ships English only, and the play button used to disable itself for
+  Kannada and Urdu. It now reads with the closest installed voice — Kannada through
+  Telugu, Tamil, Malayalam or Hindi, Urdu through Arabic, Persian or Hindi — and names the
+  substitute, so approximate pronunciation is not mistaken for a bad translation. The
+  voice list loads asynchronously, so it is watched rather than read once
 - Non-destructive answer overlay and Completed Reference Preview PDF, with HarfBuzz shaping so answers typed in any of the four scripts render correctly
 - Delete and start-over cleanup
 
@@ -452,16 +474,20 @@ CORS is limited to configured origins. Uploads use server-side UUIDs. Path trave
 
 - Field detection is heuristic and weaker on heavy tables and handwriting.
 - Perspective correction uses the processed page as the display surface.
-- Browser voices for Hindi, Kannada, and Urdu depend on the operating system. The panel says so when no voice for the chosen language is installed.
+- Browser voices for Hindi, Kannada, and Urdu depend on the operating system. A substitute voice is used when the exact one is missing, and the panel names it.
 - Groq is unused unless configured and consented.
 - Confidence scores are heuristics, not calibrated probabilities.
+- **Read-aloud pronunciation is approximate without a matching system voice.** Windows
+  ships few Indic voices by default, so Kannada may be read by a Telugu or Hindi voice and
+  Urdu by an Arabic one. The words are right and the sounds are close; the interface names
+  the voice in use. Only a device with no voices at all stays silent.
 - **Urdu OCR is the weakest of the four languages.** Tesseract's `urd` model misreads small, crisp Naskh; measured label recovery is 70% on the clean synthetic renders against 100% on the blurred ones. A label that is read does resolve correctly.
 - **The dictionary is finite.** It covers 56 common fields. A form using wording outside it gets an inferred description of the *shape* of the answer, clearly marked as inferred, rather than a definition. That is deliberate, but it is a ceiling.
 - **Dictionary matching is lexical, not semantic.** A wording that means the same thing in different words ("Name of the individual applying") resolves only if its tokens overlap an alias or fuzzily match one.
-- **Tick boxes drawn as text characters are not detected.** A `☐` typed into a sentence is
-  part of the printed text, not a drawn box, so a declaration that is ticked inline is
-  shown as text to read rather than as a field. Boxes actually drawn on the page are
-  found. When the shape detector proposes an implausible number of tick boxes on one page
+- **Tick boxes printed inside a sentence are not offered as fields.** A `☐` in the middle
+  of a declaration is punctuation the reader marks by hand, so it is shown as text to read
+  rather than as a field; a box whose neighbouring line runs most of the page's width is
+  judged to be printed text on that basis. Boxes drawn on their own are found. When the shape detector proposes an implausible number of tick boxes on one page
   (more than eight), the whole set is discarded rather than half-trusted.
 - **The interpreter needs a network and an API key.** Without it the context-aware layer
   is gone and fields are matched by printed wording alone, which is noticeably weaker on

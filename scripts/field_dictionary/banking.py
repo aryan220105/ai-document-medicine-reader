@@ -23,6 +23,12 @@ ENTRIES = [
             "جس بینک میں آپ کا اکاؤنٹ ہے اس کا نام لکھیں، جیسا آپ کی پاس بک یا چیک بک پر چھپا ہے۔",
         ),
         example="Demo National Bank",
+        example_by_language={
+            "en": "Demo National Bank",
+            "hi": "डेमो नेशनल बैंक",
+            "kn": "ಡೆಮೊ ನ್ಯಾಷನಲ್ ಬ್ಯಾಂಕ್",
+            "ur": "ڈیمو نیشنل بینک",
+        },
         validation={"kind": "text", "max_length": 80},
     ),
     entry(
@@ -43,6 +49,12 @@ ENTRIES = [
             "جس شاخ میں آپ کا اکاؤنٹ کھلا ہے اس کا نام لکھیں۔ شاخ کا نام آپ کی پاس بک پر ہوتا ہے۔",
         ),
         example="Demo Nagar Branch",
+        example_by_language={
+            "en": "Demo Nagar Branch",
+            "hi": "डेमो नगर शाखा",
+            "kn": "ಡೆಮೊ ನಗರ ಶಾಖೆ",
+            "ur": "ڈیمو نگر برانچ",
+        },
         validation={"kind": "text", "max_length": 80},
     ),
     entry(
@@ -136,6 +148,12 @@ ENTRIES = [
             "نامزد شخص وہ ہے جسے کھاتہ دار کی وفات پر رقم ملتی ہے۔ یہ عمومی رہنمائی ہے، قانونی مشورہ نہیں۔",
         ),
         example="Rohit Sharma",
+        example_by_language={
+            "en": "Rohit Sharma",
+            "hi": "रोहित शर्मा",
+            "kn": "ರೋಹಿತ್ ಶರ್ಮಾ",
+            "ur": "روہت شرما",
+        },
         validation={"kind": "person_name", "max_length": 80},
     ),
     entry(
@@ -156,6 +174,12 @@ ENTRIES = [
             "وہ شخص آپ کا کیا ہے یہ لکھیں، مثلاً والدہ، بیٹا یا شریک حیات۔",
         ),
         example="Brother",
+        example_by_language={
+            "en": "Brother",
+            "hi": "भाई",
+            "kn": "ಸಹೋದರ",
+            "ur": "بھائی",
+        },
         validation={"kind": "text", "max_length": 40},
     ),
     entry(

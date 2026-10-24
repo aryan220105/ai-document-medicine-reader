@@ -13,6 +13,23 @@ FormSathi is a monorepo: a FastAPI backend and a React frontend.
 
 Every OCR word and detected field stores page index, pixel box, source image size, and a normalized 0–1 box produced by `app.utils.bounding_boxes.normalize_box`. The processed page is the authoritative display surface after preprocessing.
 
+## Preparing the page
+
+Two decisions here are easy to get wrong in ways that look like failures somewhere else.
+
+**Page-edge detection only crops a photograph of a document on a background.** A form is
+full of large four-sided shapes — every ruled table is one — so a candidate must behave
+like a page boundary: cover most of the image and reach close to all four edges. An
+earlier version accepted any quad covering 18% of the frame, and on a Kannada electoral
+form the two-column table won: the processed page lost its title, its first three fields
+and its entire lower half. That presented as missing fields, not as a cropping bug. An
+image that already *is* the page, such as a rendered PDF, is left alone rather than
+warped and resampled.
+
+**Resolution.** Indic and Arabic scripts carry meaning in small marks — vowel signs,
+nuqtas, dots above and below — which are the first thing lost to downscaling. The working
+limit is 2400px on the longest side; 1800 was enough for Latin and too tight for the rest.
+
 ## Reading a form's structure
 
 A ruled form is a grid, not a bag of rectangles. `PageStructureService` finds the rules,
@@ -37,6 +54,38 @@ Three cases the grid analysis handles that shape detection alone cannot:
 The shape detector is still used, but only on pages with no table at all, where there is
 no grid to read. Run against a ruled form whose structure was already understood it
 contributed twenty-two spurious boxes, most of them slices of the title text.
+
+### What counts as a blank
+
+A blank is somewhere to write, so it cannot be somewhere already written. Every candidate
+is checked against the OCR word boxes and discarded if it overlaps one, whichever stage
+proposed it — a colon gap, an attestation area, or the shape detector's underlines. Without
+that rule the instruction sheet's own sentences came back as answer boxes.
+
+Three further rules separate the page's own printing from places the applicant fills:
+
+- **A long line ending in a colon is a sentence, not a caption.** Word counts cannot decide
+  this in an agglutinative language, where five Kannada words fill a line. Width can: a
+  caption occupies well under half the page, and anything wider is prose that happens to
+  end in a colon.
+- **A tick box inside a paragraph is punctuation.** The declaration text on the ECI form
+  prints `☐` mid-sentence for the reader to mark by hand; offered as a field it crowded out
+  real ones. A box whose neighbouring line runs most of the page's width is printed text.
+- **A signature line does not need room beneath it.** The gap required under an attestation
+  caption was wide enough that the officer's block at the foot of the page qualified and the
+  elector's own, a few lines above it, did not — the one place on the form the applicant
+  certainly must sign. The requirement is now one line's height.
+
+Only the first row of a table can be its header. Allowing later rows to qualify risked
+swallowing a row of real fields, and on a comparison table the second row is a question,
+not a heading.
+
+**A comparison table asks the same question twice.** `Name:` appears under "in the roll" and
+again under "as claimed", and each column is a field. An empty neighbouring cell is treated
+as the answer box only when it is clearly wider than the space left beside the caption *and*
+not the same width as the caption's own cell. Before the second condition, a column whose
+caption OCR had missed read as empty and cancelled the field in the column that was read, so
+a row asking two questions produced one.
 
 ## Establishing what the document is
 
@@ -185,7 +234,7 @@ Three decisions are made in `app/providers/ocr/tesseract.py`, each because a sin
 
 ## Direction
 
-Reading direction is handled in three places and nowhere else:
+Reading direction is handled in these places and nowhere else:
 
 - `LabelAssociationService` searches to the right of a blank on a right-to-left page, and returns label words in reading order rather than screen order. Tesseract reports Urdu words with their true coordinates, so sorting by ascending x yields the reverse of how the words are read.
 - `OCRResult.rtl` and per-line ordering keep `full_text` in reading order.
@@ -196,6 +245,24 @@ Reading direction is handled in three places and nowhere else:
 `FieldSemanticsService` resolves a printed label, in any supported script, to a row of the common-field dictionary. Matching is layered so that certainty is never overstated: an exact wording wins outright, a contained wording scores by how much of the label it explains, and token-aligned fuzzy matching sits below both — that last layer is what carries noisy scans, and it is capped under the exact-match band so a smudged guess cannot outrank a clean reading. A single generic token inside a longer label ("bank" inside "bank account number") is demoted below the usable floor, so the label-pattern heuristic answers instead of the wrong dictionary row.
 
 The resolved row supplies the field's input type and its validation rule, which is why an unknown form supports answer entry, validation, and the reference preview in the same way a known one does.
+
+## Reading aloud
+
+Browser speech voices are whatever the operating system has installed, and a Windows machine
+usually has English and nothing else. The button used to disable itself when the chosen
+language had no voice, which left Kannada and Urdu users with silence.
+
+It now reads with the closest installed voice and says which one: Kannada falls back through
+Telugu, Tamil, Malayalam and Hindi, Urdu through Arabic, Persian and Hindi — related
+letter-to-sound rules, far closer than English — and the panel names the substitute so the
+pronunciation is not mistaken for a bad translation. The utterance keeps the requested
+language tag even when the voice is a stand-in, because some engines use it to pick
+pronunciation rules independently of the voice, and it is read slightly slower.
+
+The voice list arrives asynchronously and the first `getVoices()` call returns an empty
+array, which is why an earlier version reported "no voice" for languages that were
+installed. The hook watches `voiceschanged` and polls a few times for the browsers that
+never fire it.
 
 ## No-LLM mode
 
