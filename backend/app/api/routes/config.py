@@ -36,10 +36,13 @@ def config(request: Request) -> dict[str, object]:
         "interpreter_enabled": container.interpreter.available(),
         "label_patterns": len(container.dictionary.patterns),
         "ocr_languages": container.settings.tesseract_lang,
+        "speech_configured": container.speech.configured,
+        "speech_provider": "elevenlabs" if container.speech.configured else "browser",
         "privacy_notice": (
             "FormSathi is an academic demonstration. Uploaded forms stay on this machine. "
             "Personal answers are never sent to an external language model. "
             "Changing the explanation language never changes your form or your answers. "
+            "Read-aloud sends only the guidance sentence to the speech service, never your answers or the form. "
             "Avoid highly sensitive real forms unless you trust this deployment."
         ),
     }

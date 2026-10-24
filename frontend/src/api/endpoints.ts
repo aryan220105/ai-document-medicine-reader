@@ -1,5 +1,6 @@
 export const API = {
   health: "/api/health",
+  speech: "/api/speech",
   config: "/api/config",
   upload: "/api/documents/upload",
   document: (id: string) => `/api/documents/${id}`,

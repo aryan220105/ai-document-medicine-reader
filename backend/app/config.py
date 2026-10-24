@@ -59,6 +59,12 @@ class Settings(BaseSettings):
     interpreter_classify_batch: int = 10
     interpreter_describe_batch: int = 5
 
+    # Read-aloud. Eleven v3 is required: multilingual v2 does not speak Kannada or Urdu.
+    elevenlabs_api_key: str = ""
+    elevenlabs_voice_id: str = "21m00Tcm4TlvDq8ikWAM"
+    elevenlabs_model_id: str = "eleven_v3"
+    elevenlabs_timeout_seconds: int = 30
+
     known_form_match_threshold: float = 0.42
     field_iou_merge: float = 0.45
     retrieval_min_score: float = 0.35
@@ -127,6 +133,10 @@ class Settings(BaseSettings):
     @property
     def llm_configured(self) -> bool:
         return bool(self.llm_api_keys()) and self.external_ai_enabled
+
+    @property
+    def speech_configured(self) -> bool:
+        return bool((self.elevenlabs_api_key or "").strip() and (self.elevenlabs_voice_id or "").strip())
 
 
 @lru_cache

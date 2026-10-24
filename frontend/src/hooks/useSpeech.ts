@@ -1,14 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { requestSpeech } from "../api/client";
 import { localeFor } from "../utils/languages";
 import type { Language } from "../types";
 
 /**
- * Voices to try, in order, when the exact language is not installed.
- *
- * Reading Kannada text with a Hindi voice is imperfect, but it is speech rather than
- * silence, and the engine's letter-to-sound rules for a related Indic language are much
- * closer than an English voice's. Urdu falls back through Arabic and Persian, which share
- * its script, before Hindi, which shares its vocabulary.
+ * Voices to try, in order, when ElevenLabs is not configured and the exact language
+ * is not installed. This is only a fallback. Kannada and Urdu are spoken by ElevenLabs
+ * when a key is set, including on known forms.
  */
 const VOICE_FALLBACKS: Record<Language, string[]> = {
   en: ["en"],
@@ -26,18 +24,19 @@ function pick(voices: SpeechSynthesisVoice[], prefix: string): SpeechSynthesisVo
   if (matching.length === 0) {
     return null;
   }
-  // A local voice speaks immediately; a remote one needs the network and can fail
-  // silently, which looks exactly like a broken button.
   return matching.find((voice) => voice.localService) ?? matching[0];
 }
 
-export function useSpeech(language: Language) {
+export function useSpeech(language: Language, speechConfigured = false) {
   const [speaking, setSpeaking] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [fellBack, setFellBack] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const objectUrl = useRef<string | null>(null);
+  const requestId = useRef(0);
 
-  // The voice list is populated asynchronously, and on most browsers the first call to
-  // getVoices() returns an empty array. Reading it once during render reported "no voice
-  // for this language" for every language, including ones that were installed.
   useEffect(() => {
     if (typeof window === "undefined" || !window.speechSynthesis) {
       return;
@@ -46,7 +45,6 @@ export function useSpeech(language: Language) {
     const refresh = () => setVoices(synthesis.getVoices());
     refresh();
     synthesis.addEventListener?.("voiceschanged", refresh);
-    // Safari does not always fire voiceschanged; a couple of polls settle it.
     const timers = [250, 1000, 2500].map((delay) => window.setTimeout(refresh, delay));
     return () => {
       synthesis.removeEventListener?.("voiceschanged", refresh);
@@ -65,52 +63,132 @@ export function useSpeech(language: Language) {
         return { voice, exact: index === 0 };
       }
     }
-    // Nothing in the family. Any voice is still better than a button that does nothing.
     return { voice: voices[0] ?? null, exact: false };
   }, [voices, language]);
 
-  const supported = typeof window !== "undefined" && "speechSynthesis" in window;
-  const available = supported && voices.length > 0;
+  const browserSupported = typeof window !== "undefined" && "speechSynthesis" in window;
 
-  const speak = useCallback(
+  const releaseAudio = useCallback(() => {
+    const audio = audioRef.current;
+    audioRef.current = null;
+    if (audio) {
+      // Clearing src fires an error event. That is this function stopping the
+      // clip, not a failure of ElevenLabs, so the handlers must be gone first.
+      audio.onerror = null;
+      audio.onended = null;
+      audio.pause();
+      audio.src = "";
+    }
+    if (objectUrl.current) {
+      URL.revokeObjectURL(objectUrl.current);
+      objectUrl.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    requestId.current += 1;
+    setError(null);
+    setFellBack(false);
+    releaseAudio();
+    if (browserSupported) {
+      window.speechSynthesis.cancel();
+    }
+    setSpeaking(false);
+    setLoading(false);
+  }, [browserSupported, language, releaseAudio]);
+
+  const stop = useCallback(() => {
+    requestId.current += 1;
+    releaseAudio();
+    if (browserSupported) {
+      window.speechSynthesis.cancel();
+    }
+    setSpeaking(false);
+    setLoading(false);
+  }, [browserSupported, releaseAudio]);
+
+  const browserSpeak = useCallback(
     (text: string) => {
-      if (!supported || !text.trim() || !chosen.voice) {
+      if (!browserSupported || !chosen.voice) {
+        setFellBack(true);
+        setSpeaking(false);
         return;
       }
       const synthesis = window.speechSynthesis;
       synthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.voice = chosen.voice;
-      // Keep the requested language on the utterance even when the voice is a stand-in:
-      // some engines use it to choose letter-to-sound rules independently of the voice.
       utterance.lang = chosen.exact ? localeFor(language) : chosen.voice.lang;
       utterance.rate = chosen.exact ? 0.95 : 0.85;
       utterance.onend = () => setSpeaking(false);
       utterance.onerror = () => setSpeaking(false);
+      setFellBack(true);
       setSpeaking(true);
       synthesis.speak(utterance);
     },
-    [chosen, language, supported],
+    [browserSupported, chosen, language],
   );
 
-  const stop = useCallback(() => {
-    if (supported) {
-      window.speechSynthesis.cancel();
-    }
-    setSpeaking(false);
-  }, [supported]);
+  const speak = useCallback(
+    (text: string) => {
+      const trimmed = text.trim();
+      if (!trimmed) {
+        return;
+      }
+      stop();
+      const token = requestId.current;
+      setError(null);
+      if (!speechConfigured) {
+        browserSpeak(trimmed);
+        return;
+      }
+      setLoading(true);
+      setFellBack(false);
+      void requestSpeech(trimmed, language)
+        .then(async (blob) => {
+          if (token !== requestId.current) {
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          objectUrl.current = url;
+          const audio = new Audio(url);
+          audioRef.current = audio;
+          audio.onended = () => {
+            setSpeaking(false);
+            releaseAudio();
+          };
+          audio.onerror = () => {
+            releaseAudio();
+            setError("Read-aloud audio could not be played.");
+            browserSpeak(trimmed);
+          };
+          setLoading(false);
+          setSpeaking(true);
+          await audio.play();
+        })
+        .catch((err: unknown) => {
+          setLoading(false);
+          const message = err instanceof Error ? err.message : "Read-aloud could not be generated.";
+          setError(message);
+          browserSpeak(trimmed);
+        });
+    },
+    [browserSpeak, language, releaseAudio, speechConfigured, stop],
+  );
+
+  const usingElevenLabs = speechConfigured && !fellBack;
 
   return {
     speak,
     stop,
     speaking,
-    available,
-    /** True when a voice for this exact language is installed. */
-    hasLanguageVoice: chosen.exact,
-    /** The voice that will actually be used, exact or not. */
-    voiceName: chosen.voice?.name ?? "",
-    voiceLanguage: chosen.voice?.lang ?? "",
-    /** Whether anything will be spoken at all. */
-    canSpeak: Boolean(chosen.voice),
+    loading,
+    error,
+    available: usingElevenLabs || (browserSupported && voices.length > 0),
+    hasLanguageVoice: usingElevenLabs || chosen.exact,
+    voiceName: usingElevenLabs ? "ElevenLabs" : (chosen.voice?.name ?? ""),
+    voiceLanguage: usingElevenLabs ? localeFor(language) : (chosen.voice?.lang ?? ""),
+    canSpeak: usingElevenLabs || Boolean(chosen.voice),
+    provider: usingElevenLabs ? ("elevenlabs" as const) : ("browser" as const),
   };
 }

@@ -175,6 +175,8 @@ export interface AppConfig {
   label_patterns: number;
   ocr_languages: string;
   privacy_notice: string;
+  speech_configured?: boolean;
+  speech_provider?: "elevenlabs" | "browser";
 }
 
 export interface ApiErrorBody {

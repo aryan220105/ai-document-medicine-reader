@@ -122,6 +122,20 @@ export async function createPreview(
   });
   return parse(response) as Promise<PreviewResult>;
 }
+/** Read one guidance sentence. The server sends it to ElevenLabs and returns audio. */
+export async function requestSpeech(text: string, language: Language): Promise<Blob> {
+  const response = await fetch(API.speech, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, language }),
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    const detail = (data as { detail?: { message?: string; code?: string } }).detail;
+    throw new ApiError(detail?.message || "Read-aloud could not be generated.", detail?.code || "speech_failed", response.status);
+  }
+  return response.blob();
+}
 export async function deleteDocument(id: string): Promise<void> {
   const response = await fetch(API.document(id), { method: "DELETE" });
   await parse(response);

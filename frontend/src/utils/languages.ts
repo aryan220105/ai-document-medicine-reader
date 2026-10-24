@@ -30,6 +30,29 @@ export function nativeNameFor(language: Language): string {
   return LANGUAGES.find((item) => item.id === language)?.native ?? language;
 }
 
+const SCRIPT_PATTERN: Record<Language, RegExp> = {
+  en: /[A-Za-z]/,
+  hi: /[\u0900-\u097F]/,
+  kn: /[\u0C80-\u0CFF]/,
+  ur: /[\u0600-\u06FF]/,
+};
+
+/** True when the text is written in the script of the explanation language. */
+export function matchesScript(text: string, language: Language): boolean {
+  return SCRIPT_PATTERN[language].test(text);
+}
+
+/**
+ * What to send to read-aloud. An English label beside an Urdu explanation would be
+ * spoken as Urdu and sound broken, so a sentence in the wrong script is left out.
+ * If nothing matches, the original text is still read rather than staying silent.
+ */
+export function textForSpeech(label: string, body: string, language: Language): string {
+  const parts = [label, body].map((item) => item.trim()).filter(Boolean);
+  const spoken = parts.filter((item) => matchesScript(item, language));
+  return (spoken.length > 0 ? spoken : parts).join(". ");
+}
+
 export function isSupported(value: string | null | undefined): value is Language {
   return !!value && LANGUAGE_IDS.includes(value as Language);
 }

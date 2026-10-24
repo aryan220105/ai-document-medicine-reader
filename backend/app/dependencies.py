@@ -26,6 +26,7 @@ from app.services.ocr_service import OCRService
 from app.services.pdf_service import PdfService
 from app.services.preview_service import PreviewService
 from app.services.retrieval_service import RetrievalService
+from app.services.speech_service import SpeechService
 from app.services.storage_service import StorageService
 from app.services.translation_service import TranslationService
 from app.services.validation_service import ValidationService
@@ -44,6 +45,7 @@ class AppContainer:
     ocr_service: OCRService
     llm_service: LLMService
     retrieval: RetrievalService
+    speech: SpeechService
     document_service: DocumentService
 
 
@@ -118,5 +120,6 @@ def build_container(settings: Settings | None = None) -> AppContainer:
         ocr_service=ocr_service,
         llm_service=llm_service,
         retrieval=retrieval,
+        speech=SpeechService(settings),
         document_service=document_service,
     )
