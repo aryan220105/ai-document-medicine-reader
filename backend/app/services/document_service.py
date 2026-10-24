@@ -32,6 +32,7 @@ from app.services.label_association_service import LabelAssociationService
 from app.services.ocr_service import OCRService
 from app.services.pdf_service import PdfService
 from app.services.preview_service import PreviewService
+from app.services.sir_form_service import SirFormService
 from app.services.storage_service import StorageService
 from app.services.validation_service import ValidationService
 from app.utils.text_normalization import match_tokens
@@ -80,6 +81,7 @@ class DocumentService:
         self.preview = preview
         self.validation = validation
         self.llm_configured = llm_configured
+        self.sir_forms = SirFormService()
 
     async def create_from_upload(
         self,
@@ -141,6 +143,15 @@ class DocumentService:
                 ocr = self.ocr_service.extract(preprocess.processed_path, page_index=index)
                 if not ocr.has_useful_text:
                     ocr = self.ocr_service.extract(str(source), page_index=index)
+                if record.mime_type == "application/pdf":
+                    embedded = self.pdf_service.read_embedded_text(
+                        Path(record.original_path),
+                        index,
+                        preprocess.processed_width,
+                        preprocess.processed_height,
+                    )
+                    if embedded is not None:
+                        ocr = embedded
                 ocr_pages.append(ocr)
                 self.documents.update_stage(document_id, ProcessingStage.DETECTING_FIELDS)
                 layout = self.page_structure.analyse(preprocess.processed_path, ocr, index)
@@ -179,6 +190,11 @@ class DocumentService:
             # comes from a column header rather than the caption itself, and what keeps a
             # field that belongs to the office out of the applicant's list.
             self._interpret(record, fields, layouts, ocr_pages)
+            fields = self.sir_forms.correct(fields, ocr_pages)
+            renamed = [field for field in fields if "sir_layout" in field.confidence_reasons]
+            for field in renamed:
+                self.label_association.tag_script(field)
+            self._resolve_semantics(renamed)
             record.pages = pages
             record.ocr = ocr_pages
             record.fields = fields
@@ -396,6 +412,16 @@ class DocumentService:
         words = match_tokens(text)
         if not any(len(word) >= 2 for word in words):
             return False
+        # A smear such as "gtonimensetonlnthe" is longer than any real Latin label
+        # word on these forms. Indic and Arabic words are not ASCII, so they stay.
+        letters = "".join(
+            ch if ch.isalpha() else " "
+            for ch in text
+            if unicodedata.category(ch) != "Cf"
+        )
+        for token in letters.split():
+            if token.isascii() and len(token) >= 16:
+                return False
         # Combining marks count as part of a letter. Indic vowel signs and Arabic
         # diacritics are not "alphabetic" to Python, so counting only `isalpha` would
         # reject a perfectly good Kannada or Urdu label such as "ವೃತ್ತಿ".
