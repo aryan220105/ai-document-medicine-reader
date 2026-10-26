@@ -5,33 +5,70 @@ import re
 from app.models.common import FieldType
 from app.models.fields import DetectedField, FieldOption
 from app.models.ocr import OCRResult, OCRWord
+from app.services.field_semantics_service import FieldSemanticsService
 from app.utils.bounding_boxes import iou
-from app.utils.text_normalization import fold
+from app.utils.text_normalization import dominant_script, fold, is_rtl, language_for_script
 
-SIGNATURE_TERMS = ("signature", "applicant signature", "sign here", "हस्ताक्षर", "ಸಹಿ")
-DATE_TERMS = ("date of birth", "dob", "date", "दिनांक", "ದಿನಾಂಕ")
-ADDRESS_TERMS = ("address", "residential address", "पता", "ವಿಳಾಸ")
-OFFICE_USE_TERMS = ("office use", "official use", "for office", "कार्यालय उपयोग", "ಕಚೇರಿ ಬಳಕೆ")
+SIGNATURE_TERMS = (
+    "signature", "applicant signature", "sign here", "thumb impression",
+    "हस्ताक्षर", "अंगूठे का निशान", "ಸಹಿ", "ಹೆಬ್ಬೆಟ್ಟಿನ ಗುರುತು", "دستخط", "انگوٹھے کا نشان",
+)
+DATE_TERMS = (
+    "date of birth", "dob", "date", "dated",
+    "दिनांक", "तारीख", "जन्म तिथि", "ದಿನಾಂಕ", "ತಾರೀಖು", "ಜನ್ಮ ದಿನಾಂಕ", "تاریخ", "تاریخ پیدائش",
+)
+ADDRESS_TERMS = (
+    "address", "residential address", "permanent address",
+    "पता", "स्थायी पता", "ವಿಳಾಸ", "ಶಾಶ್ವತ ವಿಳಾಸ", "پتہ", "مستقل پتہ",
+)
+OFFICE_USE_TERMS = (
+    "office use", "official use", "for office",
+    "कार्यालय उपयोग", "ಕಚೇರಿ ಬಳಕೆ", "دفتری استعمال",
+)
+
+# How far from a blank, along the row, a printed label may start. Government forms often
+# reserve a third of the page width for the label column, so a tight span clips the start
+# of a multi-word label -- "Date of Birth" arrives as "Birth" and the dictionary cannot
+# match it. The span only decides which words are *candidates*; which of them belong to
+# this label is then decided by the word-to-word gaps below, which is what keeps a
+# neighbouring column's text out.
+LABEL_SEARCH_SPAN = 0.42
+
+# A gap wider than this between two words means the label has ended.
+LABEL_WORD_GAP = 0.045
 
 
 class LabelAssociationService:
+    """Attaches each detected blank to the printed label that names it.
+
+    Label search is direction-aware. On a left-to-right page the label sits to the left of
+    the blank or on the line above it; on an Urdu page the reading order is mirrored and
+    the label sits to the *right*. Searching only leftwards leaves every field on an Urdu
+    form unlabelled, which in turn leaves it without guidance.
+    """
+
+    def __init__(self, semantics: FieldSemanticsService | None = None) -> None:
+        self.semantics = semantics
+
     def associate(self, fields: list[DetectedField], ocr: OCRResult) -> list[DetectedField]:
         used: set[str] = set()
+        rtl = is_rtl(ocr.full_text)
         # Letter glyphs ("O", "D") can pass as checkbox/radio candidates; drop them before
         # labelling so they cannot claim the real labels of neighbouring fields.
         fields = [field for field in fields if not self._mark_inside_word(field, ocr)]
         marks = [field for field in fields if field.field_type in {FieldType.CHECKBOX, FieldType.RADIO}]
-        self._label_marks(marks, ocr.words, used)
+        self._label_marks(marks, ocr.words, used, rtl)
         for field in fields:
             if field in marks:
                 continue
-            label_words = self._nearest_label(field, ocr.words, used)
+            label_words = self._nearest_label(field, ocr.words, used, rtl)
             if label_words:
                 field.label = " ".join(word.text for word in label_words).strip(" :.-")
                 field.label_boxes = [word.box for word in label_words]
                 field.source_word_ids = [word.id for word in label_words]
                 used.update(word.id for word in label_words)
             field.field_type = self._refine_type(field)
+            self._tag_script(field)
         self._infer_colon_gaps(fields, ocr)
         kept = [field for field in fields if self._keep(field, ocr)]
         return self._suppress_overlaps(kept)
@@ -54,10 +91,11 @@ class LabelAssociationService:
             return False
         return True
 
-    def _label_marks(self, marks: list[DetectedField], words: list[OCRWord], used: set[str]) -> None:
-        """Checkboxes and radios: the text right of each mark is its option, and the marks
-        on one row share the question label left of the first mark. OCR often reads the
-        mark itself as a glyph ("O", "D"), so words covering a mark are ignored."""
+    def _label_marks(self, marks: list[DetectedField], words: list[OCRWord], used: set[str], rtl: bool = False) -> None:
+        """Checkboxes and radios: the text after each mark in reading order is its option,
+        and the marks on one row share the question label before the first mark. OCR often
+        reads the mark itself as a glyph ("O", "D"), so words covering a mark are ignored.
+        On an Urdu page "after" means to the left and "before" means to the right."""
         mark_words = {
             word.id
             for word in words
@@ -76,12 +114,12 @@ class LabelAssociationService:
             else:
                 rows.append([mark])
         for row in rows:
-            row.sort(key=lambda item: item.input_box.x)
+            row.sort(key=lambda item: item.input_box.x, reverse=rtl)
             option_words: dict[str, list[OCRWord]] = {}
             for mark in row:
-                option_words[mark.id] = self._option_text(mark, candidates)
+                option_words[mark.id] = self._option_text(mark, candidates, rtl)
                 used.update(word.id for word in option_words[mark.id])
-            question = self._nearest_label(row[0], candidates, used)
+            question = self._nearest_label(row[0], candidates, used, rtl)
             used.update(word.id for word in question)
             question_label = " ".join(word.text for word in question).strip(" :.-")
             for mark in row:
@@ -93,27 +131,32 @@ class LabelAssociationService:
                     mark.options = [FieldOption(id=f"{mark.id}-opt", label=option or mark.label, box=mark.input_box)]
 
     @staticmethod
-    def _option_text(mark: DetectedField, words: list[OCRWord]) -> list[OCRWord]:
+    def _option_text(mark: DetectedField, words: list[OCRWord], rtl: bool = False) -> list[OCRWord]:
         box = mark.input_box
         mid = box.y + box.height / 2
-        right_edge = box.x + box.width
-        row = sorted(
-            (
-                word
-                for word in words
-                if word.page_index == mark.page_index
-                and word.box.x >= right_edge - 0.004
-                and abs(word.box.y + word.box.height / 2 - mid) <= max(box.height, 0.012)
-            ),
-            key=lambda item: item.box.x,
-        )
+        aligned = [
+            word
+            for word in words
+            if word.page_index == mark.page_index
+            and abs(word.box.y + word.box.height / 2 - mid) <= max(box.height, 0.012)
+        ]
+        if rtl:
+            edge = box.x
+            row = sorted(
+                (word for word in aligned if word.box.x + word.box.width <= edge + 0.004),
+                key=lambda item: -item.box.x,
+            )
+        else:
+            edge = box.x + box.width
+            row = sorted((word for word in aligned if word.box.x >= edge - 0.004), key=lambda item: item.box.x)
         chosen: list[OCRWord] = []
-        cursor = right_edge
+        cursor = edge
         for word in row:
-            if word.box.x - cursor > (0.03 if not chosen else 0.02):
+            gap = (cursor - (word.box.x + word.box.width)) if rtl else (word.box.x - cursor)
+            if gap > (0.03 if not chosen else 0.02):
                 break
             chosen.append(word)
-            cursor = word.box.x + word.box.width
+            cursor = word.box.x if rtl else word.box.x + word.box.width
         return chosen
 
     def _mark_inside_word(self, field: DetectedField, ocr: OCRResult) -> bool:
@@ -123,11 +166,14 @@ class LabelAssociationService:
             word.page_index == field.page_index and self._contains(word.box, field.input_box) for word in ocr.words
         )
 
-    def _nearest_label(self, field: DetectedField, words: list[OCRWord], used: set[str]) -> list[OCRWord]:
+    def _nearest_label(
+        self, field: DetectedField, words: list[OCRWord], used: set[str], rtl: bool = False
+    ) -> list[OCRWord]:
         box = field.input_box
-        left: list[OCRWord] = []
+        inline: list[OCRWord] = []
         above: list[OCRWord] = []
         box_mid_y = box.y + box.height / 2
+        box_right = box.x + box.width
         for word in words:
             if word.id in used or word.page_index != field.page_index or fold(word.text) in {":", "-", ".", "|"}:
                 continue
@@ -136,39 +182,73 @@ class LabelAssociationService:
             word_bottom = word_box.y + word_box.height
             word_mid_y = word_box.y + word_box.height / 2
             aligned = abs(word_mid_y - box_mid_y) <= max(box.height * 0.7, 0.018)
-            if word_right <= box.x + 0.02 and aligned and box.x - word_right <= 0.28:
-                left.append(word)
-                continue
+            if aligned:
+                if rtl:
+                    # Label precedes the blank in reading order, i.e. sits to its right.
+                    if word_box.x >= box_right - 0.02 and word_box.x - box_right <= LABEL_SEARCH_SPAN:
+                        inline.append(word)
+                        continue
+                elif word_right <= box.x + 0.02 and box.x - word_right <= LABEL_SEARCH_SPAN:
+                    inline.append(word)
+                    continue
             gap = box.y - word_bottom
-            overlap = min(word_right, box.x + box.width) - max(word_box.x, box.x)
+            overlap = min(word_right, box_right) - max(word_box.x, box.x)
             if -0.008 <= gap <= 0.035 and overlap >= min(word_box.width, box.width) * 0.2:
                 above.append(word)
-        if left:
-            return self._cluster_left(left)
-        return self._cluster_above(above)
+        if inline:
+            return self._cluster_inline(inline, rtl)
+        return self._cluster_above(above, rtl)
 
     @staticmethod
-    def _cluster_left(words: list[OCRWord]) -> list[OCRWord]:
+    def _cluster_inline(words: list[OCRWord], rtl: bool = False) -> list[OCRWord]:
+        """Walk outward from the blank, taking words until a wide gap says the label has
+        ended and a neighbouring field's text has begun.
+
+        The returned list is in *reading* order, not screen order. Tesseract reports Urdu
+        words with their real coordinates, so sorting them by ascending x yields the
+        visual order, which for a right-to-left script is the reverse of how the words are
+        read: "والد کا نام" comes back as "نام کا والد" and matches no alias. Returning
+        reading order is what lets one alias list serve every script.
+        """
         ordered = sorted(words, key=lambda item: item.box.x)
+        if rtl:
+            chosen = [ordered[0]]
+            for word in ordered[1:]:
+                gap = word.box.x - (chosen[-1].box.x + chosen[-1].box.width)
+                if gap > LABEL_WORD_GAP:
+                    break
+                chosen.append(word)
+            # Rightmost word first: that is the first word read in Urdu.
+            return sorted(chosen, key=lambda item: item.box.x, reverse=True)
         chosen = [ordered[-1]]
         for word in reversed(ordered[:-1]):
             gap = chosen[0].box.x - (word.box.x + word.box.width)
-            if gap > 0.045:
+            if gap > LABEL_WORD_GAP:
                 break
             chosen.insert(0, word)
         return chosen
 
     @staticmethod
-    def _cluster_above(words: list[OCRWord]) -> list[OCRWord]:
+    def _cluster_above(words: list[OCRWord], rtl: bool = False) -> list[OCRWord]:
         if not words:
             return []
         nearest = max(words, key=lambda item: item.box.y + item.box.height)
         seed_y = nearest.box.y
         line = [word for word in words if abs(word.box.y - seed_y) <= 0.012]
-        line.sort(key=lambda item: item.box.x)
+        line.sort(key=lambda item: item.box.x, reverse=rtl)
         return line
 
     def _refine_type(self, field: DetectedField) -> FieldType:
+        """Decide the input type from the printed wording.
+
+        When the dictionary is available it decides, because it covers all four scripts.
+        The literal term lists stay as a fallback for callers that construct this service
+        without a dictionary.
+        """
+        if self.semantics is not None:
+            match = self.semantics.resolve(field.label, field.field_type)
+            if match is not None and match.confident:
+                return self.semantics.field_type_for(match.entry.field_type, field.field_type)
         label = fold(field.label)
         if self._has_term(label, SIGNATURE_TERMS):
             return FieldType.SIGNATURE
@@ -178,6 +258,19 @@ class LabelAssociationService:
             if field.field_type not in {FieldType.CHECKBOX, FieldType.RADIO, FieldType.SIGNATURE}:
                 return FieldType.MULTILINE
         return field.field_type
+
+    def tag_script(self, field: DetectedField) -> None:
+        """Public entry point for callers that set a label after association."""
+        self._tag_script(field)
+
+    @staticmethod
+    def _tag_script(field: DetectedField) -> None:
+        """Record which script the label was printed in. Used to choose a default
+        explanation language and to pick OCR languages, never to alter the form."""
+        if not (field.label or "").strip():
+            return
+        field.label_script = dominant_script(field.label)
+        field.label_language = language_for_script(field.label_script)
 
     def _infer_colon_gaps(self, fields: list[DetectedField], ocr: OCRResult) -> None:
         existing = [field.input_box for field in fields]

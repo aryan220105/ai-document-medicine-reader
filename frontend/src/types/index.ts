@@ -1,4 +1,5 @@
-export type Language = "en" | "hi" | "kn";
+export type Language = "en" | "hi" | "kn" | "ur";
+export type TextDirection = "ltr" | "rtl";
 export type DocumentCategory = "government" | "banking" | "insurance" | "education" | "financial" | "other";
 export type DocumentStatus = "processing" | "ready" | "failed";
 export type ProcessingStage =
@@ -14,8 +15,21 @@ export type GuidanceSource =
   | "known_form_knowledge_base"
   | "common_field_dictionary"
   | "printed_form_text"
+  | "label_pattern_heuristic"
+  | "page_interpretation"
   | "general_ai_guidance"
   | "unavailable";
+
+export interface ValidationRule {
+  kind: string;
+  pattern: string | null;
+  message: string | null;
+  format: string | null;
+  optional: boolean;
+  min_value: number | null;
+  max_value: number | null;
+  max_length: number | null;
+}
 
 export interface NormalizedBoundingBox {
   x: number;
@@ -38,6 +52,23 @@ export interface DetectedField {
   required: boolean | null;
   confidence: number;
   confidence_reasons: string[];
+  known_field_id?: string | null;
+  semantic_id?: string | null;
+  semantic_score?: number;
+  semantic_source?: string | null;
+  label_pattern_id?: string | null;
+  validation_rule?: ValidationRule | null;
+  label_script?: string | null;
+  label_language?: Language | null;
+  /** Disambiguated name worked out by reading the page, e.g. "AC Name (Relative)". */
+  display_label?: string;
+  /** "applicant" | "office" | "either" — who the form expects to fill this in. */
+  filled_by?: string;
+  caption?: string;
+  column_header?: string;
+  sub_header?: string;
+  section_hint?: string;
+  structure_origin?: string;
 }
 
 export interface KnownFormMatch {
@@ -58,6 +89,10 @@ export interface DocumentResponse {
   page_count: number;
   fields: DetectedField[];
   form_match: KnownFormMatch;
+  scripts: string[];
+  suggested_language: Language;
+  interpreter_used?: boolean;
+  form_context?: FormContext | null;
   error_message: string | null;
   llm_configured: boolean;
   created_at: string;
@@ -73,9 +108,57 @@ export interface FieldGuidance {
   format_hint: string | null;
   source: GuidanceSource;
   source_reference: string | null;
+  validation_rule: ValidationRule | null;
   confidence: number;
   requires_verification: boolean;
   highlights: NormalizedBoundingBox[];
+  inferred: boolean;
+  verify_notice: string | null;
+}
+
+/** Guidance for one field in every supported language at once. */
+export interface MultilingualFieldGuidance {
+  field_id: string;
+  semantic_id: string | null;
+  label_language: Language | null;
+  source: GuidanceSource;
+  confidence: number;
+  requires_verification: boolean;
+  inferred: boolean;
+  languages: Partial<Record<Language, FieldGuidance>>;
+}
+
+export interface GuidanceBundleResponse {
+  document_id: string;
+  bundles: MultilingualFieldGuidance[];
+  languages: Language[];
+  llm_used: boolean;
+}
+
+/** What the document turned out to be, read once before any field was described. */
+export interface FormContext {
+  title: string;
+  authority: string;
+  purpose: string;
+  glossary: Record<string, string>;
+  notes: string[];
+  office_sections: string[];
+  /** Where any web-sourced background came from. Empty when none was used. */
+  web_sources?: string[];
+  confidence: number;
+}
+
+export interface ValidationResult {
+  ok: boolean;
+  message: string | null;
+}
+
+export interface LanguageDetail {
+  id: Language;
+  label: string;
+  native: string;
+  locale: string;
+  direction: TextDirection;
 }
 
 export interface AppConfig {
@@ -84,9 +167,16 @@ export interface AppConfig {
   max_upload_mb: number;
   max_pdf_pages: number;
   languages: Language[];
+  language_details: LanguageDetail[];
   categories: DocumentCategory[];
   accepted_types: string[];
+  dictionary_fields: number;
+  interpreter_enabled?: boolean;
+  label_patterns: number;
+  ocr_languages: string;
   privacy_notice: string;
+  speech_configured?: boolean;
+  speech_provider?: "elevenlabs" | "browser";
 }
 
 export interface ApiErrorBody {

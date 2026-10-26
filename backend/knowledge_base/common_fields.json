@@ -1,134 +1,4192 @@
 [
   {
     "id": "full_name",
-    "aliases": [
-      "full name",
-      "name of applicant",
-      "applicant name",
-      "name"
-    ],
     "type": "text",
+    "aliases": {
+      "en": [
+        "full name",
+        "name",
+        "name of applicant",
+        "applicant name",
+        "applicant's name",
+        "elector name",
+        "name in full",
+        "candidate name",
+        "holder name",
+        "name of the applicant"
+      ],
+      "hi": [
+        "पूरा नाम",
+        "नाम",
+        "आवेदक का नाम",
+        "अभ्यर्थी का नाम",
+        "सम्पूर्ण नाम",
+        "नाम आवेदक"
+      ],
+      "kn": [
+        "ಪೂರ್ಣ ಹೆಸರು",
+        "ಹೆಸರು",
+        "ಅರ್ಜಿದಾರರ ಹೆಸರು",
+        "ಮತದಾರರ ಹೆಸರು",
+        "ಅಭ್ಯರ್ಥಿಯ ಹೆಸರು",
+        "ಸಂಪೂರ್ಣ ಹೆಸರು"
+      ],
+      "ur": [
+        "پورا نام",
+        "نام",
+        "درخواست دہندہ کا نام",
+        "ووٹر کا نام",
+        "امیدوار کا نام",
+        "مکمل نام"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "name",
+        "applicant"
+      ],
+      "hi": [
+        "नाम"
+      ],
+      "kn": [
+        "ಹೆಸರು"
+      ],
+      "ur": [
+        "نام"
+      ]
+    },
     "simple_label": {
       "en": "Full name",
       "hi": "पूरा नाम",
-      "kn": "ಪೂರ್ಣ ಹೆಸರು"
+      "kn": "ಪೂರ್ಣ ಹೆಸರು",
+      "ur": "پورا نام"
     },
     "what_to_enter": {
-      "en": "Enter your full legal name as printed on the identity document the form asks for.",
-      "hi": "Jo pehchan patra form maangta hai, usi par chhapa poora kanooni naam likhen.",
-      "kn": "Form keluva gurutina dakhalealli iruva poorna kanoonu hesaranu baredi."
+      "en": "Write your full name exactly as it is printed on the identity document this form asks for. Do not shorten it or change the spelling.",
+      "hi": "अपना पूरा नाम ठीक वैसे ही लिखें जैसे इस फ़ॉर्म में मांगे गए पहचान पत्र पर छपा है। नाम छोटा न करें और वर्तनी न बदलें।",
+      "kn": "ಈ ಅರ್ಜಿ ಕೇಳುವ ಗುರುತಿನ ದಾಖಲೆಯಲ್ಲಿ ಮುದ್ರಿತವಾಗಿರುವಂತೆಯೇ ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ಬರೆಯಿರಿ. ಹೆಸರನ್ನು ಸಂಕ್ಷಿಪ್ತಗೊಳಿಸಬೇಡಿ ಅಥವಾ ಕಾಗುಣಿತ ಬದಲಾಯಿಸಬೇಡಿ.",
+      "ur": "اپنا پورا نام بالکل ویسے ہی لکھیں جیسے اس فارم میں مانگی گئی شناختی دستاویز پر چھپا ہے۔ نام مختصر نہ کریں اور ہجے تبدیل نہ کریں۔"
     },
     "why_needed": {
-      "en": "The form uses this to identify the applicant.",
-      "hi": "Form aavedak ki pehchan ke liye yeh naam maangta hai.",
-      "kn": "Arjidaarana gurutisalu ee hesaru beku."
+      "en": "The form uses this name to identify you and to match your other documents.",
+      "hi": "फ़ॉर्म इस नाम से आपकी पहचान करता है और आपके अन्य दस्तावेज़ों से मिलान करता है।",
+      "kn": "ಈ ಹೆಸರಿನಿಂದ ಅರ್ಜಿ ನಿಮ್ಮನ್ನು ಗುರುತಿಸುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ಇತರ ದಾಖಲೆಗಳೊಂದಿಗೆ ಹೊಂದಿಸುತ್ತದೆ.",
+      "ur": "فارم اسی نام سے آپ کی شناخت کرتا ہے اور آپ کی دیگر دستاویزات سے مطابقت کرتا ہے۔"
     },
     "example": "Ananya Rao",
-    "format_hint": "Given name and family name"
+    "example_by_language": {
+      "en": "Ananya Rao",
+      "hi": "अनन्या राव",
+      "kn": "ಅನನ್ಯಾ ರಾವ್",
+      "ur": "انانیا راؤ"
+    },
+    "format_hint": {
+      "en": "Given name followed by family name",
+      "hi": "पहले नाम, फिर कुलनाम",
+      "kn": "ಮೊದಲು ಹೆಸರು, ನಂತರ ಕುಲನಾಮ",
+      "ur": "پہلے نام، پھر خاندانی نام"
+    },
+    "validation": {
+      "kind": "person_name",
+      "max_length": 80
+    },
+    "priority": 1.1,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "father_name",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "father's name",
+        "fathers name",
+        "father name",
+        "name of father",
+        "s/o",
+        "son of",
+        "father / guardian name",
+        "father or husband name"
+      ],
+      "hi": [
+        "पिता का नाम",
+        "पिताजी का नाम",
+        "पिता",
+        "पिता अथवा पति का नाम"
+      ],
+      "kn": [
+        "ತಂದೆಯ ಹೆಸರು",
+        "ತಂದೆ ಹೆಸರು",
+        "ತಂದೆ",
+        "ತಂದೆ ಅಥವಾ ಪತಿಯ ಹೆಸರು"
+      ],
+      "ur": [
+        "والد کا نام",
+        "والد کا نام",
+        "والد",
+        "والد یا شوہر کا نام"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "father"
+      ],
+      "hi": [
+        "पिता"
+      ],
+      "kn": [
+        "ತಂದೆ"
+      ],
+      "ur": [
+        "والد"
+      ]
+    },
+    "simple_label": {
+      "en": "Father's name",
+      "hi": "पिता का नाम",
+      "kn": "ತಂದೆಯ ಹೆಸರು",
+      "ur": "والد کا نام"
+    },
+    "what_to_enter": {
+      "en": "Write your father's full name as it appears on your own identity or school records.",
+      "hi": "अपने पिता का पूरा नाम वैसे ही लिखें जैसे आपके पहचान पत्र या विद्यालय के अभिलेख में दर्ज है।",
+      "kn": "ನಿಮ್ಮ ಗುರುತಿನ ಚೀಟಿ ಅಥವಾ ಶಾಲಾ ದಾಖಲೆಗಳಲ್ಲಿ ನಮೂದಾಗಿರುವಂತೆ ನಿಮ್ಮ ತಂದೆಯ ಪೂರ್ಣ ಹೆಸರನ್ನು ಬರೆಯಿರಿ.",
+      "ur": "اپنے والد کا پورا نام ویسے ہی لکھیں جیسے آپ کی شناختی دستاویز یا اسکول کے ریکارڈ میں درج ہے۔"
+    },
+    "why_needed": {
+      "en": "Parentage is used to tell apart people with similar names.",
+      "hi": "समान नाम वाले व्यक्तियों में अंतर करने के लिए माता-पिता का नाम लिया जाता है।",
+      "kn": "ಒಂದೇ ರೀತಿಯ ಹೆಸರಿನ ವ್ಯಕ್ತಿಗಳನ್ನು ಬೇರ್ಪಡಿಸಲು ಪಾಲಕರ ಹೆಸರು ಬಳಸಲಾಗುತ್ತದೆ.",
+      "ur": "ایک جیسے نام والے افراد میں فرق کرنے کے لیے والدین کا نام لیا جاتا ہے۔"
+    },
+    "example": "Mahesh Rao",
+    "example_by_language": {
+      "en": "Mahesh Rao",
+      "hi": "महेश राव",
+      "kn": "ಮಹೇಶ್ ರಾವ್",
+      "ur": "مہیش راؤ"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "person_name",
+      "max_length": 80
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "mother_name",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "mother's name",
+        "mothers name",
+        "mother name",
+        "name of mother",
+        "maiden name of mother"
+      ],
+      "hi": [
+        "माता का नाम",
+        "माँ का नाम",
+        "माता",
+        "माता जी का नाम"
+      ],
+      "kn": [
+        "ತಾಯಿಯ ಹೆಸರು",
+        "ತಾಯಿ ಹೆಸರು",
+        "ತಾಯಿ",
+        "ಅಮ್ಮನ ಹೆಸರು"
+      ],
+      "ur": [
+        "والدہ کا نام",
+        "ماں کا نام",
+        "والدہ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "mother"
+      ],
+      "hi": [
+        "माता",
+        "माँ"
+      ],
+      "kn": [
+        "ತಾಯಿ"
+      ],
+      "ur": [
+        "والدہ"
+      ]
+    },
+    "simple_label": {
+      "en": "Mother's name",
+      "hi": "माता का नाम",
+      "kn": "ತಾಯಿಯ ಹೆಸರು",
+      "ur": "والدہ کا نام"
+    },
+    "what_to_enter": {
+      "en": "Write your mother's full name as it appears on your own identity or school records.",
+      "hi": "अपनी माता का पूरा नाम वैसे ही लिखें जैसे आपके पहचान पत्र या विद्यालय के अभिलेख में दर्ज है।",
+      "kn": "ನಿಮ್ಮ ಗುರುತಿನ ಚೀಟಿ ಅಥವಾ ಶಾಲಾ ದಾಖಲೆಗಳಲ್ಲಿ ನಮೂದಾಗಿರುವಂತೆ ನಿಮ್ಮ ತಾಯಿಯ ಪೂರ್ಣ ಹೆಸರನ್ನು ಬರೆಯಿರಿ.",
+      "ur": "اپنی والدہ کا پورا نام ویسے ہی لکھیں جیسے آپ کی شناختی دستاویز یا اسکول کے ریکارڈ میں درج ہے۔"
+    },
+    "why_needed": {},
+    "example": "Lakshmi Rao",
+    "example_by_language": {
+      "en": "Lakshmi Rao",
+      "hi": "लक्ष्मी राव",
+      "kn": "ಲಕ್ಷ್ಮಿ ರಾವ್",
+      "ur": "لکشمی راؤ"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "person_name",
+      "max_length": 80
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "spouse_name",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "spouse name",
+        "husband's name",
+        "wife's name",
+        "name of spouse",
+        "w/o",
+        "wife of",
+        "husband name",
+        "wife name"
+      ],
+      "hi": [
+        "पति का नाम",
+        "पत्नी का नाम",
+        "जीवनसाथी का नाम",
+        "पति अथवा पत्नी का नाम"
+      ],
+      "kn": [
+        "ಪತಿಯ ಹೆಸರು",
+        "ಪತ್ನಿಯ ಹೆಸರು",
+        "ಸಂಗಾತಿಯ ಹೆಸರು"
+      ],
+      "ur": [
+        "شوہر کا نام",
+        "بیوی کا نام",
+        "شریک حیات کا نام"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "spouse",
+        "husband",
+        "wife"
+      ],
+      "hi": [
+        "पति",
+        "पत्नी"
+      ],
+      "kn": [
+        "ಪತಿ",
+        "ಪತ್ನಿ"
+      ],
+      "ur": [
+        "شوہر",
+        "بیوی"
+      ]
+    },
+    "simple_label": {
+      "en": "Spouse's name",
+      "hi": "जीवनसाथी का नाम",
+      "kn": "ಸಂಗಾತಿಯ ಹೆಸರು",
+      "ur": "شریک حیات کا نام"
+    },
+    "what_to_enter": {
+      "en": "If you are married, write your husband's or wife's full name. If the question does not apply to you, leave it blank or write 'Not applicable'.",
+      "hi": "यदि आप विवाहित हैं तो अपने पति या पत्नी का पूरा नाम लिखें। यदि यह प्रश्न आप पर लागू नहीं होता तो खाली छोड़ें या 'लागू नहीं' लिखें।",
+      "kn": "ನೀವು ವಿವಾಹಿತರಾಗಿದ್ದರೆ ನಿಮ್ಮ ಪತಿ ಅಥವಾ ಪತ್ನಿಯ ಪೂರ್ಣ ಹೆಸರನ್ನು ಬರೆಯಿರಿ. ಈ ಪ್ರಶ್ನೆ ನಿಮಗೆ ಅನ್ವಯಿಸದಿದ್ದರೆ ಖಾಲಿ ಬಿಡಿ ಅಥವಾ 'ಅನ್ವಯಿಸುವುದಿಲ್ಲ' ಎಂದು ಬರೆಯಿರಿ.",
+      "ur": "اگر آپ شادی شدہ ہیں تو اپنے شوہر یا بیوی کا پورا نام لکھیں۔ اگر یہ سوال آپ پر لاگو نہیں ہوتا تو خالی چھوڑ دیں یا 'لاگو نہیں' لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "Rohit Sharma",
+    "example_by_language": {
+      "en": "Rohit Sharma",
+      "hi": "रोहित शर्मा",
+      "kn": "ರೋಹಿತ್ ಶರ್ಮಾ",
+      "ur": "روہت شرما"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "person_name",
+      "max_length": 80,
+      "optional": true
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "relative_name",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "brother's name",
+        "brother name",
+        "sister's name",
+        "sister name",
+        "son's name",
+        "son name",
+        "daughter's name",
+        "daughter name",
+        "guardian's name",
+        "guardian name",
+        "name of guardian",
+        "dependant name",
+        "dependent name",
+        "name of relative"
+      ],
+      "hi": [
+        "भाई का नाम",
+        "बहन का नाम",
+        "पुत्र का नाम",
+        "पुत्री का नाम",
+        "अभिभावक का नाम",
+        "संरक्षक का नाम",
+        "आश्रित का नाम"
+      ],
+      "kn": [
+        "ಸಹೋದರನ ಹೆಸರು",
+        "ಸಹೋದರಿಯ ಹೆಸರು",
+        "ಮಗನ ಹೆಸರು",
+        "ಮಗಳ ಹೆಸರು",
+        "ಪಾಲಕರ ಹೆಸರು",
+        "ಅವಲಂಬಿತರ ಹೆಸರು"
+      ],
+      "ur": [
+        "بھائی کا نام",
+        "بہن کا نام",
+        "بیٹے کا نام",
+        "بیٹی کا نام",
+        "سرپرست کا نام",
+        "رشتہ دار کا نام",
+        "زیرِ کفالت کا نام"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "brother",
+        "sister",
+        "guardian",
+        "dependant"
+      ],
+      "hi": [
+        "भाई",
+        "बहन",
+        "अभिभावक"
+      ],
+      "kn": [
+        "ಸಹೋದರ",
+        "ಸಹೋದರಿ",
+        "ಪಾಲಕ"
+      ],
+      "ur": [
+        "بھائی",
+        "بہن",
+        "سرپرست"
+      ]
+    },
+    "simple_label": {
+      "en": "Relative's name",
+      "hi": "संबंधी का नाम",
+      "kn": "ಸಂಬಂಧಿಕರ ಹೆಸರು",
+      "ur": "رشتہ دار کا نام"
+    },
+    "what_to_enter": {
+      "en": "Write the full name of the relative the printed label names. Spell it as it appears on that person's own identity document.",
+      "hi": "छपे लेबल में जिस संबंधी का नाम मांगा गया है उसका पूरा नाम लिखें। वर्तनी उसी व्यक्ति के पहचान पत्र के अनुसार रखें।",
+      "kn": "ಮುದ್ರಿತ ಲೇಬಲ್ ಹೆಸರಿಸುವ ಸಂಬಂಧಿಕರ ಪೂರ್ಣ ಹೆಸರನ್ನು ಬರೆಯಿರಿ. ಕಾಗುಣಿತವನ್ನು ಆ ವ್ಯಕ್ತಿಯ ಗುರುತಿನ ದಾಖಲೆಯಂತೆ ಇರಿಸಿ.",
+      "ur": "چھپے لیبل میں جس رشتہ دار کا نام مانگا گیا ہے اس کا پورا نام لکھیں۔ ہجے اسی شخص کی شناختی دستاویز کے مطابق رکھیں۔"
+    },
+    "why_needed": {
+      "en": "Read the printed label carefully: this field is about a relative, not about you.",
+      "hi": "छपा लेबल ध्यान से पढ़ें: यह फ़ील्ड आपके बारे में नहीं, किसी संबंधी के बारे में है।",
+      "kn": "ಮುದ್ರಿತ ಲೇಬಲ್ ಅನ್ನು ಗಮನವಿಟ್ಟು ಓದಿ: ಈ ಕ್ಷೇತ್ರ ನಿಮ್ಮ ಬಗ್ಗೆ ಅಲ್ಲ, ಸಂಬಂಧಿಕರ ಬಗ್ಗೆ.",
+      "ur": "چھپا لیبل غور سے پڑھیں: یہ خانہ آپ کے بارے میں نہیں، کسی رشتہ دار کے بارے میں ہے۔"
+    },
+    "example": "Rohit Rao",
+    "example_by_language": {
+      "en": "Rohit Rao",
+      "hi": "रोहित राव",
+      "kn": "ರೋಹಿತ್ ರಾವ್",
+      "ur": "روہت راؤ"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "person_name",
+      "max_length": 80
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
   },
   {
     "id": "date_of_birth",
-    "aliases": [
-      "date of birth",
-      "dob",
-      "birth date"
-    ],
     "type": "date",
+    "aliases": {
+      "en": [
+        "date of birth",
+        "dob",
+        "birth date",
+        "d.o.b",
+        "date of birth (dd/mm/yyyy)",
+        "born on"
+      ],
+      "hi": [
+        "जन्म तिथि",
+        "जन्म दिनांक",
+        "जन्म की तारीख",
+        "दिनांक जन्म"
+      ],
+      "kn": [
+        "ಜನ್ಮ ದಿನಾಂಕ",
+        "ಹುಟ್ಟಿದ ದಿನಾಂಕ",
+        "ಜನನ ದಿನಾಂಕ",
+        "ಜನ್ಮ ತಾರೀಖು"
+      ],
+      "ur": [
+        "تاریخ پیدائش",
+        "پیدائش کی تاریخ",
+        "یوم پیدائش"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "birth",
+        "dob"
+      ],
+      "hi": [
+        "जन्म"
+      ],
+      "kn": [
+        "ಜನ್ಮ",
+        "ಜನನ"
+      ],
+      "ur": [
+        "پیدائش"
+      ]
+    },
     "simple_label": {
       "en": "Date of birth",
       "hi": "जन्म तिथि",
-      "kn": "ಜನ್ಮ ದಿನಾಂಕ"
+      "kn": "ಜನ್ಮ ದಿನಾಂಕ",
+      "ur": "تاریخ پیدائش"
     },
     "what_to_enter": {
-      "en": "Enter your date of birth in DD/MM/YYYY format.",
-      "hi": "Apni janm tithi DD/MM/YYYY praroop mein likhen.",
-      "kn": "Nimma janma dinankavannu DD/MM/YYYY svaroopadalli baredi."
+      "en": "Write the day, month, and year you were born, in the order the form prints next to the box. Copy it from your birth certificate or school record.",
+      "hi": "जिस क्रम में फ़ॉर्म पर छपा है, उसी क्रम में अपने जन्म का दिन, महीना और वर्ष लिखें। इसे अपने जन्म प्रमाण पत्र या विद्यालय अभिलेख से देखकर लिखें।",
+      "kn": "ಅರ್ಜಿಯಲ್ಲಿ ಮುದ್ರಿಸಿರುವ ಕ್ರಮದಲ್ಲೇ ನೀವು ಜನಿಸಿದ ದಿನ, ತಿಂಗಳು ಮತ್ತು ವರ್ಷವನ್ನು ಬರೆಯಿರಿ. ಜನನ ಪ್ರಮಾಣಪತ್ರ ಅಥವಾ ಶಾಲಾ ದಾಖಲೆಯಿಂದ ನಕಲಿಸಿ.",
+      "ur": "جس ترتیب میں فارم پر چھپا ہے، اسی ترتیب میں اپنی پیدائش کا دن، مہینہ اور سال لکھیں۔ اسے اپنے پیدائشی سرٹیفکیٹ یا اسکول ریکارڈ سے دیکھ کر لکھیں۔"
+    },
+    "why_needed": {
+      "en": "Age decides which rules and categories apply to an application.",
+      "hi": "आयु से तय होता है कि आवेदन पर कौन से नियम और श्रेणियाँ लागू होंगी।",
+      "kn": "ಅರ್ಜಿಗೆ ಯಾವ ನಿಯಮಗಳು ಮತ್ತು ವರ್ಗಗಳು ಅನ್ವಯಿಸುತ್ತವೆ ಎಂಬುದನ್ನು ವಯಸ್ಸು ನಿರ್ಧರಿಸುತ್ತದೆ.",
+      "ur": "عمر سے طے ہوتا ہے کہ درخواست پر کون سے قواعد اور اقسام لاگو ہوں گے۔"
     },
     "example": "15/08/1998",
-    "format_hint": "DD/MM/YYYY"
+    "example_by_language": {},
+    "format_hint": {
+      "en": "DD/MM/YYYY",
+      "hi": "DD/MM/YYYY",
+      "kn": "DD/MM/YYYY",
+      "ur": "DD/MM/YYYY"
+    },
+    "validation": {
+      "kind": "date",
+      "format": "DD/MM/YYYY"
+    },
+    "priority": 1.1,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "age",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "age",
+        "age in years",
+        "age as on",
+        "completed age",
+        "age (years)"
+      ],
+      "hi": [
+        "आयु",
+        "उम्र",
+        "वर्ष में आयु",
+        "पूर्ण आयु"
+      ],
+      "kn": [
+        "ವಯಸ್ಸು",
+        "ವರ್ಷಗಳಲ್ಲಿ ವಯಸ್ಸು",
+        "ಪೂರ್ಣ ವಯಸ್ಸು"
+      ],
+      "ur": [
+        "عمر",
+        "سالوں میں عمر",
+        "مکمل عمر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "age"
+      ],
+      "hi": [
+        "आयु",
+        "उम्र"
+      ],
+      "kn": [
+        "ವಯಸ್ಸು"
+      ],
+      "ur": [
+        "عمر"
+      ]
+    },
+    "simple_label": {
+      "en": "Age",
+      "hi": "आयु",
+      "kn": "ವಯಸ್ಸು",
+      "ur": "عمر"
+    },
+    "what_to_enter": {
+      "en": "Write your age in completed years as a number. Check whether the form asks for your age on a particular date.",
+      "hi": "अपनी पूर्ण आयु वर्षों में अंकों में लिखें। देख लें कि फ़ॉर्म किसी विशेष तिथि पर आयु मांग रहा है या नहीं।",
+      "kn": "ನಿಮ್ಮ ಪೂರ್ಣ ವಯಸ್ಸನ್ನು ವರ್ಷಗಳಲ್ಲಿ ಸಂಖ್ಯೆಯಾಗಿ ಬರೆಯಿರಿ. ಅರ್ಜಿ ನಿರ್ದಿಷ್ಟ ದಿನಾಂಕದ ವಯಸ್ಸನ್ನು ಕೇಳುತ್ತಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ.",
+      "ur": "اپنی مکمل عمر سالوں میں ہندسوں میں لکھیں۔ دیکھ لیں کہ فارم کسی خاص تاریخ پر عمر مانگ رہا ہے یا نہیں۔"
+    },
+    "why_needed": {},
+    "example": "27",
+    "example_by_language": {},
+    "format_hint": {
+      "en": "Whole number of years",
+      "hi": "पूर्ण वर्षों की संख्या",
+      "kn": "ಪೂರ್ಣ ವರ್ಷಗಳ ಸಂಖ್ಯೆ",
+      "ur": "مکمل سالوں کی تعداد"
+    },
+    "validation": {
+      "kind": "integer",
+      "min": 0,
+      "max": 120
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "gender",
+    "type": "radio",
+    "aliases": {
+      "en": [
+        "gender",
+        "sex",
+        "male female other",
+        "male / female"
+      ],
+      "hi": [
+        "लिंग",
+        "पुरुष महिला अन्य",
+        "स्त्री पुरुष"
+      ],
+      "kn": [
+        "ಲಿಂಗ",
+        "ಪುರುಷ ಮಹಿಳೆ ಇತರೆ",
+        "ಗಂಡು ಹೆಣ್ಣು"
+      ],
+      "ur": [
+        "جنس",
+        "مرد عورت دیگر",
+        "مرد یا عورت"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "gender",
+        "sex"
+      ],
+      "hi": [
+        "लिंग"
+      ],
+      "kn": [
+        "ಲಿಂಗ"
+      ],
+      "ur": [
+        "جنس"
+      ]
+    },
+    "simple_label": {
+      "en": "Gender",
+      "hi": "लिंग",
+      "kn": "ಲಿಂಗ",
+      "ur": "جنس"
+    },
+    "what_to_enter": {
+      "en": "Tick the one box that matches the option you want to declare. Use only the choices printed on the form.",
+      "hi": "जो विकल्प आप बताना चाहते हैं, उसी एक खाने पर निशान लगाएँ। केवल फ़ॉर्म पर छपे विकल्पों में से चुनें।",
+      "kn": "ನೀವು ಘೋಷಿಸಲು ಬಯಸುವ ಆಯ್ಕೆಗೆ ಹೊಂದುವ ಒಂದೇ ಚೌಕದಲ್ಲಿ ಗುರುತು ಹಾಕಿ. ಅರ್ಜಿಯಲ್ಲಿ ಮುದ್ರಿಸಿರುವ ಆಯ್ಕೆಗಳನ್ನೇ ಬಳಸಿ.",
+      "ur": "جو اختیار آپ بتانا چاہتے ہیں، اسی ایک خانے پر نشان لگائیں۔ صرف فارم پر چھپے اختیارات میں سے منتخب کریں۔"
+    },
+    "why_needed": {},
+    "example": "Female",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "choice"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "marital_status",
+    "type": "radio",
+    "aliases": {
+      "en": [
+        "marital status",
+        "married single",
+        "marital state"
+      ],
+      "hi": [
+        "वैवाहिक स्थिति",
+        "विवाहित अविवाहित"
+      ],
+      "kn": [
+        "ವೈವಾಹಿಕ ಸ್ಥಿತಿ",
+        "ವಿವಾಹಿತ ಅವಿವಾಹಿತ"
+      ],
+      "ur": [
+        "ازدواجی حالت",
+        "شادی شدہ غیر شادی شدہ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "marital",
+        "married"
+      ],
+      "hi": [
+        "वैवाहिक",
+        "विवाहित"
+      ],
+      "kn": [
+        "ವೈವಾಹಿಕ",
+        "ವಿವಾಹಿತ"
+      ],
+      "ur": [
+        "ازدواجی",
+        "شادی"
+      ]
+    },
+    "simple_label": {
+      "en": "Marital status",
+      "hi": "वैवाहिक स्थिति",
+      "kn": "ವೈವಾಹಿಕ ಸ್ಥಿತಿ",
+      "ur": "ازدواجی حالت"
+    },
+    "what_to_enter": {
+      "en": "Tick the option that describes your situation today, using only the choices printed on the form.",
+      "hi": "आज आपकी जो स्थिति है, उसे बताने वाले विकल्प पर निशान लगाएँ। केवल फ़ॉर्म पर छपे विकल्पों का उपयोग करें।",
+      "kn": "ಇಂದು ನಿಮ್ಮ ಸ್ಥಿತಿಯನ್ನು ವಿವರಿಸುವ ಆಯ್ಕೆಯ ಮೇಲೆ ಗುರುತು ಹಾಕಿ. ಅರ್ಜಿಯಲ್ಲಿ ಮುದ್ರಿಸಿರುವ ಆಯ್ಕೆಗಳನ್ನೇ ಬಳಸಿ.",
+      "ur": "آج آپ کی جو حالت ہے، اسے بتانے والے اختیار پر نشان لگائیں۔ صرف فارم پر چھپے اختیارات استعمال کریں۔"
+    },
+    "why_needed": {},
+    "example": "Single",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "choice"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "nationality",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "nationality",
+        "citizenship",
+        "citizen of"
+      ],
+      "hi": [
+        "राष्ट्रीयता",
+        "नागरिकता"
+      ],
+      "kn": [
+        "ರಾಷ್ಟ್ರೀಯತೆ",
+        "ಪ್ರಜೆ"
+      ],
+      "ur": [
+        "قومیت",
+        "شہریت"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "nationality",
+        "citizen"
+      ],
+      "hi": [
+        "राष्ट्रीयता",
+        "नागरिकता"
+      ],
+      "kn": [
+        "ರಾಷ್ಟ್ರೀಯತೆ"
+      ],
+      "ur": [
+        "قومیت",
+        "شہریت"
+      ]
+    },
+    "simple_label": {
+      "en": "Nationality",
+      "hi": "राष्ट्रीयता",
+      "kn": "ರಾಷ್ಟ್ರೀಯತೆ",
+      "ur": "قومیت"
+    },
+    "what_to_enter": {
+      "en": "Write the country whose citizen you are, as shown on your passport or other proof.",
+      "hi": "जिस देश के आप नागरिक हैं उसका नाम लिखें, जैसा आपके पासपोर्ट या अन्य प्रमाण में दर्ज है।",
+      "kn": "ನೀವು ಯಾವ ದೇಶದ ಪ್ರಜೆ ಎಂಬುದನ್ನು ನಿಮ್ಮ ಪಾಸ್‌ಪೋರ್ಟ್ ಅಥವಾ ಇತರ ಸಾಕ್ಷ್ಯದಲ್ಲಿರುವಂತೆ ಬರೆಯಿರಿ.",
+      "ur": "جس ملک کے آپ شہری ہیں اس کا نام لکھیں، جیسا آپ کے پاسپورٹ یا دیگر ثبوت میں درج ہے۔"
+    },
+    "why_needed": {},
+    "example": "Indian",
+    "example_by_language": {
+      "en": "Indian",
+      "hi": "भारतीय",
+      "kn": "ಭಾರತೀಯ",
+      "ur": "بھارتی"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 40
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "religion",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "religion",
+        "religious community"
+      ],
+      "hi": [
+        "धर्म",
+        "धार्मिक समुदाय"
+      ],
+      "kn": [
+        "ಧರ್ಮ",
+        "ಧಾರ್ಮಿಕ ಸಮುದಾಯ"
+      ],
+      "ur": [
+        "مذہب",
+        "مذہبی برادری"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "religion"
+      ],
+      "hi": [
+        "धर्म"
+      ],
+      "kn": [
+        "ಧರ್ಮ"
+      ],
+      "ur": [
+        "مذہب"
+      ]
+    },
+    "simple_label": {
+      "en": "Religion",
+      "hi": "धर्म",
+      "kn": "ಧರ್ಮ",
+      "ur": "مذہب"
+    },
+    "what_to_enter": {
+      "en": "Write your religion if the form asks for it. Many forms allow you to leave this blank or write 'Not disclosed'.",
+      "hi": "यदि फ़ॉर्म पूछता है तो अपना धर्म लिखें। कई फ़ॉर्मों में इसे खाली छोड़ना या 'घोषित नहीं' लिखना स्वीकार्य होता है।",
+      "kn": "ಅರ್ಜಿ ಕೇಳಿದರೆ ನಿಮ್ಮ ಧರ್ಮವನ್ನು ಬರೆಯಿರಿ. ಹಲವು ಅರ್ಜಿಗಳಲ್ಲಿ ಇದನ್ನು ಖಾಲಿ ಬಿಡಲು ಅಥವಾ 'ಘೋಷಿಸಿಲ್ಲ' ಎಂದು ಬರೆಯಲು ಅವಕಾಶವಿದೆ.",
+      "ur": "اگر فارم پوچھتا ہے تو اپنا مذہب لکھیں۔ بہت سے فارموں میں اسے خالی چھوڑنا یا 'ظاہر نہیں کیا' لکھنا قابل قبول ہوتا ہے۔"
+    },
+    "why_needed": {},
+    "example": "Not disclosed",
+    "example_by_language": {
+      "en": "Not disclosed",
+      "hi": "घोषित नहीं",
+      "kn": "ಘೋಷಿಸಿಲ್ಲ",
+      "ur": "ظاہر نہیں کیا"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 40,
+      "optional": true
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "social_category",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "category",
+        "caste category",
+        "social category",
+        "sc st obc",
+        "reservation category",
+        "caste"
+      ],
+      "hi": [
+        "श्रेणी",
+        "जाति श्रेणी",
+        "सामाजिक श्रेणी",
+        "आरक्षण श्रेणी",
+        "जाति"
+      ],
+      "kn": [
+        "ವರ್ಗ",
+        "ಜಾತಿ ವರ್ಗ",
+        "ಸಾಮಾಜಿಕ ವರ್ಗ",
+        "ಮೀಸಲಾತಿ ವರ್ಗ",
+        "ಜಾತಿ"
+      ],
+      "ur": [
+        "درجہ",
+        "ذات کا درجہ",
+        "سماجی درجہ",
+        "ریزرویشن کیٹیگری"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "category",
+        "caste"
+      ],
+      "hi": [
+        "श्रेणी",
+        "जाति"
+      ],
+      "kn": [
+        "ವರ್ಗ",
+        "ಜಾತಿ"
+      ],
+      "ur": [
+        "درجہ",
+        "ذات"
+      ]
+    },
+    "simple_label": {
+      "en": "Category",
+      "hi": "श्रेणी",
+      "kn": "ವರ್ಗ",
+      "ur": "درجہ"
+    },
+    "what_to_enter": {
+      "en": "Write the category exactly as it appears on your category or caste certificate. Only claim a category you hold a valid certificate for.",
+      "hi": "अपनी श्रेणी वही लिखें जो आपके श्रेणी या जाति प्रमाण पत्र पर दर्ज है। केवल उसी श्रेणी का दावा करें जिसका वैध प्रमाण पत्र आपके पास है।",
+      "kn": "ನಿಮ್ಮ ವರ್ಗ ಅಥವಾ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರದಲ್ಲಿ ನಮೂದಾಗಿರುವಂತೆಯೇ ವರ್ಗವನ್ನು ಬರೆಯಿರಿ. ಮಾನ್ಯ ಪ್ರಮಾಣಪತ್ರ ಇರುವ ವರ್ಗವನ್ನೇ ಹೇಳಿ.",
+      "ur": "اپنا درجہ وہی لکھیں جو آپ کے کیٹیگری یا ذات کے سرٹیفکیٹ پر درج ہے۔ صرف اسی درجے کا دعوٰی کریں جس کا مستند سرٹیفکیٹ آپ کے پاس ہو۔"
+    },
+    "why_needed": {
+      "en": "Some schemes reserve places by category. This is general information; the official rules are on the form.",
+      "hi": "कुछ योजनाओं में श्रेणी के आधार पर स्थान आरक्षित होते हैं। यह सामान्य जानकारी है; आधिकारिक नियम फ़ॉर्म पर दिए हैं।",
+      "kn": "ಕೆಲವು ಯೋಜನೆಗಳಲ್ಲಿ ವರ್ಗದ ಆಧಾರದ ಮೇಲೆ ಸ್ಥಾನ ಮೀಸಲಿರುತ್ತದೆ. ಇದು ಸಾಮಾನ್ಯ ಮಾಹಿತಿ; ಅಧಿಕೃತ ನಿಯಮಗಳು ಅರ್ಜಿಯಲ್ಲಿವೆ.",
+      "ur": "کچھ اسکیموں میں درجے کی بنیاد پر نشستیں مخصوص ہوتی ہیں۔ یہ عمومی معلومات ہیں؛ سرکاری قواعد فارم پر درج ہیں۔"
+    },
+    "example": "General",
+    "example_by_language": {
+      "en": "General",
+      "hi": "सामान्य",
+      "kn": "ಸಾಮಾನ್ಯ",
+      "ur": "عام"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 40
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "blood_group",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "blood group",
+        "blood type"
+      ],
+      "hi": [
+        "रक्त समूह",
+        "ब्लड ग्रुप"
+      ],
+      "kn": [
+        "ರಕ್ತದ ಗುಂಪು",
+        "ಬ್ಲಡ್ ಗ್ರೂಪ್"
+      ],
+      "ur": [
+        "خون کا گروپ",
+        "بلڈ گروپ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "blood"
+      ],
+      "hi": [
+        "रक्त"
+      ],
+      "kn": [
+        "ರಕ್ತ"
+      ],
+      "ur": [
+        "خون"
+      ]
+    },
+    "simple_label": {
+      "en": "Blood group",
+      "hi": "रक्त समूह",
+      "kn": "ರಕ್ತದ ಗುಂಪು",
+      "ur": "خون کا گروپ"
+    },
+    "what_to_enter": {
+      "en": "Write your blood group only if you have it on a medical report or official card. Do not guess it.",
+      "hi": "अपना रक्त समूह केवल तब लिखें जब वह किसी चिकित्सा रिपोर्ट या आधिकारिक कार्ड पर दर्ज हो। अनुमान से न लिखें।",
+      "kn": "ವೈದ್ಯಕೀಯ ವರದಿ ಅಥವಾ ಅಧಿಕೃತ ಕಾರ್ಡ್‌ನಲ್ಲಿ ಇದ್ದರೆ ಮಾತ್ರ ನಿಮ್ಮ ರಕ್ತದ ಗುಂಪನ್ನು ಬರೆಯಿರಿ. ಊಹಿಸಿ ಬರೆಯಬೇಡಿ.",
+      "ur": "اپنا خون کا گروپ صرف اس صورت میں لکھیں جب وہ کسی طبی رپورٹ یا سرکاری کارڈ پر درج ہو۔ اندازے سے نہ لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "O+",
+    "example_by_language": {},
+    "format_hint": {
+      "en": "Such as A+, B-, O+, AB+",
+      "hi": "जैसे A+, B-, O+, AB+",
+      "kn": "ಉದಾಹರಣೆಗೆ A+, B-, O+, AB+",
+      "ur": "جیسے A+, B-, O+, AB+"
+    },
+    "validation": {
+      "kind": "blood_group",
+      "optional": true
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
   },
   {
     "id": "address",
-    "aliases": [
-      "address",
-      "residential address",
-      "postal address"
-    ],
     "type": "multiline",
+    "aliases": {
+      "en": [
+        "address",
+        "residential address",
+        "postal address",
+        "full address",
+        "present address",
+        "current address",
+        "address for communication",
+        "correspondence address",
+        "house address"
+      ],
+      "hi": [
+        "पता",
+        "निवास का पता",
+        "डाक पता",
+        "पूरा पता",
+        "वर्तमान पता",
+        "पत्राचार का पता",
+        "आवासीय पता"
+      ],
+      "kn": [
+        "ವಿಳಾಸ",
+        "ವಾಸದ ವಿಳಾಸ",
+        "ಅಂಚೆ ವಿಳಾಸ",
+        "ಪೂರ್ಣ ವಿಳಾಸ",
+        "ಪ್ರಸ್ತುತ ವಿಳಾಸ",
+        "ಪತ್ರ ವ್ಯವಹಾರದ ವಿಳಾಸ"
+      ],
+      "ur": [
+        "پتہ",
+        "رہائشی پتہ",
+        "ڈاک کا پتہ",
+        "پورا پتہ",
+        "موجودہ پتہ",
+        "خط و کتابت کا پتہ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "address"
+      ],
+      "hi": [
+        "पता"
+      ],
+      "kn": [
+        "ವಿಳಾಸ"
+      ],
+      "ur": [
+        "پتہ"
+      ]
+    },
     "simple_label": {
       "en": "Address",
       "hi": "पता",
-      "kn": "ವಿಳಾಸ"
+      "kn": "ವಿಳಾಸ",
+      "ur": "پتہ"
     },
     "what_to_enter": {
-      "en": "Enter the full postal address the form asks for, including house number and locality.",
-      "hi": "Ghar sankhya aur ilake ke saath poora daak pata likhen.",
-      "kn": "Mane sankhye mattu pradesha sahita poornadaak vilasavannu baredi."
+      "en": "Write the full postal address where you can receive letters: house or door number, street, locality, and town.",
+      "hi": "वह पूरा डाक पता लिखें जहाँ आपको पत्र मिल सकें: मकान या द्वार संख्या, गली, मोहल्ला और नगर।",
+      "kn": "ನಿಮಗೆ ಪತ್ರಗಳು ತಲುಪುವ ಪೂರ್ಣ ಅಂಚೆ ವಿಳಾಸವನ್ನು ಬರೆಯಿರಿ: ಮನೆ ಅಥವಾ ಬಾಗಿಲು ಸಂಖ್ಯೆ, ರಸ್ತೆ, ಬಡಾವಣೆ ಮತ್ತು ಊರು.",
+      "ur": "وہ پورا ڈاک کا پتہ لکھیں جہاں آپ کو خطوط مل سکیں: مکان یا دروازہ نمبر، گلی، محلہ اور شہر۔"
     },
-    "example": "12 Lotus Lane, Demo Nagar, Bengaluru 560001"
+    "why_needed": {
+      "en": "The office posts letters and documents to this address.",
+      "hi": "कार्यालय इसी पते पर पत्र और दस्तावेज़ भेजता है।",
+      "kn": "ಕಚೇರಿ ಇದೇ ವಿಳಾಸಕ್ಕೆ ಪತ್ರ ಮತ್ತು ದಾಖಲೆಗಳನ್ನು ಕಳುಹಿಸುತ್ತದೆ.",
+      "ur": "دفتر اسی پتے پر خطوط اور دستاویزات بھیجتا ہے۔"
+    },
+    "example": "12 Lotus Lane, Demo Nagar, Bengaluru",
+    "example_by_language": {
+      "en": "12 Lotus Lane, Demo Nagar, Bengaluru",
+      "hi": "12 कमल मार्ग, डेमो नगर, बेंगलुरु",
+      "kn": "12 ಕಮಲ ರಸ್ತೆ, ಡೆಮೊ ನಗರ, ಬೆಂಗಳೂರು",
+      "ur": "12 کمل روڈ، ڈیمو نگر، بنگلورو"
+    },
+    "format_hint": {
+      "en": "House number, street, locality, town",
+      "hi": "मकान संख्या, गली, मोहल्ला, नगर",
+      "kn": "ಮನೆ ಸಂಖ್ಯೆ, ರಸ್ತೆ, ಬಡಾವಣೆ, ಊರು",
+      "ur": "مکان نمبر، گلی، محلہ، شہر"
+    },
+    "validation": {
+      "kind": "multiline",
+      "max_length": 240
+    },
+    "priority": 1.05,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "permanent_address",
+    "type": "multiline",
+    "aliases": {
+      "en": [
+        "permanent address",
+        "native address",
+        "address as per aadhaar",
+        "home town address"
+      ],
+      "hi": [
+        "स्थायी पता",
+        "मूल पता",
+        "स्थायी निवास का पता"
+      ],
+      "kn": [
+        "ಶಾಶ್ವತ ವಿಳಾಸ",
+        "ಮೂಲ ವಿಳಾಸ",
+        "ಸ್ವಂತ ಊರಿನ ವಿಳಾಸ"
+      ],
+      "ur": [
+        "مستقل پتہ",
+        "آبائی پتہ",
+        "مستقل رہائش کا پتہ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "permanent",
+        "native"
+      ],
+      "hi": [
+        "स्थायी",
+        "मूल"
+      ],
+      "kn": [
+        "ಶಾಶ್ವತ",
+        "ಮೂಲ"
+      ],
+      "ur": [
+        "مستقل",
+        "آبائی"
+      ]
+    },
+    "simple_label": {
+      "en": "Permanent address",
+      "hi": "स्थायी पता",
+      "kn": "ಶಾಶ್ವತ ವಿಳಾಸ",
+      "ur": "مستقل پتہ"
+    },
+    "what_to_enter": {
+      "en": "Write your long-term home address. If it is the same as the address above, write 'Same as above'.",
+      "hi": "अपना दीर्घकालिक घर का पता लिखें। यदि यह ऊपर दिए पते के समान है तो 'उपरोक्त के समान' लिखें।",
+      "kn": "ನಿಮ್ಮ ದೀರ್ಘಕಾಲದ ಮನೆಯ ವಿಳಾಸವನ್ನು ಬರೆಯಿರಿ. ಮೇಲಿನ ವಿಳಾಸದಂತೆಯೇ ಇದ್ದರೆ 'ಮೇಲಿನಂತೆಯೇ' ಎಂದು ಬರೆಯಿರಿ.",
+      "ur": "اپنا مستقل گھر کا پتہ لکھیں۔ اگر یہ اوپر دیے گئے پتے جیسا ہی ہے تو 'بالائی پتے کے مطابق' لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "4 Temple Road, Demo Village, Mysuru",
+    "example_by_language": {
+      "en": "4 Temple Road, Demo Village, Mysuru",
+      "hi": "4 मंदिर मार्ग, डेमो गाँव, मैसूर",
+      "kn": "4 ದೇವಾಲಯ ರಸ್ತೆ, ಡೆಮೊ ಹಳ್ಳಿ, ಮೈಸೂರು",
+      "ur": "4 مندر روڈ، ڈیمو گاؤں، میسور"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "multiline",
+      "max_length": 240
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "city",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "city",
+        "town",
+        "city / town",
+        "village",
+        "place",
+        "city or village"
+      ],
+      "hi": [
+        "शहर",
+        "नगर",
+        "गाँव",
+        "स्थान",
+        "शहर अथवा गाँव"
+      ],
+      "kn": [
+        "ನಗರ",
+        "ಪಟ್ಟಣ",
+        "ಹಳ್ಳಿ",
+        "ಸ್ಥಳ",
+        "ಊರು"
+      ],
+      "ur": [
+        "شہر",
+        "قصبہ",
+        "گاؤں",
+        "مقام"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "city",
+        "town",
+        "village"
+      ],
+      "hi": [
+        "शहर",
+        "गाँव",
+        "नगर"
+      ],
+      "kn": [
+        "ನಗರ",
+        "ಹಳ್ಳಿ",
+        "ಊರು"
+      ],
+      "ur": [
+        "شہر",
+        "گاؤں"
+      ]
+    },
+    "simple_label": {
+      "en": "City or village",
+      "hi": "शहर या गाँव",
+      "kn": "ನಗರ ಅಥವಾ ಹಳ್ಳಿ",
+      "ur": "شہر یا گاؤں"
+    },
+    "what_to_enter": {
+      "en": "Write the name of the town or village in your address.",
+      "hi": "अपने पते में आने वाले नगर या गाँव का नाम लिखें।",
+      "kn": "ನಿಮ್ಮ ವಿಳಾಸದಲ್ಲಿ ಬರುವ ಪಟ್ಟಣ ಅಥವಾ ಹಳ್ಳಿಯ ಹೆಸರನ್ನು ಬರೆಯಿರಿ.",
+      "ur": "اپنے پتے میں آنے والے شہر یا گاؤں کا نام لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "Bengaluru",
+    "example_by_language": {
+      "en": "Bengaluru",
+      "hi": "बेंगलुरु",
+      "kn": "ಬೆಂಗಳೂರು",
+      "ur": "بنگلورو"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 60
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "district",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "district",
+        "taluk",
+        "tehsil",
+        "block",
+        "district / taluk"
+      ],
+      "hi": [
+        "जिला",
+        "तहसील",
+        "ज़िला",
+        "प्रखंड"
+      ],
+      "kn": [
+        "ಜಿಲ್ಲೆ",
+        "ತಾಲೂಕು",
+        "ಹೋಬಳಿ"
+      ],
+      "ur": [
+        "ضلع",
+        "تحصیل",
+        "بلاک"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "district",
+        "taluk",
+        "tehsil"
+      ],
+      "hi": [
+        "जिला",
+        "ज़िला",
+        "तहसील"
+      ],
+      "kn": [
+        "ಜಿಲ್ಲೆ",
+        "ತಾಲೂಕು"
+      ],
+      "ur": [
+        "ضلع",
+        "تحصیل"
+      ]
+    },
+    "simple_label": {
+      "en": "District",
+      "hi": "जिला",
+      "kn": "ಜಿಲ್ಲೆ",
+      "ur": "ضلع"
+    },
+    "what_to_enter": {
+      "en": "Write the district your address falls under, as printed on your address proof.",
+      "hi": "आपका पता जिस जिले में आता है वह लिखें, जैसा आपके पता प्रमाण पर छपा है।",
+      "kn": "ನಿಮ್ಮ ವಿಳಾಸ ಯಾವ ಜಿಲ್ಲೆಗೆ ಸೇರುತ್ತದೆ ಎಂಬುದನ್ನು ವಿಳಾಸ ಸಾಕ್ಷ್ಯದಲ್ಲಿ ಇರುವಂತೆ ಬರೆಯಿರಿ.",
+      "ur": "آپ کا پتہ جس ضلع میں آتا ہے وہ لکھیں، جیسا آپ کے پتے کے ثبوت پر چھپا ہے۔"
+    },
+    "why_needed": {},
+    "example": "Bengaluru Urban",
+    "example_by_language": {
+      "en": "Bengaluru Urban",
+      "hi": "बेंगलुरु शहरी",
+      "kn": "ಬೆಂಗಳೂರು ನಗರ",
+      "ur": "بنگلورو شہری"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 60
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "state",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "state",
+        "state / ut",
+        "province",
+        "state or union territory"
+      ],
+      "hi": [
+        "राज्य",
+        "प्रदेश",
+        "राज्य अथवा केंद्रशासित प्रदेश"
+      ],
+      "kn": [
+        "ರಾಜ್ಯ",
+        "ರಾಜ್ಯ ಅಥವಾ ಕೇಂದ್ರಾಡಳಿತ ಪ್ರದೇಶ"
+      ],
+      "ur": [
+        "ریاست",
+        "صوبہ",
+        "ریاست یا مرکزی علاقہ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "state",
+        "province"
+      ],
+      "hi": [
+        "राज्य",
+        "प्रदेश"
+      ],
+      "kn": [
+        "ರಾಜ್ಯ"
+      ],
+      "ur": [
+        "ریاست",
+        "صوبہ"
+      ]
+    },
+    "simple_label": {
+      "en": "State",
+      "hi": "राज्य",
+      "kn": "ರಾಜ್ಯ",
+      "ur": "ریاست"
+    },
+    "what_to_enter": {
+      "en": "Write the state or union territory of your address.",
+      "hi": "अपने पते का राज्य या केंद्रशासित प्रदेश लिखें।",
+      "kn": "ನಿಮ್ಮ ವಿಳಾಸದ ರಾಜ್ಯ ಅಥವಾ ಕೇಂದ್ರಾಡಳಿತ ಪ್ರದೇಶವನ್ನು ಬರೆಯಿರಿ.",
+      "ur": "اپنے پتے کی ریاست یا مرکزی علاقہ لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "Karnataka",
+    "example_by_language": {
+      "en": "Karnataka",
+      "hi": "कर्नाटक",
+      "kn": "ಕರ್ನಾಟಕ",
+      "ur": "کرناٹک"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 60
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "pincode",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "pin code",
+        "pincode",
+        "pin",
+        "postal code",
+        "zip code",
+        "post code"
+      ],
+      "hi": [
+        "पिन कोड",
+        "डाक कोड",
+        "पिनकोड"
+      ],
+      "kn": [
+        "ಪಿನ್ ಕೋಡ್",
+        "ಅಂಚೆ ಸಂಖ್ಯೆ",
+        "ಪಿನ್‌ಕೋಡ್"
+      ],
+      "ur": [
+        "پن کوڈ",
+        "ڈاک کوڈ",
+        "پنکوڈ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "pin",
+        "pincode",
+        "postal",
+        "zip"
+      ],
+      "hi": [
+        "पिन",
+        "कोड"
+      ],
+      "kn": [
+        "ಪಿನ್",
+        "ಕೋಡ್"
+      ],
+      "ur": [
+        "پن",
+        "کوڈ"
+      ]
+    },
+    "simple_label": {
+      "en": "PIN code",
+      "hi": "पिन कोड",
+      "kn": "ಪಿನ್ ಕೋಡ್",
+      "ur": "پن کوڈ"
+    },
+    "what_to_enter": {
+      "en": "Write the six-digit postal code of your address. It is printed on your address proof or available at your post office.",
+      "hi": "अपने पते का छह अंकों का डाक कोड लिखें। यह आपके पता प्रमाण पर छपा होता है या डाकघर से मिल सकता है।",
+      "kn": "ನಿಮ್ಮ ವಿಳಾಸದ ಆರು ಅಂಕಿಗಳ ಅಂಚೆ ಕೋಡ್ ಬರೆಯಿರಿ. ಇದು ವಿಳಾಸ ಸಾಕ್ಷ್ಯದಲ್ಲಿ ಮುದ್ರಿತವಾಗಿರುತ್ತದೆ ಅಥವಾ ಅಂಚೆ ಕಚೇರಿಯಲ್ಲಿ ಸಿಗುತ್ತದೆ.",
+      "ur": "اپنے پتے کا چھ ہندسوں کا ڈاک کوڈ لکھیں۔ یہ آپ کے پتے کے ثبوت پر چھپا ہوتا ہے یا ڈاک خانے سے مل سکتا ہے۔"
+    },
+    "why_needed": {},
+    "example": "560001",
+    "example_by_language": {},
+    "format_hint": {
+      "en": "6 digits",
+      "hi": "6 अंक",
+      "kn": "6 ಅಂಕಿಗಳು",
+      "ur": "6 ہندسے"
+    },
+    "validation": {
+      "kind": "pincode_in",
+      "format": "6 digits"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "mobile_number",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "mobile number",
+        "mobile no",
+        "phone number",
+        "contact number",
+        "mobile",
+        "cell number",
+        "contact no",
+        "telephone number",
+        "phone no"
+      ],
+      "hi": [
+        "मोबाइल नंबर",
+        "मोबाइल संख्या",
+        "दूरभाष संख्या",
+        "संपर्क नंबर",
+        "फ़ोन नंबर",
+        "मोबाइल"
+      ],
+      "kn": [
+        "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",
+        "ದೂರವಾಣಿ ಸಂಖ್ಯೆ",
+        "ಸಂಪರ್ಕ ಸಂಖ್ಯೆ",
+        "ಫೋನ್ ಸಂಖ್ಯೆ",
+        "ಮೊಬೈಲ್"
+      ],
+      "ur": [
+        "موبائل نمبر",
+        "فون نمبر",
+        "رابطہ نمبر",
+        "ٹیلیفون نمبر",
+        "موبائل"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "mobile",
+        "phone",
+        "contact"
+      ],
+      "hi": [
+        "मोबाइल",
+        "फ़ोन",
+        "संपर्क"
+      ],
+      "kn": [
+        "ಮೊಬೈಲ್",
+        "ಫೋನ್",
+        "ಸಂಪರ್ಕ"
+      ],
+      "ur": [
+        "موبائل",
+        "فون",
+        "رابطہ"
+      ]
+    },
+    "simple_label": {
+      "en": "Mobile number",
+      "hi": "मोबाइल नंबर",
+      "kn": "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",
+      "ur": "موبائل نمبر"
+    },
+    "what_to_enter": {
+      "en": "Write a working mobile number you can answer. Indian numbers are ten digits without the country code.",
+      "hi": "वह चालू मोबाइल नंबर लिखें जिस पर आप उत्तर दे सकें। भारतीय नंबर देश कोड के बिना दस अंकों के होते हैं।",
+      "kn": "ನೀವು ಉತ್ತರಿಸಬಹುದಾದ ಚಾಲ್ತಿಯಲ್ಲಿರುವ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಬರೆಯಿರಿ. ಭಾರತೀಯ ಸಂಖ್ಯೆಗಳು ದೇಶ ಸಂಕೇತವಿಲ್ಲದೆ ಹತ್ತು ಅಂಕಿಗಳಿರುತ್ತವೆ.",
+      "ur": "وہ فعال موبائل نمبر لکھیں جس پر آپ جواب دے سکیں۔ بھارتی نمبر ملکی کوڈ کے بغیر دس ہندسوں کے ہوتے ہیں۔"
+    },
+    "why_needed": {
+      "en": "The office uses this number to send updates about your application.",
+      "hi": "कार्यालय इस नंबर पर आपके आवेदन की सूचनाएँ भेजता है।",
+      "kn": "ಕಚೇರಿ ಈ ಸಂಖ್ಯೆಗೆ ನಿಮ್ಮ ಅರ್ಜಿಯ ಮಾಹಿತಿ ಕಳುಹಿಸುತ್ತದೆ.",
+      "ur": "دفتر اس نمبر پر آپ کی درخواست کی اطلاعات بھیجتا ہے۔"
+    },
+    "example": "9876500000",
+    "example_by_language": {},
+    "format_hint": {
+      "en": "10 digits",
+      "hi": "10 अंक",
+      "kn": "10 ಅಂಕಿಗಳು",
+      "ur": "10 ہندسے"
+    },
+    "validation": {
+      "kind": "mobile_in",
+      "format": "10 digits"
+    },
+    "priority": 1.05,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "email",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "email",
+        "email id",
+        "e-mail",
+        "email address",
+        "e mail id"
+      ],
+      "hi": [
+        "ईमेल",
+        "ईमेल पता",
+        "ई-मेल",
+        "ईमेल आईडी"
+      ],
+      "kn": [
+        "ಇಮೇಲ್",
+        "ಇಮೇಲ್ ವಿಳಾಸ",
+        "ಇ-ಮೇಲ್"
+      ],
+      "ur": [
+        "ای میل",
+        "ای میل پتہ",
+        "ای میل آئی ڈی"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "email",
+        "mail"
+      ],
+      "hi": [
+        "ईमेल",
+        "मेल"
+      ],
+      "kn": [
+        "ಇಮೇಲ್",
+        "ಮೇಲ್"
+      ],
+      "ur": [
+        "میل"
+      ]
+    },
+    "simple_label": {
+      "en": "Email address",
+      "hi": "ईमेल पता",
+      "kn": "ಇಮೇಲ್ ವಿಳಾಸ",
+      "ur": "ای میل پتہ"
+    },
+    "what_to_enter": {
+      "en": "Write an email address you check regularly. Include the part after the @ sign.",
+      "hi": "वह ईमेल पता लिखें जिसे आप नियमित देखते हैं। @ चिह्न के बाद का भाग भी लिखें।",
+      "kn": "ನೀವು ನಿಯಮಿತವಾಗಿ ಪರಿಶೀಲಿಸುವ ಇಮೇಲ್ ವಿಳಾಸ ಬರೆಯಿರಿ. @ ಚಿಹ್ನೆಯ ನಂತರದ ಭಾಗವನ್ನೂ ಬರೆಯಿರಿ.",
+      "ur": "وہ ای میل پتہ لکھیں جو آپ باقاعدگی سے دیکھتے ہیں۔ @ کے بعد کا حصہ بھی لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "ananya.demo@example.com",
+    "example_by_language": {},
+    "format_hint": {
+      "en": "name@example.com",
+      "hi": "name@example.com",
+      "kn": "name@example.com",
+      "ur": "name@example.com"
+    },
+    "validation": {
+      "kind": "email",
+      "format": "name@example.com"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "alternate_phone",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "alternate number",
+        "alternate mobile",
+        "landline number",
+        "emergency contact number",
+        "secondary phone"
+      ],
+      "hi": [
+        "वैकल्पिक नंबर",
+        "अन्य मोबाइल नंबर",
+        "लैंडलाइन नंबर",
+        "आपातकालीन संपर्क नंबर"
+      ],
+      "kn": [
+        "ಪರ್ಯಾಯ ಸಂಖ್ಯೆ",
+        "ಇತರ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",
+        "ಸ್ಥಿರ ದೂರವಾಣಿ ಸಂಖ್ಯೆ",
+        "ತುರ್ತು ಸಂಪರ್ಕ ಸಂಖ್ಯೆ"
+      ],
+      "ur": [
+        "متبادل نمبر",
+        "دوسرا موبائل نمبر",
+        "لینڈ لائن نمبر",
+        "ہنگامی رابطہ نمبر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "alternate",
+        "landline",
+        "emergency"
+      ],
+      "hi": [
+        "वैकल्पिक",
+        "लैंडलाइन",
+        "आपातकालीन"
+      ],
+      "kn": [
+        "ಪರ್ಯಾಯ",
+        "ತುರ್ತು"
+      ],
+      "ur": [
+        "متبادل",
+        "ہنگامی"
+      ]
+    },
+    "simple_label": {
+      "en": "Alternate phone number",
+      "hi": "वैकल्पिक फ़ोन नंबर",
+      "kn": "ಪರ್ಯಾಯ ದೂರವಾಣಿ ಸಂಖ್ಯೆ",
+      "ur": "متبادل فون نمبر"
+    },
+    "what_to_enter": {
+      "en": "Write a second number where you can be reached if the first one does not answer. Leave it blank if you do not have one.",
+      "hi": "यदि पहला नंबर न लगे तो जिस दूसरे नंबर पर आप संपर्क में आ सकें वह लिखें। यदि ऐसा नंबर नहीं है तो खाली छोड़ दें।",
+      "kn": "ಮೊದಲ ಸಂಖ್ಯೆ ಸಿಗದಿದ್ದರೆ ನಿಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಬಹುದಾದ ಎರಡನೇ ಸಂಖ್ಯೆ ಬರೆಯಿರಿ. ಇಲ್ಲದಿದ್ದರೆ ಖಾಲಿ ಬಿಡಿ.",
+      "ur": "اگر پہلا نمبر نہ ملے تو جس دوسرے نمبر پر آپ سے رابطہ ہو سکے وہ لکھیں۔ اگر ایسا نمبر نہیں ہے تو خالی چھوڑ دیں۔"
+    },
+    "why_needed": {},
+    "example": "08012345678",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "phone",
+      "optional": true
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "aadhaar_number",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "aadhaar number",
+        "aadhar number",
+        "aadhaar no",
+        "uid number",
+        "aadhaar",
+        "aadhaar card number"
+      ],
+      "hi": [
+        "आधार संख्या",
+        "आधार नंबर",
+        "आधार",
+        "आधार कार्ड संख्या"
+      ],
+      "kn": [
+        "ಆಧಾರ್ ಸಂಖ್ಯೆ",
+        "ಆಧಾರ್ ನಂಬರ್",
+        "ಆಧಾರ್",
+        "ಆಧಾರ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆ"
+      ],
+      "ur": [
+        "آدھار نمبر",
+        "آدھار",
+        "آدھار کارڈ نمبر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "aadhaar",
+        "aadhar",
+        "uid"
+      ],
+      "hi": [
+        "आधार"
+      ],
+      "kn": [
+        "ಆಧಾರ್"
+      ],
+      "ur": [
+        "آدھار"
+      ]
+    },
+    "simple_label": {
+      "en": "Aadhaar number",
+      "hi": "आधार संख्या",
+      "kn": "ಆಧಾರ್ ಸಂಖ್ಯೆ",
+      "ur": "آدھار نمبر"
+    },
+    "what_to_enter": {
+      "en": "Write the twelve-digit number printed on your Aadhaar card. Copy the number digit by digit from the card itself. Do not write it from memory.",
+      "hi": "अपने आधार कार्ड पर छपी बारह अंकों की संख्या लिखें। संख्या को कार्ड से देखकर अंक दर अंक लिखें। स्मृति से न लिखें।",
+      "kn": "ನಿಮ್ಮ ಆಧಾರ್ ಕಾರ್ಡ್‌ನಲ್ಲಿ ಮುದ್ರಿತವಾದ ಹನ್ನೆರಡು ಅಂಕಿಗಳ ಸಂಖ್ಯೆಯನ್ನು ಬರೆಯಿರಿ. ಸಂಖ್ಯೆಯನ್ನು ಕಾರ್ಡ್‌ನಿಂದಲೇ ನೋಡಿ ಅಂಕಿ ಅಂಕಿಯಾಗಿ ಬರೆಯಿರಿ. ನೆನಪಿನಿಂದ ಬರೆಯಬೇಡಿ.",
+      "ur": "اپنے آدھار کارڈ پر چھپا بارہ ہندسوں کا نمبر لکھیں۔ نمبر کو کارڈ سے دیکھ کر ہندسہ بہ ہندسہ لکھیں۔ یاد سے نہ لکھیں۔"
+    },
+    "why_needed": {
+      "en": "Offices use this number to check your identity against official records.",
+      "hi": "कार्यालय इस संख्या से आधिकारिक अभिलेखों में आपकी पहचान जाँचते हैं।",
+      "kn": "ಕಚೇರಿಗಳು ಈ ಸಂಖ್ಯೆಯಿಂದ ಅಧಿಕೃತ ದಾಖಲೆಗಳಲ್ಲಿ ನಿಮ್ಮ ಗುರುತನ್ನು ಪರಿಶೀಲಿಸುತ್ತವೆ.",
+      "ur": "دفاتر اس نمبر سے سرکاری ریکارڈ میں آپ کی شناخت جانچتے ہیں۔"
+    },
+    "example": "9999 8888 7777",
+    "example_by_language": {},
+    "format_hint": {
+      "en": "12 digits",
+      "hi": "12 अंक",
+      "kn": "12 ಅಂಕಿಗಳು",
+      "ur": "12 ہندسے"
+    },
+    "validation": {
+      "kind": "aadhaar_in",
+      "format": "12 digits"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "pan_number",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "pan number",
+        "pan",
+        "pan card number",
+        "permanent account number",
+        "pan no"
+      ],
+      "hi": [
+        "पैन संख्या",
+        "पैन नंबर",
+        "पैन",
+        "स्थायी खाता संख्या"
+      ],
+      "kn": [
+        "ಪ್ಯಾನ್ ಸಂಖ್ಯೆ",
+        "ಪ್ಯಾನ್",
+        "ಶಾಶ್ವತ ಖಾತೆ ಸಂಖ್ಯೆ"
+      ],
+      "ur": [
+        "پین نمبر",
+        "پین",
+        "مستقل اکاؤنٹ نمبر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "pan"
+      ],
+      "hi": [
+        "पैन"
+      ],
+      "kn": [
+        "ಪ್ಯಾನ್"
+      ],
+      "ur": [
+        "پین"
+      ]
+    },
+    "simple_label": {
+      "en": "PAN number",
+      "hi": "पैन संख्या",
+      "kn": "ಪ್ಯಾನ್ ಸಂಖ್ಯೆ",
+      "ur": "پین نمبر"
+    },
+    "what_to_enter": {
+      "en": "Write the ten-character code printed on your PAN card. Copy the number digit by digit from the card itself. Do not write it from memory.",
+      "hi": "अपने पैन कार्ड पर छपा दस अक्षरों का कोड लिखें। संख्या को कार्ड से देखकर अंक दर अंक लिखें। स्मृति से न लिखें।",
+      "kn": "ನಿಮ್ಮ ಪ್ಯಾನ್ ಕಾರ್ಡ್‌ನಲ್ಲಿ ಮುದ್ರಿತವಾದ ಹತ್ತು ಅಕ್ಷರಗಳ ಸಂಕೇತವನ್ನು ಬರೆಯಿರಿ. ಸಂಖ್ಯೆಯನ್ನು ಕಾರ್ಡ್‌ನಿಂದಲೇ ನೋಡಿ ಅಂಕಿ ಅಂಕಿಯಾಗಿ ಬರೆಯಿರಿ. ನೆನಪಿನಿಂದ ಬರೆಯಬೇಡಿ.",
+      "ur": "اپنے پین کارڈ پر چھپا دس حروف کا کوڈ لکھیں۔ نمبر کو کارڈ سے دیکھ کر ہندسہ بہ ہندسہ لکھیں۔ یاد سے نہ لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "ABCDE1234F",
+    "example_by_language": {},
+    "format_hint": {
+      "en": "5 letters, 4 digits, 1 letter",
+      "hi": "5 अक्षर, 4 अंक, 1 अक्षर",
+      "kn": "5 ಅಕ್ಷರ, 4 ಅಂಕಿ, 1 ಅಕ್ಷರ",
+      "ur": "5 حروف، 4 ہندسے، 1 حرف"
+    },
+    "validation": {
+      "kind": "pan_in",
+      "format": "ABCDE1234F"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "voter_id",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "voter id",
+        "epic number",
+        "voter id number",
+        "election card number",
+        "voter card no"
+      ],
+      "hi": [
+        "मतदाता पहचान पत्र संख्या",
+        "वोटर आईडी",
+        "निर्वाचन कार्ड संख्या"
+      ],
+      "kn": [
+        "ಮತದಾರರ ಗುರುತಿನ ಚೀಟಿ ಸಂಖ್ಯೆ",
+        "ವೋಟರ್ ಐಡಿ",
+        "ಚುನಾವಣಾ ಕಾರ್ಡ್ ಸಂಖ್ಯೆ"
+      ],
+      "ur": [
+        "ووٹر شناختی نمبر",
+        "ووٹر آئی ڈی",
+        "الیکشن کارڈ نمبر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "voter",
+        "epic",
+        "election"
+      ],
+      "hi": [
+        "मतदाता",
+        "वोटर",
+        "निर्वाचन"
+      ],
+      "kn": [
+        "ಮತದಾರ",
+        "ಚುನಾವಣಾ"
+      ],
+      "ur": [
+        "ووٹر",
+        "الیکشن"
+      ]
+    },
+    "simple_label": {
+      "en": "Voter ID number",
+      "hi": "मतदाता पहचान संख्या",
+      "kn": "ಮತದಾರರ ಗುರುತಿನ ಸಂಖ್ಯೆ",
+      "ur": "ووٹر شناختی نمبر"
+    },
+    "what_to_enter": {
+      "en": "Write the number printed on your voter identity card. Copy the number digit by digit from the card itself. Do not write it from memory.",
+      "hi": "अपने मतदाता पहचान पत्र पर छपी संख्या लिखें। संख्या को कार्ड से देखकर अंक दर अंक लिखें। स्मृति से न लिखें।",
+      "kn": "ನಿಮ್ಮ ಮತದಾರರ ಗುರುತಿನ ಚೀಟಿಯಲ್ಲಿ ಮುದ್ರಿತವಾದ ಸಂಖ್ಯೆಯನ್ನು ಬರೆಯಿರಿ. ಸಂಖ್ಯೆಯನ್ನು ಕಾರ್ಡ್‌ನಿಂದಲೇ ನೋಡಿ ಅಂಕಿ ಅಂಕಿಯಾಗಿ ಬರೆಯಿರಿ. ನೆನಪಿನಿಂದ ಬರೆಯಬೇಡಿ.",
+      "ur": "اپنے ووٹر شناختی کارڈ پر چھپا نمبر لکھیں۔ نمبر کو کارڈ سے دیکھ کر ہندسہ بہ ہندسہ لکھیں۔ یاد سے نہ لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "DEM1234567",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "alphanumeric",
+      "max_length": 20,
+      "optional": true
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "passport_number",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "passport number",
+        "passport no",
+        "passport"
+      ],
+      "hi": [
+        "पासपोर्ट संख्या",
+        "पासपोर्ट नंबर",
+        "पासपोर्ट"
+      ],
+      "kn": [
+        "ಪಾಸ್‌ಪೋರ್ಟ್ ಸಂಖ್ಯೆ",
+        "ಪಾಸ್‌ಪೋರ್ಟ್"
+      ],
+      "ur": [
+        "پاسپورٹ نمبر",
+        "پاسپورٹ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "passport"
+      ],
+      "hi": [
+        "पासपोर्ट"
+      ],
+      "kn": [
+        "ಪಾಸ್‌ಪೋರ್ಟ್"
+      ],
+      "ur": [
+        "پاسپورٹ"
+      ]
+    },
+    "simple_label": {
+      "en": "Passport number",
+      "hi": "पासपोर्ट संख्या",
+      "kn": "ಪಾಸ್‌ಪೋರ್ಟ್ ಸಂಖ್ಯೆ",
+      "ur": "پاسپورٹ نمبر"
+    },
+    "what_to_enter": {
+      "en": "Write the passport number from the first page of your passport. Copy the number digit by digit from the card itself. Do not write it from memory.",
+      "hi": "अपने पासपोर्ट के पहले पृष्ठ से पासपोर्ट संख्या लिखें। संख्या को कार्ड से देखकर अंक दर अंक लिखें। स्मृति से न लिखें।",
+      "kn": "ನಿಮ್ಮ ಪಾಸ್‌ಪೋರ್ಟ್‌ನ ಮೊದಲ ಪುಟದಿಂದ ಪಾಸ್‌ಪೋರ್ಟ್ ಸಂಖ್ಯೆಯನ್ನು ಬರೆಯಿರಿ. ಸಂಖ್ಯೆಯನ್ನು ಕಾರ್ಡ್‌ನಿಂದಲೇ ನೋಡಿ ಅಂಕಿ ಅಂಕಿಯಾಗಿ ಬರೆಯಿರಿ. ನೆನಪಿನಿಂದ ಬರೆಯಬೇಡಿ.",
+      "ur": "اپنے پاسپورٹ کے پہلے صفحے سے پاسپورٹ نمبر لکھیں۔ نمبر کو کارڈ سے دیکھ کر ہندسہ بہ ہندسہ لکھیں۔ یاد سے نہ لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "Z1234567",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "alphanumeric",
+      "max_length": 20,
+      "optional": true
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "ration_card",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "ration card number",
+        "ration card no",
+        "pds card number",
+        "family card number"
+      ],
+      "hi": [
+        "राशन कार्ड संख्या",
+        "राशन कार्ड नंबर",
+        "परिवार कार्ड संख्या"
+      ],
+      "kn": [
+        "ಪಡಿತರ ಚೀಟಿ ಸಂಖ್ಯೆ",
+        "ರೇಷನ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆ",
+        "ಕುಟುಂಬ ಚೀಟಿ ಸಂಖ್ಯೆ"
+      ],
+      "ur": [
+        "راشن کارڈ نمبر",
+        "خاندانی کارڈ نمبر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "ration",
+        "pds"
+      ],
+      "hi": [
+        "राशन"
+      ],
+      "kn": [
+        "ಪಡಿತರ",
+        "ರೇಷನ್"
+      ],
+      "ur": [
+        "راشن"
+      ]
+    },
+    "simple_label": {
+      "en": "Ration card number",
+      "hi": "राशन कार्ड संख्या",
+      "kn": "ಪಡಿತರ ಚೀಟಿ ಸಂಖ್ಯೆ",
+      "ur": "راشن کارڈ نمبر"
+    },
+    "what_to_enter": {
+      "en": "Write the number printed on your family's ration card. Copy the number digit by digit from the card itself. Do not write it from memory.",
+      "hi": "अपने परिवार के राशन कार्ड पर छपी संख्या लिखें। संख्या को कार्ड से देखकर अंक दर अंक लिखें। स्मृति से न लिखें।",
+      "kn": "ನಿಮ್ಮ ಕುಟುಂಬದ ಪಡಿತರ ಚೀಟಿಯಲ್ಲಿ ಮುದ್ರಿತವಾದ ಸಂಖ್ಯೆಯನ್ನು ಬರೆಯಿರಿ. ಸಂಖ್ಯೆಯನ್ನು ಕಾರ್ಡ್‌ನಿಂದಲೇ ನೋಡಿ ಅಂಕಿ ಅಂಕಿಯಾಗಿ ಬರೆಯಿರಿ. ನೆನಪಿನಿಂದ ಬರೆಯಬೇಡಿ.",
+      "ur": "اپنے خاندان کے راشن کارڈ پر چھپا نمبر لکھیں۔ نمبر کو کارڈ سے دیکھ کر ہندسہ بہ ہندسہ لکھیں۔ یاد سے نہ لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "DEM0001234",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "alphanumeric",
+      "max_length": 24,
+      "optional": true
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "driving_licence",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "driving licence number",
+        "driving license number",
+        "dl number",
+        "licence number"
+      ],
+      "hi": [
+        "ड्राइविंग लाइसेंस संख्या",
+        "चालक अनुज्ञप्ति संख्या",
+        "लाइसेंस संख्या"
+      ],
+      "kn": [
+        "ಚಾಲನಾ ಪರವಾನಗಿ ಸಂಖ್ಯೆ",
+        "ಡ್ರೈವಿಂಗ್ ಲೈಸೆನ್ಸ್ ಸಂಖ್ಯೆ"
+      ],
+      "ur": [
+        "ڈرائیونگ لائسنس نمبر",
+        "لائسنس نمبر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "driving",
+        "licence",
+        "license"
+      ],
+      "hi": [
+        "लाइसेंस",
+        "अनुज्ञप्ति"
+      ],
+      "kn": [
+        "ಪರವಾನಗಿ",
+        "ಲೈಸೆನ್ಸ್"
+      ],
+      "ur": [
+        "لائسنس"
+      ]
+    },
+    "simple_label": {
+      "en": "Driving licence number",
+      "hi": "ड्राइविंग लाइसेंस संख्या",
+      "kn": "ಚಾಲನಾ ಪರವಾನಗಿ ಸಂಖ್ಯೆ",
+      "ur": "ڈرائیونگ لائسنس نمبر"
+    },
+    "what_to_enter": {
+      "en": "Write the licence number from your driving licence card. Copy the number digit by digit from the card itself. Do not write it from memory.",
+      "hi": "अपने ड्राइविंग लाइसेंस कार्ड से लाइसेंस संख्या लिखें। संख्या को कार्ड से देखकर अंक दर अंक लिखें। स्मृति से न लिखें।",
+      "kn": "ನಿಮ್ಮ ಚಾಲನಾ ಪರವಾನಗಿ ಕಾರ್ಡ್‌ನಿಂದ ಪರವಾನಗಿ ಸಂಖ್ಯೆಯನ್ನು ಬರೆಯಿರಿ. ಸಂಖ್ಯೆಯನ್ನು ಕಾರ್ಡ್‌ನಿಂದಲೇ ನೋಡಿ ಅಂಕಿ ಅಂಕಿಯಾಗಿ ಬರೆಯಿರಿ. ನೆನಪಿನಿಂದ ಬರೆಯಬೇಡಿ.",
+      "ur": "اپنے ڈرائیونگ لائسنس کارڈ سے لائسنس نمبر لکھیں۔ نمبر کو کارڈ سے دیکھ کر ہندسہ بہ ہندسہ لکھیں۔ یاد سے نہ لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "KA0120110001234",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "alphanumeric",
+      "max_length": 24,
+      "optional": true
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "application_number",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "application number",
+        "application no",
+        "reference number",
+        "acknowledgement number",
+        "registration number",
+        "enrolment number",
+        "token number",
+        "file number"
+      ],
+      "hi": [
+        "आवेदन संख्या",
+        "संदर्भ संख्या",
+        "पंजीकरण संख्या",
+        "पावती संख्या",
+        "फाइल संख्या"
+      ],
+      "kn": [
+        "ಅರ್ಜಿ ಸಂಖ್ಯೆ",
+        "ಉಲ್ಲೇಖ ಸಂಖ್ಯೆ",
+        "ನೋಂದಣಿ ಸಂಖ್ಯೆ",
+        "ಸ್ವೀಕೃತಿ ಸಂಖ್ಯೆ",
+        "ಕಡತ ಸಂಖ್ಯೆ"
+      ],
+      "ur": [
+        "درخواست نمبر",
+        "حوالہ نمبر",
+        "رجسٹریشن نمبر",
+        "رسید نمبر",
+        "فائل نمبر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "application",
+        "reference",
+        "registration",
+        "acknowledgement"
+      ],
+      "hi": [
+        "आवेदन",
+        "संदर्भ",
+        "पंजीकरण"
+      ],
+      "kn": [
+        "ಅರ್ಜಿ",
+        "ಉಲ್ಲೇಖ",
+        "ನೋಂದಣಿ"
+      ],
+      "ur": [
+        "درخواست",
+        "حوالہ",
+        "رجسٹریشن"
+      ]
+    },
+    "simple_label": {
+      "en": "Application or reference number",
+      "hi": "आवेदन अथवा संदर्भ संख्या",
+      "kn": "ಅರ್ಜಿ ಅಥವಾ ಉಲ್ಲೇಖ ಸಂಖ್ಯೆ",
+      "ur": "درخواست یا حوالہ نمبر"
+    },
+    "what_to_enter": {
+      "en": "Write the number the office already gave you for this application. If no number has been given to you yet, leave this blank for the office to fill.",
+      "hi": "इस आवेदन के लिए कार्यालय ने आपको जो संख्या पहले दी है वह लिखें। यदि अभी कोई संख्या नहीं मिली है तो इसे कार्यालय के भरने के लिए खाली छोड़ दें।",
+      "kn": "ಈ ಅರ್ಜಿಗೆ ಕಚೇರಿ ಈಗಾಗಲೇ ನೀಡಿರುವ ಸಂಖ್ಯೆಯನ್ನು ಬರೆಯಿರಿ. ಇನ್ನೂ ಸಂಖ್ಯೆ ಸಿಗದಿದ್ದರೆ ಕಚೇರಿ ಭರಿಸಲು ಖಾಲಿ ಬಿಡಿ.",
+      "ur": "اس درخواست کے لیے دفتر نے آپ کو جو نمبر پہلے دیا ہے وہ لکھیں۔ اگر ابھی کوئی نمبر نہیں ملا تو اسے دفتر کے بھرنے کے لیے خالی چھوڑ دیں۔"
+    },
+    "why_needed": {},
+    "example": "APP/2026/000123",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "alphanumeric",
+      "max_length": 32,
+      "optional": true
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "bank_name",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "bank name",
+        "name of bank",
+        "bank"
+      ],
+      "hi": [
+        "बैंक का नाम",
+        "बैंक"
+      ],
+      "kn": [
+        "ಬ್ಯಾಂಕ್ ಹೆಸರು",
+        "ಬ್ಯಾಂಕಿನ ಹೆಸರು",
+        "ಬ್ಯಾಂಕ್"
+      ],
+      "ur": [
+        "بینک کا نام",
+        "بینک"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "bank"
+      ],
+      "hi": [
+        "बैंक"
+      ],
+      "kn": [
+        "ಬ್ಯಾಂಕ್"
+      ],
+      "ur": [
+        "بینک"
+      ]
+    },
+    "simple_label": {
+      "en": "Bank name",
+      "hi": "बैंक का नाम",
+      "kn": "ಬ್ಯಾಂಕ್ ಹೆಸರು",
+      "ur": "بینک کا نام"
+    },
+    "what_to_enter": {
+      "en": "Write the name of the bank that holds your account, as printed on your passbook or cheque book.",
+      "hi": "जिस बैंक में आपका खाता है उसका नाम लिखें, जैसा आपकी पासबुक या चेक बुक पर छपा है।",
+      "kn": "ನಿಮ್ಮ ಖಾತೆ ಇರುವ ಬ್ಯಾಂಕಿನ ಹೆಸರನ್ನು ಪಾಸ್‌ಬುಕ್ ಅಥವಾ ಚೆಕ್ ಪುಸ್ತಕದಲ್ಲಿ ಇರುವಂತೆ ಬರೆಯಿರಿ.",
+      "ur": "جس بینک میں آپ کا اکاؤنٹ ہے اس کا نام لکھیں، جیسا آپ کی پاس بک یا چیک بک پر چھپا ہے۔"
+    },
+    "why_needed": {},
+    "example": "Demo National Bank",
+    "example_by_language": {
+      "en": "Demo National Bank",
+      "hi": "डेमो नेशनल बैंक",
+      "kn": "ಡೆಮೊ ನ್ಯಾಷನಲ್ ಬ್ಯಾಂಕ್",
+      "ur": "ڈیمو نیشنل بینک"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 80
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "branch_name",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "branch",
+        "branch name",
+        "branch address",
+        "bank branch"
+      ],
+      "hi": [
+        "शाखा",
+        "शाखा का नाम",
+        "बैंक शाखा"
+      ],
+      "kn": [
+        "ಶಾಖೆ",
+        "ಶಾಖೆಯ ಹೆಸರು",
+        "ಬ್ಯಾಂಕ್ ಶಾಖೆ"
+      ],
+      "ur": [
+        "شاخ",
+        "برانچ",
+        "برانچ کا نام"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "branch"
+      ],
+      "hi": [
+        "शाखा"
+      ],
+      "kn": [
+        "ಶಾಖೆ"
+      ],
+      "ur": [
+        "شاخ",
+        "برانچ"
+      ]
+    },
+    "simple_label": {
+      "en": "Branch",
+      "hi": "शाखा",
+      "kn": "ಶಾಖೆ",
+      "ur": "برانچ"
+    },
+    "what_to_enter": {
+      "en": "Write the branch where your account was opened. The branch name is on your passbook.",
+      "hi": "जिस शाखा में आपका खाता खुला है उसका नाम लिखें। शाखा का नाम आपकी पासबुक पर होता है।",
+      "kn": "ನಿಮ್ಮ ಖಾತೆ ತೆರೆದಿರುವ ಶಾಖೆಯನ್ನು ಬರೆಯಿರಿ. ಶಾಖೆಯ ಹೆಸರು ಪಾಸ್‌ಬುಕ್‌ನಲ್ಲಿದೆ.",
+      "ur": "جس شاخ میں آپ کا اکاؤنٹ کھلا ہے اس کا نام لکھیں۔ شاخ کا نام آپ کی پاس بک پر ہوتا ہے۔"
+    },
+    "why_needed": {},
+    "example": "Demo Nagar Branch",
+    "example_by_language": {
+      "en": "Demo Nagar Branch",
+      "hi": "डेमो नगर शाखा",
+      "kn": "ಡೆಮೊ ನಗರ ಶಾಖೆ",
+      "ur": "ڈیمو نگر برانچ"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 80
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "bank_account_number",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "account number",
+        "account no",
+        "bank account number",
+        "a/c number",
+        "a/c no",
+        "savings account number"
+      ],
+      "hi": [
+        "खाता संख्या",
+        "बैंक खाता संख्या",
+        "खाता नंबर"
+      ],
+      "kn": [
+        "ಖಾತೆ ಸಂಖ್ಯೆ",
+        "ಬ್ಯಾಂಕ್ ಖಾತೆ ಸಂಖ್ಯೆ",
+        "ಅಕೌಂಟ್ ನಂಬರ್"
+      ],
+      "ur": [
+        "اکاؤنٹ نمبر",
+        "بینک اکاؤنٹ نمبر",
+        "کھاتہ نمبر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "account"
+      ],
+      "hi": [
+        "खाता"
+      ],
+      "kn": [
+        "ಖಾತೆ",
+        "ಅಕೌಂಟ್"
+      ],
+      "ur": [
+        "اکاؤنٹ",
+        "کھاتہ"
+      ]
+    },
+    "simple_label": {
+      "en": "Bank account number",
+      "hi": "बैंक खाता संख्या",
+      "kn": "ಬ್ಯಾಂಕ್ ಖಾತೆ ಸಂಖ್ಯೆ",
+      "ur": "بینک اکاؤنٹ نمبر"
+    },
+    "what_to_enter": {
+      "en": "Copy your account number digit by digit from your passbook or cheque book. Check it twice before you write it on the official form.",
+      "hi": "अपनी पासबुक या चेक बुक से खाता संख्या अंक दर अंक लिखें। आधिकारिक फ़ॉर्म पर लिखने से पहले दो बार जाँच लें।",
+      "kn": "ಪಾಸ್‌ಬುಕ್ ಅಥವಾ ಚೆಕ್ ಪುಸ್ತಕದಿಂದ ಖಾತೆ ಸಂಖ್ಯೆಯನ್ನು ಅಂಕಿ ಅಂಕಿಯಾಗಿ ನಕಲಿಸಿ. ಅಧಿಕೃತ ಅರ್ಜಿಯಲ್ಲಿ ಬರೆಯುವ ಮೊದಲು ಎರಡು ಬಾರಿ ಪರಿಶೀಲಿಸಿ.",
+      "ur": "اپنی پاس بک یا چیک بک سے اکاؤنٹ نمبر ہندسہ بہ ہندسہ لکھیں۔ سرکاری فارم پر لکھنے سے پہلے دو بار جانچ لیں۔"
+    },
+    "why_needed": {
+      "en": "Money is credited to the account you write here, so a wrong digit can misdirect a payment.",
+      "hi": "आप जो खाता यहाँ लिखते हैं उसी में राशि जमा होती है, इसलिए एक अंक गलत होने पर भुगतान गलत जगह जा सकता है।",
+      "kn": "ನೀವು ಇಲ್ಲಿ ಬರೆಯುವ ಖಾತೆಗೆ ಹಣ ಜಮೆಯಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಒಂದು ಅಂಕಿ ತಪ್ಪಾದರೆ ಪಾವತಿ ಬೇರೆಡೆಗೆ ಹೋಗಬಹುದು.",
+      "ur": "آپ جو اکاؤنٹ یہاں لکھتے ہیں اسی میں رقم جمع ہوتی ہے، اس لیے ایک ہندسہ غلط ہونے پر رقم غلط جگہ جا سکتی ہے۔"
+    },
+    "example": "000123456789",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "bank_account",
+      "max_length": 20
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "ifsc_code",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "ifsc",
+        "ifsc code",
+        "branch ifsc",
+        "ifs code"
+      ],
+      "hi": [
+        "आईएफएससी कोड",
+        "आईएफएससी",
+        "शाखा आईएफएससी"
+      ],
+      "kn": [
+        "ಐಎಫ್‌ಎಸ್‌ಸಿ ಕೋಡ್",
+        "ಐಎಫ್‌ಎಸ್‌ಸಿ"
+      ],
+      "ur": [
+        "آئی ایف ایس سی کوڈ",
+        "آئی ایف ایس سی"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "ifsc"
+      ],
+      "hi": [
+        "आईएफएससी"
+      ],
+      "kn": [
+        "ಐಎಫ್"
+      ],
+      "ur": [
+        "آئی"
+      ]
+    },
+    "simple_label": {
+      "en": "IFSC code",
+      "hi": "आईएफएससी कोड",
+      "kn": "ಐಎಫ್‌ಎಸ್‌ಸಿ ಕೋಡ್",
+      "ur": "آئی ایف ایس سی کوڈ"
+    },
+    "what_to_enter": {
+      "en": "Write the eleven-character branch code printed on your cheque book or passbook.",
+      "hi": "अपनी चेक बुक या पासबुक पर छपा ग्यारह अक्षरों का शाखा कोड लिखें।",
+      "kn": "ನಿಮ್ಮ ಚೆಕ್ ಪುಸ್ತಕ ಅಥವಾ ಪಾಸ್‌ಬುಕ್‌ನಲ್ಲಿ ಮುದ್ರಿತವಾದ ಹನ್ನೊಂದು ಅಕ್ಷರಗಳ ಶಾಖಾ ಸಂಕೇತವನ್ನು ಬರೆಯಿರಿ.",
+      "ur": "اپنی چیک بک یا پاس بک پر چھپا گیارہ حروف کا برانچ کوڈ لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "DEMO0001234",
+    "example_by_language": {},
+    "format_hint": {
+      "en": "4 letters, 0, then 6 characters",
+      "hi": "4 अक्षर, 0, फिर 6 वर्ण",
+      "kn": "4 ಅಕ್ಷರ, 0, ನಂತರ 6 ಅಕ್ಷರ",
+      "ur": "4 حروف، 0، پھر 6 حروف"
+    },
+    "validation": {
+      "kind": "ifsc_in",
+      "format": "DEMO0001234"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "account_type",
+    "type": "radio",
+    "aliases": {
+      "en": [
+        "account type",
+        "type of account",
+        "savings current",
+        "nature of account"
+      ],
+      "hi": [
+        "खाते का प्रकार",
+        "खाता प्रकार",
+        "बचत चालू"
+      ],
+      "kn": [
+        "ಖಾತೆಯ ಪ್ರಕಾರ",
+        "ಖಾತೆ ವಿಧ",
+        "ಉಳಿತಾಯ ಚಾಲ್ತಿ"
+      ],
+      "ur": [
+        "اکاؤنٹ کی قسم",
+        "کھاتے کی قسم"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "account type",
+        "savings",
+        "current"
+      ],
+      "hi": [
+        "प्रकार",
+        "बचत"
+      ],
+      "kn": [
+        "ಪ್ರಕಾರ",
+        "ಉಳಿತಾಯ"
+      ],
+      "ur": [
+        "قسم"
+      ]
+    },
+    "simple_label": {
+      "en": "Account type",
+      "hi": "खाते का प्रकार",
+      "kn": "ಖಾತೆಯ ಪ್ರಕಾರ",
+      "ur": "اکاؤنٹ کی قسم"
+    },
+    "what_to_enter": {
+      "en": "Tick the type of account you want or already hold, using only the options printed on the form.",
+      "hi": "जो खाता आप चाहते हैं या पहले से रखते हैं उसके प्रकार पर निशान लगाएँ। केवल फ़ॉर्म पर छपे विकल्प चुनें।",
+      "kn": "ನೀವು ಬಯಸುವ ಅಥವಾ ಈಗಾಗಲೇ ಹೊಂದಿರುವ ಖಾತೆಯ ಪ್ರಕಾರಕ್ಕೆ ಗುರುತು ಹಾಕಿ. ಅರ್ಜಿಯಲ್ಲಿ ಮುದ್ರಿಸಿರುವ ಆಯ್ಕೆಗಳನ್ನೇ ಬಳಸಿ.",
+      "ur": "جو اکاؤنٹ آپ چاہتے ہیں یا پہلے سے رکھتے ہیں اس کی قسم پر نشان لگائیں۔ صرف فارم پر چھپے اختیارات منتخب کریں۔"
+    },
+    "why_needed": {},
+    "example": "Savings",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "choice"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "nominee_name",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "nominee",
+        "nominee name",
+        "name of nominee",
+        "nominee details",
+        "beneficiary name"
+      ],
+      "hi": [
+        "नामिती",
+        "नामांकित व्यक्ति का नाम",
+        "नॉमिनी",
+        "नॉमिनी का नाम",
+        "हिताधिकारी का नाम"
+      ],
+      "kn": [
+        "ನಾಮನಿರ್ದೇಶಿತರು",
+        "ನಾಮಿನಿ",
+        "ನಾಮಿನಿ ಹೆಸರು",
+        "ನಾಮನಿರ್ದೇಶಿತರ ಹೆಸರು",
+        "ಫಲಾನುಭವಿಯ ಹೆಸರು"
+      ],
+      "ur": [
+        "نامزد شخص",
+        "نامزد شخص کا نام",
+        "نومینی",
+        "نومینی کا نام"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "nominee",
+        "beneficiary"
+      ],
+      "hi": [
+        "नामिती",
+        "नॉमिनी"
+      ],
+      "kn": [
+        "ನಾಮಿನಿ",
+        "ನಾಮನಿರ್ದೇಶಿತ"
+      ],
+      "ur": [
+        "نامزد",
+        "نومینی"
+      ]
+    },
+    "simple_label": {
+      "en": "Nominee",
+      "hi": "नामिती",
+      "kn": "ನಾಮಿನಿ",
+      "ur": "نامزد شخص"
+    },
+    "what_to_enter": {
+      "en": "Write the full name of the person you want to name as nominee. Only you can decide who this is.",
+      "hi": "जिस व्यक्ति को आप नामिती बनाना चाहते हैं उसका पूरा नाम लिखें। यह निर्णय केवल आप ही ले सकते हैं।",
+      "kn": "ನೀವು ನಾಮಿನಿಯಾಗಿ ಹೆಸರಿಸಲು ಬಯಸುವ ವ್ಯಕ್ತಿಯ ಪೂರ್ಣ ಹೆಸರನ್ನು ಬರೆಯಿರಿ. ಈ ನಿರ್ಧಾರ ನಿಮ್ಮದೇ.",
+      "ur": "جس شخص کو آپ نامزد کرنا چاہتے ہیں اس کا پورا نام لکھیں۔ یہ فیصلہ صرف آپ کر سکتے ہیں۔"
+    },
+    "why_needed": {
+      "en": "A nominee is the person named to receive the proceeds if the holder dies. This is general guidance, not legal advice.",
+      "hi": "नामिती वह व्यक्ति है जिसे खाताधारक की मृत्यु पर राशि मिलती है। यह सामान्य मार्गदर्शन है, कानूनी सलाह नहीं।",
+      "kn": "ಖಾತೆದಾರರ ಮರಣದ ನಂತರ ಹಣ ಪಡೆಯಲು ಹೆಸರಿಸಿದ ವ್ಯಕ್ತಿಯೇ ನಾಮಿನಿ. ಇದು ಸಾಮಾನ್ಯ ಮಾರ್ಗದರ್ಶನ, ಕಾನೂನು ಸಲಹೆ ಅಲ್ಲ.",
+      "ur": "نامزد شخص وہ ہے جسے کھاتہ دار کی وفات پر رقم ملتی ہے۔ یہ عمومی رہنمائی ہے، قانونی مشورہ نہیں۔"
+    },
+    "example": "Rohit Sharma",
+    "example_by_language": {
+      "en": "Rohit Sharma",
+      "hi": "रोहित शर्मा",
+      "kn": "ರೋಹಿತ್ ಶರ್ಮಾ",
+      "ur": "روہت شرما"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "person_name",
+      "max_length": 80
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "nominee_relation",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "relationship with nominee",
+        "relation with nominee",
+        "nominee relationship",
+        "relationship",
+        "relation",
+        "relation to applicant"
+      ],
+      "hi": [
+        "नामिती से संबंध",
+        "संबंध",
+        "रिश्ता",
+        "आवेदक से संबंध"
+      ],
+      "kn": [
+        "ನಾಮಿನಿಯೊಂದಿಗಿನ ಸಂಬಂಧ",
+        "ಸಂಬಂಧ",
+        "ಅರ್ಜಿದಾರರೊಂದಿಗಿನ ಸಂಬಂಧ"
+      ],
+      "ur": [
+        "نامزد شخص سے رشتہ",
+        "رشتہ",
+        "تعلق",
+        "درخواست دہندہ سے رشتہ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "relationship",
+        "relation"
+      ],
+      "hi": [
+        "संबंध",
+        "रिश्ता"
+      ],
+      "kn": [
+        "ಸಂಬಂಧ"
+      ],
+      "ur": [
+        "رشتہ",
+        "تعلق"
+      ]
+    },
+    "simple_label": {
+      "en": "Relationship",
+      "hi": "संबंध",
+      "kn": "ಸಂಬಂಧ",
+      "ur": "رشتہ"
+    },
+    "what_to_enter": {
+      "en": "Write how that person is related to you, for example mother, son, or spouse.",
+      "hi": "वह व्यक्ति आपका क्या है यह लिखें, जैसे माता, पुत्र या जीवनसाथी।",
+      "kn": "ಆ ವ್ಯಕ್ತಿ ನಿಮಗೆ ಏನಾಗುತ್ತಾರೆ ಎಂದು ಬರೆಯಿರಿ, ಉದಾಹರಣೆಗೆ ತಾಯಿ, ಮಗ ಅಥವಾ ಸಂಗಾತಿ.",
+      "ur": "وہ شخص آپ کا کیا ہے یہ لکھیں، مثلاً والدہ، بیٹا یا شریک حیات۔"
+    },
+    "why_needed": {},
+    "example": "Brother",
+    "example_by_language": {
+      "en": "Brother",
+      "hi": "भाई",
+      "kn": "ಸಹೋದರ",
+      "ur": "بھائی"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 40
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "annual_income",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "annual income",
+        "family income",
+        "yearly income",
+        "total income",
+        "income per annum",
+        "income"
+      ],
+      "hi": [
+        "वार्षिक आय",
+        "पारिवारिक आय",
+        "कुल आय",
+        "आय"
+      ],
+      "kn": [
+        "ವಾರ್ಷಿಕ ಆದಾಯ",
+        "ಕುಟುಂಬದ ಆದಾಯ",
+        "ಒಟ್ಟು ಆದಾಯ",
+        "ಆದಾಯ"
+      ],
+      "ur": [
+        "سالانہ آمدنی",
+        "خاندانی آمدنی",
+        "کل آمدنی",
+        "آمدنی"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "income"
+      ],
+      "hi": [
+        "आय"
+      ],
+      "kn": [
+        "ಆದಾಯ"
+      ],
+      "ur": [
+        "آمدنی"
+      ]
+    },
+    "simple_label": {
+      "en": "Annual income",
+      "hi": "वार्षिक आय",
+      "kn": "ವಾರ್ಷಿಕ ಆದಾಯ",
+      "ur": "سالانہ آمدنی"
+    },
+    "what_to_enter": {
+      "en": "Write the yearly income figure that your income certificate or salary records show. Read the form to see whose income it asks for.",
+      "hi": "आपके आय प्रमाण पत्र या वेतन अभिलेख में दर्ज वार्षिक आय की राशि लिखें। फ़ॉर्म पढ़कर देखें कि वह किसकी आय मांग रहा है।",
+      "kn": "ನಿಮ್ಮ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ ಅಥವಾ ವೇತನ ದಾಖಲೆಯಲ್ಲಿರುವ ವಾರ್ಷಿಕ ಆದಾಯದ ಮೊತ್ತವನ್ನು ಬರೆಯಿರಿ. ಯಾರ ಆದಾಯ ಕೇಳುತ್ತಿದೆ ಎಂದು ಅರ್ಜಿಯಲ್ಲಿ ನೋಡಿ.",
+      "ur": "آپ کے آمدنی سرٹیفکیٹ یا تنخواہ کے ریکارڈ میں درج سالانہ آمدنی کی رقم لکھیں۔ فارم پڑھ کر دیکھیں کہ وہ کس کی آمدنی مانگ رہا ہے۔"
+    },
+    "why_needed": {},
+    "example": "240000",
+    "example_by_language": {},
+    "format_hint": {
+      "en": "Amount in rupees",
+      "hi": "राशि रुपये में",
+      "kn": "ಮೊತ್ತ ರೂಪಾಯಿಗಳಲ್ಲಿ",
+      "ur": "رقم روپے میں"
+    },
+    "validation": {
+      "kind": "amount"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "amount",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "amount",
+        "amount in rupees",
+        "amount deposited",
+        "fee amount",
+        "premium amount",
+        "sum assured",
+        "total amount"
+      ],
+      "hi": [
+        "राशि",
+        "रकम",
+        "जमा राशि",
+        "शुल्क राशि",
+        "प्रीमियम राशि",
+        "कुल राशि"
+      ],
+      "kn": [
+        "ಮೊತ್ತ",
+        "ಹಣದ ಮೊತ್ತ",
+        "ಠೇವಣಿ ಮೊತ್ತ",
+        "ಶುಲ್ಕದ ಮೊತ್ತ",
+        "ಒಟ್ಟು ಮೊತ್ತ"
+      ],
+      "ur": [
+        "رقم",
+        "جمع شدہ رقم",
+        "فیس کی رقم",
+        "پریمیم کی رقم",
+        "کل رقم"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "amount",
+        "rupees",
+        "premium",
+        "fee"
+      ],
+      "hi": [
+        "राशि",
+        "रकम"
+      ],
+      "kn": [
+        "ಮೊತ್ತ"
+      ],
+      "ur": [
+        "رقم"
+      ]
+    },
+    "simple_label": {
+      "en": "Amount",
+      "hi": "राशि",
+      "kn": "ಮೊತ್ತ",
+      "ur": "رقم"
+    },
+    "what_to_enter": {
+      "en": "Write the amount in figures. Check whether the form also asks for the amount written out in words.",
+      "hi": "राशि अंकों में लिखें। देख लें कि फ़ॉर्म राशि शब्दों में भी मांग रहा है या नहीं।",
+      "kn": "ಮೊತ್ತವನ್ನು ಅಂಕಿಗಳಲ್ಲಿ ಬರೆಯಿರಿ. ಅರ್ಜಿ ಮೊತ್ತವನ್ನು ಅಕ್ಷರಗಳಲ್ಲೂ ಕೇಳುತ್ತಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ.",
+      "ur": "رقم ہندسوں میں لکھیں۔ دیکھ لیں کہ فارم رقم الفاظ میں بھی مانگ رہا ہے یا نہیں۔"
+    },
+    "why_needed": {},
+    "example": "5000",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "amount"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
   },
   {
     "id": "occupation",
-    "aliases": [
-      "occupation",
-      "profession",
-      "employment"
-    ],
     "type": "text",
+    "aliases": {
+      "en": [
+        "occupation",
+        "profession",
+        "employment",
+        "nature of work",
+        "job",
+        "work"
+      ],
+      "hi": [
+        "व्यवसाय",
+        "पेशा",
+        "रोज़गार",
+        "कार्य का स्वरूप",
+        "नौकरी"
+      ],
+      "kn": [
+        "ವೃತ್ತಿ",
+        "ಉದ್ಯೋಗ",
+        "ಕೆಲಸದ ಸ್ವರೂಪ",
+        "ಕೆಲಸ"
+      ],
+      "ur": [
+        "پیشہ",
+        "روزگار",
+        "ملازمت",
+        "کام"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "occupation",
+        "profession",
+        "employment"
+      ],
+      "hi": [
+        "व्यवसाय",
+        "पेशा"
+      ],
+      "kn": [
+        "ವೃತ್ತಿ",
+        "ಉದ್ಯೋಗ"
+      ],
+      "ur": [
+        "پیشہ",
+        "ملازمت"
+      ]
+    },
     "simple_label": {
       "en": "Occupation",
       "hi": "व्यवसाय",
-      "kn": "ವೃತ್ತಿ"
+      "kn": "ವೃತ್ತಿ",
+      "ur": "پیشہ"
     },
     "what_to_enter": {
-      "en": "Enter your current occupation or write Student, Homemaker, or Retired if that applies.",
-      "hi": "Apna vartaman vyavsay likhen, ya Student / Homemaker / Retired likhen.",
-      "kn": "Nimma igina vrttiyannu baredi, athava Student / Homemaker / Retired baredi."
+      "en": "Write what you do for a living. If you do not earn, write Student, Homemaker, or Retired as it applies to you.",
+      "hi": "आप जीवनयापन के लिए जो करते हैं वह लिखें। यदि आप नहीं कमाते तो जो लागू हो वही लिखें: विद्यार्थी, गृहिणी या सेवानिवृत्त।",
+      "kn": "ನೀವು ಜೀವನೋಪಾಯಕ್ಕೆ ಏನು ಮಾಡುತ್ತೀರಿ ಎಂದು ಬರೆಯಿರಿ. ಸಂಪಾದಿಸದಿದ್ದರೆ ಅನ್ವಯಿಸುವಂತೆ ವಿದ್ಯಾರ್ಥಿ, ಗೃಹಿಣಿ ಅಥವಾ ನಿವೃತ್ತ ಎಂದು ಬರೆಯಿರಿ.",
+      "ur": "آپ روزی کے لیے جو کرتے ہیں وہ لکھیں۔ اگر آپ نہیں کماتے تو جو لاگو ہو وہی لکھیں: طالب علم، خاتونِ خانہ یا ریٹائرڈ۔"
     },
-    "example": "School teacher"
+    "why_needed": {},
+    "example": "School teacher",
+    "example_by_language": {
+      "en": "School teacher",
+      "hi": "विद्यालय शिक्षक",
+      "kn": "ಶಾಲಾ ಶಿಕ್ಷಕ",
+      "ur": "اسکول ٹیچر"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 60
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
   },
   {
-    "id": "nominee",
-    "aliases": [
-      "nominee",
-      "nominee name"
-    ],
+    "id": "employer_name",
     "type": "text",
+    "aliases": {
+      "en": [
+        "employer name",
+        "name of employer",
+        "organisation name",
+        "organization name",
+        "company name",
+        "office name",
+        "institution name"
+      ],
+      "hi": [
+        "नियोक्ता का नाम",
+        "संस्था का नाम",
+        "कंपनी का नाम",
+        "कार्यालय का नाम"
+      ],
+      "kn": [
+        "ಉದ್ಯೋಗದಾತರ ಹೆಸರು",
+        "ಸಂಸ್ಥೆಯ ಹೆಸರು",
+        "ಕಂಪನಿಯ ಹೆಸರು",
+        "ಕಚೇರಿಯ ಹೆಸರು"
+      ],
+      "ur": [
+        "آجر کا نام",
+        "ادارے کا نام",
+        "کمپنی کا نام",
+        "دفتر کا نام"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "employer",
+        "organisation",
+        "company"
+      ],
+      "hi": [
+        "नियोक्ता",
+        "संस्था",
+        "कंपनी"
+      ],
+      "kn": [
+        "ಉದ್ಯೋಗದಾತ",
+        "ಸಂಸ್ಥೆ",
+        "ಕಂಪನಿ"
+      ],
+      "ur": [
+        "آجر",
+        "ادارہ",
+        "کمپنی"
+      ]
+    },
     "simple_label": {
-      "en": "Nominee",
-      "hi": "Nominee",
-      "kn": "Nominee"
+      "en": "Employer or organisation",
+      "hi": "नियोक्ता अथवा संस्था",
+      "kn": "ಉದ್ಯೋಗದಾತ ಅಥವಾ ಸಂಸ್ಥೆ",
+      "ur": "آجر یا ادارہ"
     },
     "what_to_enter": {
-      "en": "Enter the full name of the person you want to name as nominee, if the form asks for one.",
-      "hi": "Yadi form maange to nominee ke roop mein jis vyakti ka naam dena chahte hain, unka poora naam likhen.",
-      "kn": "Form kelidare nominee aagi hesaru needabekada vyaktiya poorna hesaranu baredi."
+      "en": "Write the name of the office, company, or institution where you work or study.",
+      "hi": "जहाँ आप काम करते हैं या पढ़ते हैं उस कार्यालय, कंपनी या संस्था का नाम लिखें।",
+      "kn": "ನೀವು ಕೆಲಸ ಮಾಡುವ ಅಥವಾ ಓದುವ ಕಚೇರಿ, ಕಂಪನಿ ಅಥವಾ ಸಂಸ್ಥೆಯ ಹೆಸರನ್ನು ಬರೆಯಿರಿ.",
+      "ur": "جہاں آپ کام کرتے ہیں یا پڑھتے ہیں اس دفتر، کمپنی یا ادارے کا نام لکھیں۔"
     },
-    "why_needed": {
-      "en": "A nominee is the person named to receive proceeds if the account holder dies. This is general guidance, not legal advice.",
-      "hi": "Nominee vah vyakti hai jiska naam aap aapatkal ke liye dete hain. Yeh kanooni salah nahi hai.",
-      "kn": "Nominee endare khateya malika illadiddare hesaru kottiruva vyakti. Idu kanoonu salahe alla."
+    "why_needed": {},
+    "example": "Demo Public School",
+    "example_by_language": {
+      "en": "Demo Public School",
+      "hi": "डेमो पब्लिक स्कूल",
+      "kn": "ಡೆಮೊ ಪಬ್ಲಿಕ್ ಶಾಲೆ",
+      "ur": "ڈیمو پبلک اسکول"
     },
-    "example": "Rohit Sharma"
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 100
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "designation",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "designation",
+        "post",
+        "post held",
+        "job title",
+        "rank"
+      ],
+      "hi": [
+        "पदनाम",
+        "पद",
+        "धारित पद"
+      ],
+      "kn": [
+        "ಹುದ್ದೆ",
+        "ಪದನಾಮ",
+        "ನಿರ್ವಹಿಸುತ್ತಿರುವ ಹುದ್ದೆ"
+      ],
+      "ur": [
+        "عہدہ",
+        "منصب"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "designation",
+        "post"
+      ],
+      "hi": [
+        "पदनाम",
+        "पद"
+      ],
+      "kn": [
+        "ಹುದ್ದೆ",
+        "ಪದನಾಮ"
+      ],
+      "ur": [
+        "عہدہ",
+        "منصب"
+      ]
+    },
+    "simple_label": {
+      "en": "Designation",
+      "hi": "पदनाम",
+      "kn": "ಹುದ್ದೆ",
+      "ur": "عہدہ"
+    },
+    "what_to_enter": {
+      "en": "Write the post you hold at that organisation.",
+      "hi": "उस संस्था में आप जो पद धारण करते हैं वह लिखें।",
+      "kn": "ಆ ಸಂಸ್ಥೆಯಲ್ಲಿ ನೀವು ಹೊಂದಿರುವ ಹುದ್ದೆಯನ್ನು ಬರೆಯಿರಿ.",
+      "ur": "اس ادارے میں آپ جو عہدہ رکھتے ہیں وہ لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "Assistant Teacher",
+    "example_by_language": {
+      "en": "Assistant Teacher",
+      "hi": "सहायक शिक्षक",
+      "kn": "ಸಹಾಯಕ ಶಿಕ್ಷಕ",
+      "ur": "اسسٹنٹ ٹیچر"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 60
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "qualification",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "educational qualification",
+        "qualification",
+        "highest qualification",
+        "academic qualification",
+        "last qualification"
+      ],
+      "hi": [
+        "शैक्षिक योग्यता",
+        "योग्यता",
+        "उच्चतम योग्यता",
+        "शैक्षणिक योग्यता"
+      ],
+      "kn": [
+        "ವಿದ್ಯಾರ್ಹತೆ",
+        "ಅರ್ಹತೆ",
+        "ಗರಿಷ್ಠ ವಿದ್ಯಾರ್ಹತೆ",
+        "ಶೈಕ್ಷಣಿಕ ಅರ್ಹತೆ"
+      ],
+      "ur": [
+        "تعلیمی قابلیت",
+        "قابلیت",
+        "اعلیٰ ترین قابلیت"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "qualification"
+      ],
+      "hi": [
+        "योग्यता"
+      ],
+      "kn": [
+        "ಅರ್ಹತೆ",
+        "ವಿದ್ಯಾರ್ಹತೆ"
+      ],
+      "ur": [
+        "قابلیت"
+      ]
+    },
+    "simple_label": {
+      "en": "Educational qualification",
+      "hi": "शैक्षिक योग्यता",
+      "kn": "ವಿದ್ಯಾರ್ಹತೆ",
+      "ur": "تعلیمی قابلیت"
+    },
+    "what_to_enter": {
+      "en": "Write the highest course you have completed, as named on your certificate.",
+      "hi": "आपने जो सर्वोच्च पाठ्यक्रम पूरा किया है वह लिखें, जैसा आपके प्रमाण पत्र पर दर्ज है।",
+      "kn": "ನೀವು ಪೂರ್ಣಗೊಳಿಸಿದ ಗರಿಷ್ಠ ಕೋರ್ಸ್ ಅನ್ನು ಪ್ರಮಾಣಪತ್ರದಲ್ಲಿರುವಂತೆ ಬರೆಯಿರಿ.",
+      "ur": "آپ نے جو سب سے اعلیٰ کورس مکمل کیا ہے وہ لکھیں، جیسا آپ کے سرٹیفکیٹ پر درج ہے۔"
+    },
+    "why_needed": {},
+    "example": "B.Sc. Mathematics",
+    "example_by_language": {
+      "en": "B.Sc. Mathematics",
+      "hi": "बी.एससी. गणित",
+      "kn": "ಬಿ.ಎಸ್ಸಿ. ಗಣಿತ",
+      "ur": "بی ایس سی ریاضی"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 80
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "institution_name",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "school name",
+        "college name",
+        "name of school",
+        "name of college",
+        "name of institution",
+        "university name",
+        "school / college"
+      ],
+      "hi": [
+        "विद्यालय का नाम",
+        "महाविद्यालय का नाम",
+        "स्कूल का नाम",
+        "कॉलेज का नाम",
+        "विश्वविद्यालय का नाम"
+      ],
+      "kn": [
+        "ಶಾಲೆಯ ಹೆಸರು",
+        "ಕಾಲೇಜಿನ ಹೆಸರು",
+        "ವಿದ್ಯಾಸಂಸ್ಥೆಯ ಹೆಸರು",
+        "ವಿಶ್ವವಿದ್ಯಾಲಯದ ಹೆಸರು"
+      ],
+      "ur": [
+        "اسکول کا نام",
+        "کالج کا نام",
+        "تعلیمی ادارے کا نام",
+        "یونیورسٹی کا نام"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "school",
+        "college",
+        "university",
+        "institution"
+      ],
+      "hi": [
+        "विद्यालय",
+        "महाविद्यालय",
+        "स्कूल",
+        "कॉलेज"
+      ],
+      "kn": [
+        "ಶಾಲೆ",
+        "ಕಾಲೇಜು",
+        "ವಿಶ್ವವಿದ್ಯಾಲಯ"
+      ],
+      "ur": [
+        "اسکول",
+        "کالج",
+        "یونیورسٹی"
+      ]
+    },
+    "simple_label": {
+      "en": "School or college",
+      "hi": "विद्यालय अथवा महाविद्यालय",
+      "kn": "ಶಾಲೆ ಅಥವಾ ಕಾಲೇಜು",
+      "ur": "اسکول یا کالج"
+    },
+    "what_to_enter": {
+      "en": "Write the full name of the school or college, as it appears on your marksheet.",
+      "hi": "विद्यालय या महाविद्यालय का पूरा नाम लिखें, जैसा आपकी अंकतालिका पर दर्ज है।",
+      "kn": "ಶಾಲೆ ಅಥವಾ ಕಾಲೇಜಿನ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಿಮ್ಮ ಅಂಕಪಟ್ಟಿಯಲ್ಲಿರುವಂತೆ ಬರೆಯಿರಿ.",
+      "ur": "اسکول یا کالج کا پورا نام لکھیں، جیسا آپ کی مارک شیٹ پر درج ہے۔"
+    },
+    "why_needed": {},
+    "example": "Demo Government College",
+    "example_by_language": {
+      "en": "Demo Government College",
+      "hi": "डेमो सरकारी महाविद्यालय",
+      "kn": "ಡೆಮೊ ಸರ್ಕಾರಿ ಕಾಲೇಜು",
+      "ur": "ڈیمو سرکاری کالج"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 120
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "course_name",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "course",
+        "course name",
+        "class",
+        "standard",
+        "branch of study",
+        "stream",
+        "subject",
+        "course applied for"
+      ],
+      "hi": [
+        "पाठ्यक्रम",
+        "कक्षा",
+        "संवर्ग",
+        "विषय",
+        "अध्ययन शाखा"
+      ],
+      "kn": [
+        "ಕೋರ್ಸ್",
+        "ತರಗತಿ",
+        "ವಿಷಯ",
+        "ಅಧ್ಯಯನ ಶಾಖೆ"
+      ],
+      "ur": [
+        "کورس",
+        "جماعت",
+        "مضمون",
+        "شعبہ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "course",
+        "class",
+        "standard",
+        "stream"
+      ],
+      "hi": [
+        "पाठ्यक्रम",
+        "कक्षा"
+      ],
+      "kn": [
+        "ಕೋರ್ಸ್",
+        "ತರಗತಿ"
+      ],
+      "ur": [
+        "کورس",
+        "جماعت"
+      ]
+    },
+    "simple_label": {
+      "en": "Course or class",
+      "hi": "पाठ्यक्रम अथवा कक्षा",
+      "kn": "ಕೋರ್ಸ್ ಅಥವಾ ತರಗತಿ",
+      "ur": "کورس یا جماعت"
+    },
+    "what_to_enter": {
+      "en": "Write the course or class you are in, or the one you are applying for.",
+      "hi": "आप जिस पाठ्यक्रम या कक्षा में हैं, अथवा जिसके लिए आवेदन कर रहे हैं, वह लिखें।",
+      "kn": "ನೀವು ಇರುವ ಅಥವಾ ಅರ್ಜಿ ಸಲ್ಲಿಸುತ್ತಿರುವ ಕೋರ್ಸ್ ಅಥವಾ ತರಗತಿಯನ್ನು ಬರೆಯಿರಿ.",
+      "ur": "آپ جس کورس یا جماعت میں ہیں، یا جس کے لیے درخواست دے رہے ہیں، وہ لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "Second year B.Sc.",
+    "example_by_language": {
+      "en": "Second year B.Sc.",
+      "hi": "द्वितीय वर्ष बी.एससी.",
+      "kn": "ಎರಡನೇ ವರ್ಷ ಬಿ.ಎಸ್ಸಿ.",
+      "ur": "دوسرا سال بی ایس سی"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 80
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "roll_number",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "roll number",
+        "roll no",
+        "admission number",
+        "student id",
+        "register number",
+        "enrollment number",
+        "usn"
+      ],
+      "hi": [
+        "अनुक्रमांक",
+        "रोल नंबर",
+        "प्रवेश संख्या",
+        "छात्र संख्या",
+        "अनुक्रमांक संख्या"
+      ],
+      "kn": [
+        "ನೋಂದಣಿ ಸಂಖ್ಯೆ",
+        "ರೋಲ್ ನಂಬರ್",
+        "ಪ್ರವೇಶ ಸಂಖ್ಯೆ",
+        "ವಿದ್ಯಾರ್ಥಿ ಸಂಖ್ಯೆ"
+      ],
+      "ur": [
+        "رول نمبر",
+        "داخلہ نمبر",
+        "طالب علم نمبر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "roll",
+        "admission",
+        "register",
+        "usn"
+      ],
+      "hi": [
+        "अनुक्रमांक",
+        "रोल",
+        "प्रवेश"
+      ],
+      "kn": [
+        "ರೋಲ್",
+        "ಪ್ರವೇಶ"
+      ],
+      "ur": [
+        "رول",
+        "داخلہ"
+      ]
+    },
+    "simple_label": {
+      "en": "Roll or admission number",
+      "hi": "अनुक्रमांक अथवा प्रवेश संख्या",
+      "kn": "ರೋಲ್ ಅಥವಾ ಪ್ರವೇಶ ಸಂಖ್ಯೆ",
+      "ur": "رول یا داخلہ نمبر"
+    },
+    "what_to_enter": {
+      "en": "Write the number your school or college issued to you. It is on your marksheet or identity card.",
+      "hi": "आपके विद्यालय या महाविद्यालय ने आपको जो संख्या दी है वह लिखें। यह आपकी अंकतालिका या पहचान पत्र पर होती है।",
+      "kn": "ನಿಮ್ಮ ಶಾಲೆ ಅಥವಾ ಕಾಲೇಜು ನೀಡಿರುವ ಸಂಖ್ಯೆಯನ್ನು ಬರೆಯಿರಿ. ಇದು ಅಂಕಪಟ್ಟಿ ಅಥವಾ ಗುರುತಿನ ಚೀಟಿಯಲ್ಲಿದೆ.",
+      "ur": "آپ کے اسکول یا کالج نے آپ کو جو نمبر دیا ہے وہ لکھیں۔ یہ آپ کی مارک شیٹ یا شناختی کارڈ پر ہوتا ہے۔"
+    },
+    "why_needed": {},
+    "example": "2DM21CS001",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "alphanumeric",
+      "max_length": 24
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "marks_percentage",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "percentage",
+        "marks obtained",
+        "percentage of marks",
+        "cgpa",
+        "aggregate marks",
+        "total marks"
+      ],
+      "hi": [
+        "प्रतिशत",
+        "प्राप्तांक",
+        "अंकों का प्रतिशत",
+        "कुल अंक"
+      ],
+      "kn": [
+        "ಶೇಕಡಾವಾರು",
+        "ಗಳಿಸಿದ ಅಂಕಗಳು",
+        "ಅಂಕಗಳ ಶೇಕಡಾ",
+        "ಒಟ್ಟು ಅಂಕಗಳು"
+      ],
+      "ur": [
+        "فیصد",
+        "حاصل کردہ نمبر",
+        "نمبروں کا فیصد",
+        "کل نمبر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "percentage",
+        "marks",
+        "cgpa"
+      ],
+      "hi": [
+        "प्रतिशत",
+        "अंक"
+      ],
+      "kn": [
+        "ಶೇಕಡಾ",
+        "ಅಂಕ"
+      ],
+      "ur": [
+        "فیصد",
+        "نمبر"
+      ]
+    },
+    "simple_label": {
+      "en": "Marks or percentage",
+      "hi": "अंक अथवा प्रतिशत",
+      "kn": "ಅಂಕಗಳು ಅಥವಾ ಶೇಕಡಾವಾರು",
+      "ur": "نمبر یا فیصد"
+    },
+    "what_to_enter": {
+      "en": "Copy the marks or percentage from your marksheet. Check whether the form wants a percentage or a CGPA.",
+      "hi": "अपनी अंकतालिका से अंक या प्रतिशत लिखें। देख लें कि फ़ॉर्म प्रतिशत मांग रहा है या सीजीपीए।",
+      "kn": "ನಿಮ್ಮ ಅಂಕಪಟ್ಟಿಯಿಂದ ಅಂಕಗಳು ಅಥವಾ ಶೇಕಡಾವಾರು ನಕಲಿಸಿ. ಅರ್ಜಿ ಶೇಕಡಾ ಕೇಳುತ್ತಿದೆಯೇ ಅಥವಾ ಸಿಜಿಪಿಎ ಕೇಳುತ್ತಿದೆಯೇ ಪರಿಶೀಲಿಸಿ.",
+      "ur": "اپنی مارک شیٹ سے نمبر یا فیصد لکھیں۔ دیکھ لیں کہ فارم فیصد مانگ رہا ہے یا سی جی پی اے۔"
+    },
+    "why_needed": {},
+    "example": "78.4",
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "decimal",
+      "min": 0,
+      "max": 100
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "year_of_passing",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "year of passing",
+        "year of study",
+        "passing year",
+        "academic year",
+        "year"
+      ],
+      "hi": [
+        "उत्तीर्ण वर्ष",
+        "अध्ययन वर्ष",
+        "शैक्षणिक वर्ष",
+        "वर्ष"
+      ],
+      "kn": [
+        "ಉತ್ತೀರ್ಣ ವರ್ಷ",
+        "ಅಧ್ಯಯನ ವರ್ಷ",
+        "ಶೈಕ್ಷಣಿಕ ವರ್ಷ",
+        "ವರ್ಷ"
+      ],
+      "ur": [
+        "سال کامیابی",
+        "تعلیمی سال",
+        "سال"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "year",
+        "passing"
+      ],
+      "hi": [
+        "वर्ष",
+        "उत्तीर्ण"
+      ],
+      "kn": [
+        "ವರ್ಷ",
+        "ಉತ್ತೀರ್ಣ"
+      ],
+      "ur": [
+        "سال"
+      ]
+    },
+    "simple_label": {
+      "en": "Year",
+      "hi": "वर्ष",
+      "kn": "ವರ್ಷ",
+      "ur": "سال"
+    },
+    "what_to_enter": {
+      "en": "Write the four-digit year, as printed on your certificate.",
+      "hi": "चार अंकों का वर्ष लिखें, जैसा आपके प्रमाण पत्र पर छपा है।",
+      "kn": "ನಾಲ್ಕು ಅಂಕಿಗಳ ವರ್ಷವನ್ನು ಪ್ರಮಾಣಪತ್ರದಲ್ಲಿ ಮುದ್ರಿತವಾಗಿರುವಂತೆ ಬರೆಯಿರಿ.",
+      "ur": "چار ہندسوں کا سال لکھیں، جیسا آپ کے سرٹیفکیٹ پر چھپا ہے۔"
+    },
+    "why_needed": {},
+    "example": "2024",
+    "example_by_language": {},
+    "format_hint": {
+      "en": "YYYY",
+      "hi": "YYYY",
+      "kn": "YYYY",
+      "ur": "YYYY"
+    },
+    "validation": {
+      "kind": "year"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
   },
   {
     "id": "signature",
-    "aliases": [
-      "signature",
-      "applicant signature",
-      "sign here"
-    ],
     "type": "signature",
+    "aliases": {
+      "en": [
+        "signature",
+        "applicant signature",
+        "sign here",
+        "signature of applicant",
+        "signature / thumb impression",
+        "full signature"
+      ],
+      "hi": [
+        "हस्ताक्षर",
+        "आवेदक के हस्ताक्षर",
+        "यहाँ हस्ताक्षर करें",
+        "हस्ताक्षर अथवा अंगूठा निशान"
+      ],
+      "kn": [
+        "ಸಹಿ",
+        "ಅರ್ಜಿದಾರರ ಸಹಿ",
+        "ಇಲ್ಲಿ ಸಹಿ ಮಾಡಿ",
+        "ಸಹಿ ಅಥವಾ ಹೆಬ್ಬೆಟ್ಟಿನ ಗುರುತು"
+      ],
+      "ur": [
+        "دستخط",
+        "درخواست دہندہ کے دستخط",
+        "یہاں دستخط کریں",
+        "دستخط یا انگوٹھے کا نشان"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "signature",
+        "sign"
+      ],
+      "hi": [
+        "हस्ताक्षर"
+      ],
+      "kn": [
+        "ಸಹಿ"
+      ],
+      "ur": [
+        "دستخط"
+      ]
+    },
     "simple_label": {
       "en": "Signature",
       "hi": "हस्ताक्षर",
-      "kn": "ಸಹಿ"
+      "kn": "ಸಹಿ",
+      "ur": "دستخط"
     },
     "what_to_enter": {
-      "en": "Leave this blank in FormSathi. Sign the official paper form by hand.",
-      "hi": "Yahan FormSathi mein kuch na likhen. Asli form par haath se hastakshar karen.",
-      "kn": "FormSathiyalli idannu khali bidi. Adhikrita formnalli kaiyinda sahi maadi."
+      "en": "Sign this space yourself, by hand, on the official form. FormSathi never creates or prints a signature for you.",
+      "hi": "इस स्थान पर आधिकारिक फ़ॉर्म पर स्वयं अपने हाथ से हस्ताक्षर करें। FormSathi कभी आपके लिए हस्ताक्षर नहीं बनाता।",
+      "kn": "ಈ ಜಾಗದಲ್ಲಿ ಅಧಿಕೃತ ಅರ್ಜಿಯ ಮೇಲೆ ನೀವೇ ಕೈಯಿಂದ ಸಹಿ ಮಾಡಿ. FormSathi ಎಂದಿಗೂ ನಿಮ್ಮ ಪರವಾಗಿ ಸಹಿ ಸೃಷ್ಟಿಸುವುದಿಲ್ಲ.",
+      "ur": "اس جگہ پر سرکاری فارم پر خود اپنے ہاتھ سے دستخط کریں۔ FormSathi کبھی آپ کے لیے دستخط نہیں بناتا۔"
     },
-    "example": "[SIGN MANUALLY]"
+    "why_needed": {
+      "en": "Your signature is what makes the declaration on the form binding on you.",
+      "hi": "आपके हस्ताक्षर ही फ़ॉर्म पर दी गई घोषणा को आप पर बाध्यकारी बनाते हैं।",
+      "kn": "ನಿಮ್ಮ ಸಹಿಯೇ ಅರ್ಜಿಯಲ್ಲಿನ ಘೋಷಣೆಯನ್ನು ನಿಮಗೆ ಬದ್ಧವಾಗಿಸುತ್ತದೆ.",
+      "ur": "آپ کے دستخط ہی فارم پر دیے گئے اعلان کو آپ پر لازم بناتے ہیں۔"
+    },
+    "example": null,
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "signature"
+    },
+    "priority": 1.2,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "thumb_impression",
+    "type": "signature",
+    "aliases": {
+      "en": [
+        "thumb impression",
+        "left thumb impression",
+        "right thumb impression",
+        "lti",
+        "rti",
+        "thumb print"
+      ],
+      "hi": [
+        "अंगूठे का निशान",
+        "बाएँ अंगूठे का निशान",
+        "दाएँ अंगूठे का निशान"
+      ],
+      "kn": [
+        "ಹೆಬ್ಬೆಟ್ಟಿನ ಗುರುತು",
+        "ಎಡ ಹೆಬ್ಬೆಟ್ಟಿನ ಗುರುತು",
+        "ಬಲ ಹೆಬ್ಬೆಟ್ಟಿನ ಗುರುತು"
+      ],
+      "ur": [
+        "انگوٹھے کا نشان",
+        "بائیں انگوٹھے کا نشان",
+        "دائیں انگوٹھے کا نشان"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "thumb",
+        "impression"
+      ],
+      "hi": [
+        "अंगूठे",
+        "अंगूठा"
+      ],
+      "kn": [
+        "ಹೆಬ್ಬೆಟ್ಟು",
+        "ಹೆಬ್ಬೆಟ್ಟಿನ"
+      ],
+      "ur": [
+        "انگوٹھے",
+        "انگوٹھا"
+      ]
+    },
+    "simple_label": {
+      "en": "Thumb impression",
+      "hi": "अंगूठे का निशान",
+      "kn": "ಹೆಬ್ಬೆಟ್ಟಿನ ಗುರುತು",
+      "ur": "انگوٹھے کا نشان"
+    },
+    "what_to_enter": {
+      "en": "Place your own thumb impression here on the official form. FormSathi never creates one for you.",
+      "hi": "आधिकारिक फ़ॉर्म पर यहाँ स्वयं अपने अंगूठे का निशान लगाएँ। FormSathi कभी आपके लिए निशान नहीं बनाता।",
+      "kn": "ಅಧಿಕೃತ ಅರ್ಜಿಯ ಮೇಲೆ ಇಲ್ಲಿ ನೀವೇ ನಿಮ್ಮ ಹೆಬ್ಬೆಟ್ಟಿನ ಗುರುತು ಹಾಕಿ. FormSathi ಎಂದಿಗೂ ನಿಮ್ಮ ಪರವಾಗಿ ಅದನ್ನು ಸೃಷ್ಟಿಸುವುದಿಲ್ಲ.",
+      "ur": "سرکاری فارم پر یہاں خود اپنے انگوٹھے کا نشان لگائیں۔ FormSathi کبھی آپ کے لیے نشان نہیں بناتا۔"
+    },
+    "why_needed": {},
+    "example": null,
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "signature"
+    },
+    "priority": 1.2,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "photograph",
+    "type": "signature",
+    "aliases": {
+      "en": [
+        "affix photograph",
+        "paste photograph",
+        "photograph",
+        "photo",
+        "passport size photo",
+        "recent photograph"
+      ],
+      "hi": [
+        "फोटो चिपकाएँ",
+        "छायाचित्र",
+        "फोटो",
+        "पासपोर्ट आकार का फोटो"
+      ],
+      "kn": [
+        "ಭಾವಚಿತ್ರ ಅಂಟಿಸಿ",
+        "ಭಾವಚಿತ್ರ",
+        "ಫೋಟೋ",
+        "ಪಾಸ್‌ಪೋರ್ಟ್ ಅಳತೆಯ ಫೋಟೋ"
+      ],
+      "ur": [
+        "تصویر چسپاں کریں",
+        "تصویر",
+        "فوٹو",
+        "پاسپورٹ سائز تصویر"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "photograph",
+        "photo"
+      ],
+      "hi": [
+        "फोटो",
+        "छायाचित्र"
+      ],
+      "kn": [
+        "ಫೋಟೋ",
+        "ಭಾವಚಿತ್ರ"
+      ],
+      "ur": [
+        "تصویر",
+        "فوٹو"
+      ]
+    },
+    "simple_label": {
+      "en": "Photograph",
+      "hi": "फोटो",
+      "kn": "ಭಾವಚಿತ್ರ",
+      "ur": "تصویر"
+    },
+    "what_to_enter": {
+      "en": "Paste a recent photograph of yourself in this box on the official form. Read the form for the size it asks for.",
+      "hi": "आधिकारिक फ़ॉर्म पर इस खाने में अपना हाल का फोटो चिपकाएँ। आकार के लिए फ़ॉर्म पर दिए निर्देश पढ़ें।",
+      "kn": "ಅಧಿಕೃತ ಅರ್ಜಿಯ ಈ ಚೌಕದಲ್ಲಿ ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಭಾವಚಿತ್ರವನ್ನು ಅಂಟಿಸಿ. ಅಳತೆಗಾಗಿ ಅರ್ಜಿಯಲ್ಲಿನ ಸೂಚನೆಗಳನ್ನು ಓದಿ.",
+      "ur": "سرکاری فارم پر اس خانے میں اپنی حالیہ تصویر چسپاں کریں۔ سائز کے لیے فارم پر دی گئی ہدایات پڑھیں۔"
+    },
+    "why_needed": {},
+    "example": null,
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "attachment"
+    },
+    "priority": 1.15,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "place",
+    "type": "text",
+    "aliases": {
+      "en": [
+        "place",
+        "place of signing",
+        "signed at",
+        "place of birth",
+        "town of signing"
+      ],
+      "hi": [
+        "स्थान",
+        "हस्ताक्षर का स्थान",
+        "जन्म स्थान"
+      ],
+      "kn": [
+        "ಸ್ಥಳ",
+        "ಸಹಿ ಮಾಡಿದ ಸ್ಥಳ",
+        "ಜನ್ಮ ಸ್ಥಳ"
+      ],
+      "ur": [
+        "مقام",
+        "دستخط کا مقام",
+        "جائے پیدائش"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "place"
+      ],
+      "hi": [
+        "स्थान"
+      ],
+      "kn": [
+        "ಸ್ಥಳ"
+      ],
+      "ur": [
+        "مقام"
+      ]
+    },
+    "simple_label": {
+      "en": "Place",
+      "hi": "स्थान",
+      "kn": "ಸ್ಥಳ",
+      "ur": "مقام"
+    },
+    "what_to_enter": {
+      "en": "Write the name of the town or city where you are filling and signing the form.",
+      "hi": "जहाँ आप फ़ॉर्म भर रहे और हस्ताक्षर कर रहे हैं उस नगर का नाम लिखें।",
+      "kn": "ನೀವು ಅರ್ಜಿಯನ್ನು ಭರ್ತಿ ಮಾಡಿ ಸಹಿ ಮಾಡುತ್ತಿರುವ ಊರಿನ ಹೆಸರನ್ನು ಬರೆಯಿರಿ.",
+      "ur": "جہاں آپ فارم بھر رہے اور دستخط کر رہے ہیں اس شہر کا نام لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "Bengaluru",
+    "example_by_language": {
+      "en": "Bengaluru",
+      "hi": "बेंगलुरु",
+      "kn": "ಬೆಂಗಳೂರು",
+      "ur": "بنگلورو"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "text",
+      "max_length": 60
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "declaration_date",
+    "type": "date",
+    "aliases": {
+      "en": [
+        "date",
+        "dated",
+        "date of application",
+        "date of submission",
+        "today's date",
+        "date of declaration"
+      ],
+      "hi": [
+        "दिनांक",
+        "तारीख",
+        "आवेदन की तिथि",
+        "घोषणा की तिथि"
+      ],
+      "kn": [
+        "ದಿನಾಂಕ",
+        "ತಾರೀಖು",
+        "ಅರ್ಜಿಯ ದಿನಾಂಕ",
+        "ಘೋಷಣೆಯ ದಿನಾಂಕ"
+      ],
+      "ur": [
+        "تاریخ",
+        "درخواست کی تاریخ",
+        "اعلان کی تاریخ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "date"
+      ],
+      "hi": [
+        "दिनांक",
+        "तारीख"
+      ],
+      "kn": [
+        "ದಿನಾಂಕ",
+        "ತಾರೀಖು"
+      ],
+      "ur": [
+        "تاریخ"
+      ]
+    },
+    "simple_label": {
+      "en": "Date",
+      "hi": "दिनांक",
+      "kn": "ದಿನಾಂಕ",
+      "ur": "تاریخ"
+    },
+    "what_to_enter": {
+      "en": "Write the date on which you are filling and signing the form, in the order the form prints.",
+      "hi": "जिस दिन आप फ़ॉर्म भर रहे और हस्ताक्षर कर रहे हैं वह तिथि, फ़ॉर्म पर छपे क्रम में लिखें।",
+      "kn": "ನೀವು ಅರ್ಜಿಯನ್ನು ಭರ್ತಿ ಮಾಡಿ ಸಹಿ ಮಾಡುತ್ತಿರುವ ದಿನಾಂಕವನ್ನು ಅರ್ಜಿಯಲ್ಲಿ ಮುದ್ರಿಸಿರುವ ಕ್ರಮದಲ್ಲಿ ಬರೆಯಿರಿ.",
+      "ur": "جس دن آپ فارم بھر رہے اور دستخط کر رہے ہیں وہ تاریخ، فارم پر چھپی ترتیب میں لکھیں۔"
+    },
+    "why_needed": {},
+    "example": "21/10/2026",
+    "example_by_language": {},
+    "format_hint": {
+      "en": "DD/MM/YYYY",
+      "hi": "DD/MM/YYYY",
+      "kn": "DD/MM/YYYY",
+      "ur": "DD/MM/YYYY"
+    },
+    "validation": {
+      "kind": "date",
+      "format": "DD/MM/YYYY"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "purpose",
+    "type": "multiline",
+    "aliases": {
+      "en": [
+        "purpose",
+        "purpose of application",
+        "reason",
+        "reason for application",
+        "purpose for which required"
+      ],
+      "hi": [
+        "प्रयोजन",
+        "आवेदन का प्रयोजन",
+        "कारण",
+        "आवेदन का कारण",
+        "उद्देश्य"
+      ],
+      "kn": [
+        "ಉದ್ದೇಶ",
+        "ಅರ್ಜಿಯ ಉದ್ದೇಶ",
+        "ಕಾರಣ",
+        "ಅರ್ಜಿಯ ಕಾರಣ"
+      ],
+      "ur": [
+        "مقصد",
+        "درخواست کا مقصد",
+        "وجہ",
+        "درخواست کی وجہ"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "purpose",
+        "reason"
+      ],
+      "hi": [
+        "प्रयोजन",
+        "कारण",
+        "उद्देश्य"
+      ],
+      "kn": [
+        "ಉದ್ದೇಶ",
+        "ಕಾರಣ"
+      ],
+      "ur": [
+        "مقصد",
+        "وجہ"
+      ]
+    },
+    "simple_label": {
+      "en": "Purpose",
+      "hi": "प्रयोजन",
+      "kn": "ಉದ್ದೇಶ",
+      "ur": "مقصد"
+    },
+    "what_to_enter": {
+      "en": "Write in your own words why you need this service or document. One or two plain sentences are usually enough.",
+      "hi": "आपको यह सेवा या दस्तावेज़ क्यों चाहिए, यह अपने शब्दों में लिखें। सामान्यतः एक या दो सरल वाक्य पर्याप्त होते हैं।",
+      "kn": "ಈ ಸೇವೆ ಅಥವಾ ದಾಖಲೆ ನಿಮಗೆ ಏಕೆ ಬೇಕು ಎಂಬುದನ್ನು ನಿಮ್ಮ ಮಾತಿನಲ್ಲಿ ಬರೆಯಿರಿ. ಸಾಮಾನ್ಯವಾಗಿ ಒಂದು ಅಥವಾ ಎರಡು ಸರಳ ವಾಕ್ಯ ಸಾಕು.",
+      "ur": "آپ کو یہ خدمت یا دستاویز کیوں درکار ہے، یہ اپنے الفاظ میں لکھیں۔ عام طور پر ایک یا دو سادہ جملے کافی ہوتے ہیں۔"
+    },
+    "why_needed": {},
+    "example": "Required for school admission",
+    "example_by_language": {
+      "en": "Required for school admission",
+      "hi": "विद्यालय प्रवेश हेतु आवश्यक",
+      "kn": "ಶಾಲಾ ಪ್ರವೇಶಕ್ಕೆ ಅಗತ್ಯ",
+      "ur": "اسکول داخلے کے لیے ضروری"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "multiline",
+      "max_length": 240
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "remarks",
+    "type": "multiline",
+    "aliases": {
+      "en": [
+        "remarks",
+        "any other information",
+        "additional information",
+        "notes",
+        "comments",
+        "other details"
+      ],
+      "hi": [
+        "टिप्पणी",
+        "अन्य जानकारी",
+        "अतिरिक्त जानकारी",
+        "विवरण"
+      ],
+      "kn": [
+        "ಟಿಪ್ಪಣಿ",
+        "ಇತರ ಮಾಹಿತಿ",
+        "ಹೆಚ್ಚುವರಿ ಮಾಹಿತಿ",
+        "ವಿವರ"
+      ],
+      "ur": [
+        "ریمارکس",
+        "دیگر معلومات",
+        "اضافی معلومات",
+        "تفصیل"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "remarks",
+        "comments",
+        "notes"
+      ],
+      "hi": [
+        "टिप्पणी"
+      ],
+      "kn": [
+        "ಟಿಪ್ಪಣಿ"
+      ],
+      "ur": [
+        "ریمارکس"
+      ]
+    },
+    "simple_label": {
+      "en": "Remarks",
+      "hi": "टिप्पणी",
+      "kn": "ಟಿಪ್ಪಣಿ",
+      "ur": "ریمارکس"
+    },
+    "what_to_enter": {
+      "en": "Add anything else the office should know. You may leave this blank if you have nothing to add.",
+      "hi": "कार्यालय को जो और बताना चाहें वह लिखें। यदि कुछ नहीं जोड़ना है तो इसे खाली छोड़ सकते हैं।",
+      "kn": "ಕಚೇರಿಗೆ ಬೇರೆ ಏನಾದರೂ ತಿಳಿಸಬೇಕಿದ್ದರೆ ಬರೆಯಿರಿ. ಸೇರಿಸಲು ಏನೂ ಇಲ್ಲದಿದ್ದರೆ ಖಾಲಿ ಬಿಡಬಹುದು.",
+      "ur": "دفتر کو جو مزید بتانا چاہیں وہ لکھیں۔ اگر کچھ شامل نہیں کرنا تو اسے خالی چھوڑ سکتے ہیں۔"
+    },
+    "why_needed": {},
+    "example": "None",
+    "example_by_language": {
+      "en": "None",
+      "hi": "कुछ नहीं",
+      "kn": "ಏನೂ ಇಲ್ಲ",
+      "ur": "کچھ نہیں"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "multiline",
+      "max_length": 240,
+      "optional": true
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "declaration_consent",
+    "type": "checkbox",
+    "aliases": {
+      "en": [
+        "declaration",
+        "i declare",
+        "i hereby declare",
+        "undertaking",
+        "consent",
+        "i agree",
+        "self declaration"
+      ],
+      "hi": [
+        "घोषणा",
+        "मैं घोषणा करता हूँ",
+        "स्वघोषणा",
+        "सहमति",
+        "मैं सहमत हूँ"
+      ],
+      "kn": [
+        "ಘೋಷಣೆ",
+        "ನಾನು ಘೋಷಿಸುತ್ತೇನೆ",
+        "ಸ್ವಯಂ ಘೋಷಣೆ",
+        "ಸಮ್ಮತಿ",
+        "ನಾನು ಒಪ್ಪುತ್ತೇನೆ"
+      ],
+      "ur": [
+        "اعلان",
+        "میں اعلان کرتا ہوں",
+        "حلف نامہ",
+        "رضامندی",
+        "میں متفق ہوں"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "declare",
+        "declaration",
+        "consent",
+        "undertaking"
+      ],
+      "hi": [
+        "घोषणा",
+        "सहमति"
+      ],
+      "kn": [
+        "ಘೋಷಣೆ",
+        "ಸಮ್ಮತಿ"
+      ],
+      "ur": [
+        "اعلان",
+        "رضامندی"
+      ]
+    },
+    "simple_label": {
+      "en": "Declaration",
+      "hi": "घोषणा",
+      "kn": "ಘೋಷಣೆ",
+      "ur": "اعلان"
+    },
+    "what_to_enter": {
+      "en": "Read the printed declaration fully, then tick the box only if every statement in it is true for you.",
+      "hi": "छपी हुई घोषणा पूरी पढ़ें, और उसके बाद खाने पर निशान तभी लगाएँ जब उसका प्रत्येक कथन आपके लिए सत्य हो।",
+      "kn": "ಮುದ್ರಿತ ಘೋಷಣೆಯನ್ನು ಪೂರ್ಣವಾಗಿ ಓದಿ, ಅದರ ಪ್ರತಿ ಹೇಳಿಕೆಯೂ ನಿಮಗೆ ಸತ್ಯವಾಗಿದ್ದರೆ ಮಾತ್ರ ಚೌಕದಲ್ಲಿ ಗುರುತು ಹಾಕಿ.",
+      "ur": "چھپا ہوا اعلان پورا پڑھیں، اور اس کے بعد خانے پر نشان صرف اس صورت میں لگائیں جب اس کا ہر بیان آپ کے لیے سچ ہو۔"
+    },
+    "why_needed": {
+      "en": "Ticking this box states that your answers are true. Read it before you sign.",
+      "hi": "इस खाने पर निशान लगाना यह कहता है कि आपके उत्तर सत्य हैं। हस्ताक्षर से पहले इसे पढ़ें।",
+      "kn": "ಈ ಚೌಕದಲ್ಲಿ ಗುರುತು ಹಾಕುವುದು ನಿಮ್ಮ ಉತ್ತರಗಳು ಸತ್ಯ ಎಂದು ಹೇಳುತ್ತದೆ. ಸಹಿ ಮಾಡುವ ಮೊದಲು ಓದಿ.",
+      "ur": "اس خانے پر نشان لگانا یہ کہتا ہے کہ آپ کے جوابات سچ ہیں۔ دستخط سے پہلے اسے پڑھیں۔"
+    },
+    "example": null,
+    "example_by_language": {},
+    "format_hint": {},
+    "validation": {
+      "kind": "choice"
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
+  },
+  {
+    "id": "documents_attached",
+    "type": "multiline",
+    "aliases": {
+      "en": [
+        "documents attached",
+        "enclosures",
+        "list of enclosures",
+        "documents enclosed",
+        "attachments",
+        "annexures"
+      ],
+      "hi": [
+        "संलग्न दस्तावेज़",
+        "संलग्नक",
+        "संलग्नकों की सूची"
+      ],
+      "kn": [
+        "ಲಗತ್ತಿಸಿದ ದಾಖಲೆಗಳು",
+        "ಲಗತ್ತುಗಳು",
+        "ಲಗತ್ತುಗಳ ಪಟ್ಟಿ"
+      ],
+      "ur": [
+        "منسلک دستاویزات",
+        "ملفوفات",
+        "ملفوفات کی فہرست"
+      ]
+    },
+    "keywords": {
+      "en": [
+        "enclosures",
+        "attached",
+        "documents"
+      ],
+      "hi": [
+        "संलग्न",
+        "दस्तावेज़"
+      ],
+      "kn": [
+        "ಲಗತ್ತು",
+        "ದಾಖಲೆ"
+      ],
+      "ur": [
+        "منسلک",
+        "دستاویزات"
+      ]
+    },
+    "simple_label": {
+      "en": "Documents attached",
+      "hi": "संलग्न दस्तावेज़",
+      "kn": "ಲಗತ್ತಿಸಿದ ದಾಖಲೆಗಳು",
+      "ur": "منسلک دستاویزات"
+    },
+    "what_to_enter": {
+      "en": "List the copies you are attaching to the form. Attach only what the printed instructions ask for.",
+      "hi": "फ़ॉर्म के साथ आप जो प्रतियाँ लगा रहे हैं उनकी सूची लिखें। केवल वही लगाएँ जो छपे निर्देशों में मांगा गया है।",
+      "kn": "ಅರ್ಜಿಯೊಂದಿಗೆ ನೀವು ಲಗತ್ತಿಸುತ್ತಿರುವ ನಕಲುಗಳ ಪಟ್ಟಿ ಬರೆಯಿರಿ. ಮುದ್ರಿತ ಸೂಚನೆಗಳಲ್ಲಿ ಕೇಳಿರುವುದನ್ನೇ ಲಗತ್ತಿಸಿ.",
+      "ur": "فارم کے ساتھ آپ جو نقول لگا رہے ہیں ان کی فہرست لکھیں۔ صرف وہی لگائیں جو چھپی ہدایات میں مانگا گیا ہے۔"
+    },
+    "why_needed": {},
+    "example": "Aadhaar copy, marksheet copy",
+    "example_by_language": {
+      "en": "Aadhaar copy, marksheet copy",
+      "hi": "आधार प्रति, अंकतालिका प्रति",
+      "kn": "ಆಧಾರ್ ಪ್ರತಿ, ಅಂಕಪಟ್ಟಿ ಪ್ರತಿ",
+      "ur": "آدھار کاپی، مارک شیٹ کاپی"
+    },
+    "format_hint": {},
+    "validation": {
+      "kind": "multiline",
+      "max_length": 240,
+      "optional": true
+    },
+    "priority": 1.0,
+    "source_reference": "FormSathi common-field dictionary (general guidance, not official instructions)"
   }
 ]

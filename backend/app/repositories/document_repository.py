@@ -58,6 +58,24 @@ class DocumentRepository:
             return None
         return DocumentRecord.model_validate_json(row["payload"])
 
+    def counters(self) -> dict[str, int]:
+        """How many documents are held, and in what state.
+
+        Exposed on /api/metrics so an operator can see whether uploads are completing or
+        piling up in `processing`, and whether cleanup is actually removing them.
+        """
+        with self._lock, self._connect() as connection:
+            rows = connection.execute("SELECT payload FROM documents").fetchall()
+        counts: dict[str, int] = {"total": len(rows)}
+        for row in rows:
+            try:
+                record = DocumentRecord.model_validate_json(row["payload"])
+            except Exception:
+                counts["unreadable"] = counts.get("unreadable", 0) + 1
+                continue
+            counts[record.status.value] = counts.get(record.status.value, 0) + 1
+        return counts
+
     def delete(self, document_id: str) -> DocumentRecord | None:
         record = self.get(document_id)
         with self._lock, self._connect() as connection:

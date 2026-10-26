@@ -11,6 +11,8 @@ from app.models.document import DocumentRecord
 from app.models.fields import DetectedField, FieldAnswer
 from app.models.preview import PreviewRequest, PreviewResult, PreviewWarning
 from app.services.pdf_service import PdfService
+from app.utils import text_shaping
+from app.utils.text_normalization import dominant_script
 
 
 FOOTER = "FormSathi Completed Reference Preview - Verify before copying or submitting."
@@ -82,6 +84,9 @@ class PreviewService:
                 draw.line((box.x + box.width - 2, box.y + 2, box.x + 2, box.y + box.height - 2), fill=(20, 40, 70), width=3)
             return None
         text = answer.value.strip()
+        script = dominant_script(text)
+        if script not in {"latin", "unknown"}:
+            return self._draw_shaped(image, field, text, script, left, top, box, font.size)
         wrapped = self._wrap(text, font, box.width - 8)
         line_height = int(font.size * 1.2)
         if len(wrapped) * line_height > box.height + 6:
@@ -90,6 +95,51 @@ class PreviewService:
         for line in wrapped:
             draw.text((left, y), line, fill=(20, 40, 70), font=font)
             y += line_height
+        return None
+
+    def _draw_shaped(
+        self,
+        image: Image.Image,
+        field: DetectedField,
+        text: str,
+        script: str,
+        left: int,
+        top: int,
+        box,
+        size: int,
+    ) -> PreviewWarning | None:
+        """Draw an answer written in Devanagari, Kannada, or Urdu.
+
+        Pillow cannot shape these scripts in a default install, so the text is shaped with
+        HarfBuzz. If shaping is unavailable the answer is left off the sheet and a warning
+        is raised, because a misordered rendering of someone's own name is worse than a
+        gap they can fill in by hand.
+        """
+        if not text_shaping.can_shape(text):
+            return PreviewWarning(
+                field_id=field.id,
+                code="script_not_rendered",
+                message=(
+                    f"This answer is written in the {script} script, which cannot be rendered on this "
+                    "machine. Install the shaping extras, or copy this value onto the form directly."
+                ),
+            )
+        rendered = text_shaping.render_line(text, size)
+        if rendered is None:
+            return PreviewWarning(
+                field_id=field.id,
+                code="script_not_rendered",
+                message="This answer could not be rendered. Copy it onto the form directly.",
+            )
+        if rendered.width > box.width - 6 or rendered.height > box.height + 8:
+            return PreviewWarning(
+                field_id=field.id,
+                code="text_overflow",
+                message="Text does not fit this field. Shorten it.",
+            )
+        # Urdu is right-aligned inside its box, matching how it is written on the form.
+        x = left if script != "arabic" else max(left, box.x + box.width - 3 - rendered.width)
+        image.paste(rendered.image, (int(x), int(top)), rendered.image)
         return None
 
     def _wrap(self, text: str, font: ImageFont.ImageFont, max_width: int) -> list[str]:

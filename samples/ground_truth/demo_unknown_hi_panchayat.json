@@ -1,0 +1,134 @@
+{
+  "form_id": null,
+  "language": "hi",
+  "rtl": false,
+  "fields": [
+    {
+      "field_id": "full_name",
+      "label": "पूरा नाम",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 184,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "father_name",
+      "label": "पिता का नाम",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 294,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "date_of_birth",
+      "label": "जन्म तिथि",
+      "type": "date",
+      "pixel": {
+        "x": 484,
+        "y": 406,
+        "width": 300,
+        "height": 38,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "mobile_number",
+      "label": "मोबाइल नंबर",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 514,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "aadhaar_number",
+      "label": "आधार संख्या",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 624,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "pincode",
+      "label": "पिन कोड",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 734,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "permanent_address",
+      "label": "स्थायी पता",
+      "type": "multiline",
+      "pixel": {
+        "x": 64,
+        "y": 890,
+        "width": 1112,
+        "height": 110,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "annual_income",
+      "label": "वार्षिक आय",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 1034,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "signature",
+      "label": "हस्ताक्षर",
+      "type": "signature",
+      "pixel": {
+        "x": 484,
+        "y": 1144,
+        "width": 420,
+        "height": 86,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    }
+  ],
+  "image": "demo_unknown_hi_panchayat.png"
+}

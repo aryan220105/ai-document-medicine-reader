@@ -1,11 +1,13 @@
 from pydantic import BaseModel, Field
 
+from app.models.common import Language
 from app.models.fields import FieldAnswer
 
 
 class PreviewRequest(BaseModel):
     answers: list[FieldAnswer] = Field(default_factory=list)
-    language: str = "en"
+    # Language for the warning messages only. The form's own content is never translated.
+    language: Language = Language.ENGLISH
 
 
 class PreviewWarning(BaseModel):

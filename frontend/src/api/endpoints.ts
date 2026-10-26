@@ -1,5 +1,6 @@
 export const API = {
   health: "/api/health",
+  speech: "/api/speech",
   config: "/api/config",
   upload: "/api/documents/upload",
   document: (id: string) => `/api/documents/${id}`,
@@ -11,6 +12,8 @@ export const API = {
   fields: (id: string) => `/api/documents/${id}/fields`,
   formMatch: (id: string) => `/api/documents/${id}/form-match`,
   guidance: (id: string) => `/api/documents/${id}/guidance`,
+  guidanceBundle: (id: string) => `/api/documents/${id}/guidance/bundle`,
+  validate: (id: string) => `/api/documents/${id}/validate`,
   ask: (id: string) => `/api/documents/${id}/ask`,
   preview: (id: string) => `/api/documents/${id}/preview`,
   previewPdf: (id: string, previewId: string) => `/api/documents/${id}/previews/${previewId}.pdf`,
