@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { fitFieldText, measureTextWidth, type FittedFieldText } from "../utils/fieldText";
 import { overlayStyle, validateAnswer } from "../utils/validation";
 import type { DetectedField } from "../types";
 
@@ -27,7 +28,11 @@ export function FieldOverlay({ field, active, completed, value, onSelect, onChan
   const choice = field.field_type === "checkbox" || field.field_type === "radio";
   const inputRef = useRef<HTMLInputElement>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState<FittedFieldText>({ fontSize: 14, lines: [], padTop: 0 });
+  const [boxHeight, setBoxHeight] = useState(0);
   const error = typing ? validateAnswer(field, value) : null;
+  const multiline = field.field_type === "multiline";
   const color = active
     ? "border-coral bg-coral/15 ring-2 ring-coral/30"
     : completed
@@ -42,19 +47,46 @@ export function FieldOverlay({ field, active, completed, value, onSelect, onChan
     }
   }, [active, typing, field.id]);
 
+  useLayoutEffect(() => {
+    const node = boxRef.current;
+    if (!node) {
+      return;
+    }
+    const measure = () => {
+      const width = node.clientWidth;
+      const height = node.clientHeight;
+      setBoxHeight(height);
+      setFit(fitFieldText(value, width, height, multiline, measureTextWidth));
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") {
+      return;
+    }
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [value, multiline, active]);
+
   const label = field.label || field.id;
 
+  const inkStyle = {
+    fontSize: fit.fontSize,
+    textAlign: "center" as const,
+    lineHeight: multiline ? 1.2 : boxHeight > 0 ? `${boxHeight}px` : undefined,
+    paddingTop: multiline ? fit.padTop : 0,
+  };
+
   return (
-    <div className={`field-ink absolute border-2 transition ${color}`} style={overlayStyle(field.input_box)}>
+    <div ref={boxRef} className={`field-ink absolute border-2 transition ${color}`} style={overlayStyle(field.input_box)}>
       {typing && active ? (
-        field.field_type === "multiline" ? (
+        multiline ? (
           <textarea
             ref={areaRef}
             aria-label={label}
             className="field-ink-input"
             value={value}
             dir="auto"
-            rows={2}
+            style={inkStyle}
             aria-invalid={error ? true : undefined}
             onChange={(event) => onChange(field.id, event.target.value)}
           />
@@ -65,6 +97,7 @@ export function FieldOverlay({ field, active, completed, value, onSelect, onChan
             className="field-ink-input"
             value={value}
             dir="auto"
+            style={inkStyle}
             aria-invalid={error ? true : undefined}
             onChange={(event) => onChange(field.id, event.target.value)}
           />
@@ -82,7 +115,9 @@ export function FieldOverlay({ field, active, completed, value, onSelect, onChan
             }
           }}
         >
-          {choice ? (value === "true" ? "✓" : "") : value}
+          <span className="field-ink-value" style={{ fontSize: choice ? Math.max(boxHeight * 0.7, 12) : fit.fontSize }}>
+            {choice ? (value === "true" ? "✓" : "") : fit.lines.join("\n")}
+          </span>
         </button>
       )}
     </div>

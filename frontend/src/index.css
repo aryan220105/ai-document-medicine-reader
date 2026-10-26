@@ -385,6 +385,20 @@ input.field-ink-input {
   cursor: pointer;
 }
 
+.field-ink-value {
+  display: block;
+  width: 100%;
+  text-align: center;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+
+textarea.field-ink-input {
+  resize: none;
+  overflow: hidden;
+}
+
 .field-ink-input:focus {
   outline: none;
 }

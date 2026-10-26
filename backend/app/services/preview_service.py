@@ -19,6 +19,14 @@ FOOTER = "FormSathi Completed Reference Preview - Verify before copying or submi
 SIGNATURE_MARK = "[SIGN MANUALLY]"
 
 
+def centered_x(box_x: float, box_width: float, text_width: float) -> float:
+    return box_x + max(0.0, (box_width - text_width) / 2)
+
+
+def centered_y(box_y: float, box_height: float, block_height: float) -> float:
+    return box_y + max(0.0, (box_height - block_height) / 2)
+
+
 class PreviewService:
     def __init__(self, settings: Settings, pdf: PdfService) -> None:
         self.settings = settings
@@ -74,9 +82,14 @@ class PreviewService:
         font: ImageFont.ImageFont,
     ) -> PreviewWarning | None:
         box = field.input_box.to_pixel(image.width, image.height)
-        left, top = box.x + 3, box.y + 2
         if field.field_type == FieldType.SIGNATURE:
-            draw.text((left, top), SIGNATURE_MARK, fill=(20, 40, 70), font=font)
+            mark_width = font.getlength(SIGNATURE_MARK)
+            draw.text(
+                (centered_x(box.x, box.width, mark_width), centered_y(box.y, box.height, font.size)),
+                SIGNATURE_MARK,
+                fill=(20, 40, 70),
+                font=font,
+            )
             return None
         if field.field_type in {FieldType.CHECKBOX, FieldType.RADIO}:
             if answer.value.lower() in {"true", "1", "yes", "on", "x"}:
@@ -86,14 +99,16 @@ class PreviewService:
         text = answer.value.strip()
         script = dominant_script(text)
         if script not in {"latin", "unknown"}:
-            return self._draw_shaped(image, field, text, script, left, top, box, font.size)
+            return self._draw_shaped(image, field, text, script, box, font.size)
         wrapped = self._wrap(text, font, box.width - 8)
         line_height = int(font.size * 1.2)
-        if len(wrapped) * line_height > box.height + 6:
+        block_height = len(wrapped) * line_height
+        if block_height > box.height + 6:
             return PreviewWarning(field_id=field.id, code="text_overflow", message="Text does not fit this field. Shorten it.")
-        y = top
+        y = centered_y(box.y, box.height, block_height)
         for line in wrapped:
-            draw.text((left, y), line, fill=(20, 40, 70), font=font)
+            line_width = font.getlength(line)
+            draw.text((centered_x(box.x, box.width, line_width), y), line, fill=(20, 40, 70), font=font)
             y += line_height
         return None
 
@@ -103,8 +118,6 @@ class PreviewService:
         field: DetectedField,
         text: str,
         script: str,
-        left: int,
-        top: int,
         box,
         size: int,
     ) -> PreviewWarning | None:
@@ -137,9 +150,11 @@ class PreviewService:
                 code="text_overflow",
                 message="Text does not fit this field. Shorten it.",
             )
-        # Urdu is right-aligned inside its box, matching how it is written on the form.
-        x = left if script != "arabic" else max(left, box.x + box.width - 3 - rendered.width)
-        image.paste(rendered.image, (int(x), int(top)), rendered.image)
+        image.paste(
+            rendered.image,
+            (int(centered_x(box.x, box.width, rendered.width)), int(centered_y(box.y, box.height, rendered.height))),
+            rendered.image,
+        )
         return None
 
     def _wrap(self, text: str, font: ImageFont.ImageFont, max_width: int) -> list[str]:
