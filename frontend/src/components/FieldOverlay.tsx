@@ -29,7 +29,7 @@ export function FieldOverlay({ field, active, completed, value, onSelect, onChan
   const inputRef = useRef<HTMLInputElement>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
-  const [fit, setFit] = useState<FittedFieldText>({ fontSize: 14, lines: [], padTop: 0 });
+  const [fit, setFit] = useState<FittedFieldText>({ fontSize: 14, lines: [], padTop: 0, scale: 1 });
   const [boxHeight, setBoxHeight] = useState(0);
   const error = typing ? validateAnswer(field, value) : null;
   const multiline = field.field_type === "multiline";
@@ -74,6 +74,8 @@ export function FieldOverlay({ field, active, completed, value, onSelect, onChan
     textAlign: "center" as const,
     lineHeight: multiline ? 1.2 : boxHeight > 0 ? `${boxHeight}px` : undefined,
     paddingTop: multiline ? fit.padTop : 0,
+    transform: fit.scale < 0.995 ? `scale(${fit.scale})` : undefined,
+    transformOrigin: "center center",
   };
 
   return (
@@ -115,7 +117,14 @@ export function FieldOverlay({ field, active, completed, value, onSelect, onChan
             }
           }}
         >
-          <span className="field-ink-value" style={{ fontSize: choice ? Math.max(boxHeight * 0.7, 12) : fit.fontSize }}>
+          <span
+            className="field-ink-value"
+            style={{
+              fontSize: choice ? Math.max(boxHeight * 0.7, 12) : fit.fontSize,
+              transform: !choice && fit.scale < 0.995 ? `scale(${fit.scale})` : undefined,
+              whiteSpace: fit.lines.length > 1 ? "pre-wrap" : "nowrap",
+            }}
+          >
             {choice ? (value === "true" ? "✓" : "") : fit.lines.join("\n")}
           </span>
         </button>

@@ -2,10 +2,11 @@ export interface FittedFieldText {
   fontSize: number;
   lines: string[];
   padTop: number;
+  scale: number;
 }
 
-const MIN_FONT = 10;
 const LINE = 1.2;
+const FLOOR = 6;
 
 export function wrapToWidth(text: string, maxWidth: number, widthOf: (line: string) => number): string[] {
   const words = text.split(/\s+/).filter(Boolean);
@@ -36,30 +37,32 @@ export function fitFieldText(
   multiline: boolean,
   widthOf: (line: string, fontSize: number) => number,
 ): FittedFieldText {
-  const max = Math.min(Math.max(boxHeight * 0.72, MIN_FONT), 22);
-  if (boxWidth < 8 || boxHeight < 8) {
-    return { fontSize: max, lines: text ? [text] : [], padTop: 0 };
-  }
+  const max = Math.min(Math.max(boxHeight * 0.8, 1), 22);
   const sample = text.trim();
+  if (boxWidth < 8 || boxHeight < 8 || !sample) {
+    return { fontSize: max, lines: sample ? [sample] : [], padTop: 0, scale: 1 };
+  }
   const innerWidth = Math.max(4, boxWidth - 6);
+  const innerHeight = Math.max(1, boxHeight - 1);
   let size = max;
-  let lines = sample ? [sample] : [];
-  while (size > MIN_FONT) {
-    lines = sample
-      ? multiline
-        ? wrapToWidth(sample, innerWidth, (line) => widthOf(line, size))
-        : [sample]
-      : [];
+  let lines = [sample];
+  const measureLines = (fontSize: number) =>
+    multiline ? wrapToWidth(sample, innerWidth, (line) => widthOf(line, fontSize)) : [sample];
+  while (size > FLOOR) {
+    lines = measureLines(size);
     const widest = lines.reduce((widestLine, line) => Math.max(widestLine, widthOf(line, size)), 0);
-    const block = Math.max(lines.length, 1) * size * (multiline ? LINE : 1);
-    if (widest <= innerWidth && block <= boxHeight - 1) {
+    const block = lines.length * size * (multiline ? LINE : 1);
+    if (widest <= innerWidth && block <= innerHeight) {
       break;
     }
     size = Math.round((size - 0.5) * 10) / 10;
   }
+  lines = measureLines(size);
+  const widest = lines.reduce((widestLine, line) => Math.max(widestLine, widthOf(line, size)), 0);
   const block = Math.max(lines.length, 1) * size * (multiline ? LINE : 1);
-  const padTop = multiline ? Math.max(0, (boxHeight - block) / 2) : 0;
-  return { fontSize: size, lines, padTop };
+  const scale = widest > innerWidth ? innerWidth / widest : 1;
+  const padTop = multiline ? Math.max(0, (boxHeight - block * scale) / 2) : 0;
+  return { fontSize: size, lines, padTop, scale };
 }
 
 export function measureTextWidth(line: string, fontSize: number): number {

@@ -27,6 +27,18 @@ describe("field text fitting", () => {
     }
   });
 
+  it("keeps a thin blank's letters inside the line", () => {
+    const thin = fitFieldText("Ravi", 120, 9, false, widthOf);
+    expect(thin.fontSize).toBeLessThanOrEqual(9);
+  });
+
+  it("scales a value that is wider than the blank so the whole value stays visible", () => {
+    const fitted = fitFieldText("Ravi Kumar from a very long place name", 30, 9, false, widthOf);
+    const drawn = widthOf(fitted.lines[0], fitted.fontSize) * fitted.scale;
+    expect(drawn).toBeLessThanOrEqual(24);
+    expect(fitted.lines[0]).toBe("Ravi Kumar from a very long place name");
+  });
+
   it("wraps on word boundaries", () => {
     expect(wrapToWidth("one two three", 8, (line) => line.length)).toEqual(["one two", "three"]);
   });
