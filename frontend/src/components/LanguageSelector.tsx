@@ -19,13 +19,13 @@ export function LanguageSelector({ value, onChange, available, compact = false }
 
   return (
     <div className="text-sm">
-      <label htmlFor={id} className="block font-medium text-slate-700">
+      <label htmlFor={id} className="fs-label">
         {EXPLANATION_LANGUAGE_LABEL}
       </label>
       <select
         id={id}
         aria-describedby={compact ? undefined : hintId}
-        className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2"
+        className="fs-field"
         value={value}
         onChange={(event) => onChange(event.target.value as Language)}
       >
@@ -37,7 +37,7 @@ export function LanguageSelector({ value, onChange, available, compact = false }
         ))}
       </select>
       {compact ? null : (
-        <p id={hintId} className="mt-1 text-xs text-slate-600">
+        <p id={hintId} className="mt-1 text-xs text-pine/75">
           {EXPLANATION_LANGUAGE_HINT}
         </p>
       )}

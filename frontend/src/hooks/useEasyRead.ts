@@ -8,6 +8,7 @@ export function useEasyRead() {
   useEffect(() => {
     localStorage.setItem(KEY, String(easyRead));
     document.documentElement.classList.toggle("easy-read", easyRead);
+    document.body.classList.toggle("easy-read", easyRead);
   }, [easyRead]);
 
   return { easyRead, setEasyRead };

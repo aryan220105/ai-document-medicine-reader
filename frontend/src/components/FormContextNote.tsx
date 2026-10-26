@@ -19,15 +19,15 @@ export function FormContextNote({ context }: Props) {
   }
   const terms = Object.entries(context.glossary ?? {});
   return (
-    <details className="mt-2 rounded border border-slate-200 bg-slate-50 p-2 text-xs" data-testid="form-context">
-      <summary className="cursor-pointer font-medium text-slate-800">
+    <details className="mt-2 rounded-xl border border-softline bg-foam p-2 text-xs" data-testid="form-context">
+      <summary className="cursor-pointer font-medium text-ink">
         {context.title || "This form"}
         {context.authority ? ` — ${context.authority}` : ""}
       </summary>
-      {context.purpose ? <p className="mt-1 text-slate-700">{context.purpose}</p> : null}
+      {context.purpose ? <p className="mt-1 text-pine">{context.purpose}</p> : null}
       {terms.length ? (
         <>
-          <p className="mt-2 font-medium text-slate-800">Abbreviations on this form</p>
+          <p className="mt-2 font-medium text-ink">Abbreviations on this form</p>
           <ul className="mt-1 space-y-0.5">
             {terms.map(([term, meaning]) => (
               <li key={term}>
@@ -39,7 +39,7 @@ export function FormContextNote({ context }: Props) {
       ) : null}
       {context.notes?.length ? (
         <>
-          <p className="mt-2 font-medium text-slate-800">From the form's own instructions</p>
+          <p className="mt-2 font-medium text-ink">From the form's own instructions</p>
           <ul className="mt-1 list-disc space-y-0.5 pl-4">
             {context.notes.map((note) => (
               <li key={note}>{note}</li>
@@ -49,10 +49,10 @@ export function FormContextNote({ context }: Props) {
       ) : null}
       {context.web_sources?.length ? (
         <>
-          <p className="mt-2 font-medium text-slate-800">Background looked up online</p>
-          <p className="mt-1 text-slate-700">
-            Used only to fill gaps this document left, such as an abbreviation it never spells out.
-            Anything printed on your form takes precedence.
+          <p className="mt-2 font-medium text-ink">Background looked up online</p>
+          <p className="mt-1 text-pine">
+            Used only to fill gaps this document left, such as an abbreviation it never spells out. Anything printed on
+            your form takes precedence.
           </p>
           <ul className="mt-1 list-disc space-y-0.5 pl-4">
             {context.web_sources.map((source) => (
@@ -61,7 +61,7 @@ export function FormContextNote({ context }: Props) {
           </ul>
         </>
       ) : null}
-      <p className="mt-2 text-slate-600">Read from this document. Always check the form's own instructions.</p>
+      <p className="mt-2 text-pine/75">Read from this document. Always check the form's own instructions.</p>
     </details>
   );
 }

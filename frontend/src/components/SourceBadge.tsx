@@ -12,7 +12,7 @@ const LABELS: Record<GuidanceSource, string> = {
 
 export function SourceBadge({ source }: { source: GuidanceSource }) {
   return (
-    <span className="inline-block rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-800" data-testid="source-badge">
+    <span className="fs-chip bg-white text-pine ring-1 ring-softline" data-testid="source-badge">
       {LABELS[source]}
     </span>
   );

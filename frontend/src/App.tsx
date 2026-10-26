@@ -260,28 +260,41 @@ export default function App() {
   const scripts = document?.scripts ?? [];
 
   return (
-    <div className={`min-h-screen ${easyRead ? "easy-read" : ""}`}>
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 shadow-sm">
-        <div>
-          <p className="font-serif text-xl text-slate-900">FormSathi</p>
-          <p className="text-sm text-slate-600">English, Hindi, Kannada, and Urdu guidance for the form in front of you</p>
-        </div>
-        <div className="flex flex-wrap items-end gap-3">
-          <LanguageSelector value={language} onChange={chooseLanguage} compact />
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={easyRead} onChange={(event) => setEasyRead(event.target.checked)} />
-            Easy Read
-          </label>
-          {document ? (
-            <button type="button" className="rounded border px-3 py-2" onClick={reset}>
-              Start new form
+    <div className={`fs-shell ${easyRead ? "easy-read" : ""}`}>
+      <header className="fs-header">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-4 py-3">
+          <div>
+            <p className="font-display text-2xl font-semibold tracking-tight text-ink">FormSathi</p>
+            <p className="text-sm text-pine/80">Guidance in English, Hindi, Kannada, and Urdu</p>
+          </div>
+          <div className="flex flex-wrap items-end gap-3">
+            <LanguageSelector value={language} onChange={chooseLanguage} compact />
+            <button
+              type="button"
+              className="easy-read-toggle"
+              data-on={easyRead ? "true" : "false"}
+              aria-pressed={easyRead}
+              aria-label="Easy Read"
+              title="Larger text, stronger contrast, and bigger buttons"
+              onClick={() => setEasyRead(!easyRead)}
+            >
+              <span className="easy-read-toggle-switch" aria-hidden />
+              <span className="easy-read-toggle-copy">
+                <span>Easy Read</span>
+                <small>{easyRead ? "On — larger & clearer" : "Larger text & buttons"}</small>
+              </span>
             </button>
-          ) : null}
+            {document ? (
+              <button type="button" className="fs-btn-secondary" onClick={reset}>
+                Start new form
+              </button>
+            ) : null}
+          </div>
         </div>
       </header>
-      <main className="p-4">
+      <main className="mx-auto max-w-[1400px] p-4 sm:p-6">
         {error ? (
-          <p role="alert" className="mb-4 rounded bg-red-50 p-3 text-red-900">
+          <p role="alert" className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-900">
             {error}
           </p>
         ) : null}
@@ -301,19 +314,20 @@ export default function App() {
         ) : document.status === "processing" ? (
           <ProcessingProgress stage={document.stage} />
         ) : document.status === "failed" ? (
-          <div className="mx-auto max-w-xl space-y-3">
-            <p>{document.error_message}</p>
-            <button type="button" className="underline" onClick={reset}>
+          <div className="mx-auto max-w-xl space-y-4 rounded-3xl border border-softline bg-foam p-6 shadow-soft">
+            <p className="text-ink">{document.error_message}</p>
+            <button type="button" className="fs-btn-primary" onClick={reset}>
               Try another form
             </button>
           </div>
         ) : (
-          <div className="grid items-start gap-4 lg:grid-cols-[240px_minmax(0,1fr)_360px]">
-            <div className="hidden rounded-xl border border-slate-200 bg-white p-3 lg:block">
+          <div className="grid items-start gap-4 lg:grid-cols-[250px_minmax(0,1fr)_380px]">
+            <div className="fs-panel hidden p-3 lg:block">
               <FieldNavigator
                 fields={document.fields.filter((field) => !excluded.has(field.id) || field.id === selectedId)}
                 selectedId={selectedId}
                 excluded={excluded}
+                answers={answers}
                 onSelect={(id) => {
                   setSelectedId(id);
                   const field = document.fields.find((item) => item.id === id);
@@ -344,34 +358,36 @@ export default function App() {
               onSelect={setSelectedId}
               onPage={setPageIndex}
             />
-            <div className="rounded-xl border border-slate-200 bg-white">
-              <div className="px-4 text-sm text-slate-600" data-testid="form-status">
+            <div className="fs-panel overflow-hidden">
+              <div className="space-y-2 border-b border-softline bg-mist/50 px-4 py-3 text-sm text-pine" data-testid="form-status">
                 {unknownForm ? (
                   <p>
                     Unknown form. {resolvedCount} of {document.fields.length} fields matched the multilingual field
                     dictionary; the rest are described from their printed wording.
                   </p>
                 ) : (
-                  <p>Known form: {document.form_match.display_name}</p>
+                  <p>
+                    <span className="font-semibold text-ink">Known form:</span> {document.form_match.display_name}
+                  </p>
                 )}
                 {scripts.length > 0 ? (
-                  <p className="mt-1 text-xs">
+                  <p className="text-xs">
                     Printed script: {scripts.map(scriptLabel).join(", ")}. Explanations shown in{" "}
                     {nativeNameFor(language)}; the form itself is never translated.
                   </p>
                 ) : null}
                 {document.interpreter_used ? (
-                  <p className="mt-1 text-xs" data-testid="interpreter-note">
-                    Fields were read in the context of their column headings, so repeated labels on this
-                    form are told apart.
+                  <p className="text-xs" data-testid="interpreter-note">
+                    Fields were read in the context of their column headings, so repeated labels on this form are told
+                    apart.
                   </p>
                 ) : config?.interpreter_enabled === false ? (
-                  <p className="mt-1 text-xs" data-testid="interpreter-off">
-                    Context reading is off, so fields are matched by their printed wording alone. Dense
-                    tables with repeated labels may be described imprecisely.
+                  <p className="text-xs" data-testid="interpreter-off">
+                    Context reading is off, so fields are matched by their printed wording alone. Dense tables with
+                    repeated labels may be described imprecisely.
                   </p>
                 ) : null}
-                {bundleLoading ? <p className="mt-1 text-xs">Preparing guidance in all languages…</p> : null}
+                {bundleLoading ? <p className="text-xs">Preparing guidance in all languages…</p> : null}
                 <FormContextNote context={document.form_context} />
               </div>
               <GuidancePanel
@@ -406,25 +422,28 @@ export default function App() {
                 }}
                 askAnswer={askAnswer}
               />
-              <div className="flex flex-wrap gap-2 p-4">
-                <button type="button" className="rounded bg-teal-800 px-3 py-2 text-white" onClick={handlePreview}>
+              <div className="sticky bottom-0 space-y-2 border-t border-softline bg-foam p-4">
+                <button type="button" className="fs-btn-primary w-full" onClick={handlePreview}>
                   Create completed reference preview
                 </button>
-                <button type="button" className="rounded border px-3 py-2" onClick={() => setAnswers({})}>
-                  Clear answers
-                </button>
-                <button type="button" className="rounded border px-3 py-2" onClick={() => setSelectedId(null)}>
-                  Clear highlight
-                </button>
-                <button type="button" className="rounded border px-3 py-2" onClick={reset}>
-                  Delete document
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button type="button" className="fs-btn-secondary" onClick={() => setAnswers({})}>
+                    Clear answers
+                  </button>
+                  <button type="button" className="fs-btn-secondary" onClick={() => setSelectedId(null)}>
+                    Clear highlight
+                  </button>
+                  <button type="button" className="fs-btn-ghost" onClick={reset}>
+                    Delete document
+                  </button>
+                </div>
               </div>
-              <div className="lg:hidden">
+              <div className="border-t border-softline p-3 lg:hidden">
                 <FieldNavigator
                   fields={document.fields}
                   selectedId={selectedId}
                   excluded={excluded}
+                  answers={answers}
                   onSelect={setSelectedId}
                   onExclude={(id) => setExcluded(new Set(excluded).add(id))}
                 />

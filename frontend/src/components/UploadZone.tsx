@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Upload } from "lucide-react";
+import { FileUp, Sparkles } from "lucide-react";
 import { LanguageSelector } from "./LanguageSelector";
 import { PrivacyNotice } from "./PrivacyNotice";
 import type { AppConfig, DocumentCategory, Language } from "../types";
@@ -41,73 +41,101 @@ export function UploadZone({
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <header>
-        <p className="text-sm uppercase tracking-wide text-teal-800">Academic demonstration</p>
-        <h1 className="mt-1 font-serif text-3xl text-slate-900">FormSathi</h1>
-        <p className="mt-2 text-slate-700">
+    <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+      <section className="space-y-6 px-1">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-leaf">Academic demonstration</p>
+        <h1 className="font-display text-5xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl">
+          FormSathi
+        </h1>
+        <p className="max-w-xl text-lg leading-relaxed text-ink">
           Upload a form, see where each answer belongs, and hear the explanation in English, Hindi, Kannada, or Urdu.
-          Known forms and forms the app has never seen are both read aloud.
         </p>
-      </header>
-      <div
-        className={`rounded-xl border-2 border-dashed px-6 py-12 text-center shadow-sm ${drag ? "border-teal-700 bg-teal-50" : "border-slate-300 bg-white"}`}
-        onDragOver={(event) => {
-          event.preventDefault();
-          setDrag(true);
-        }}
-        onDragLeave={() => setDrag(false)}
-        onDrop={(event) => {
-          event.preventDefault();
-          setDrag(false);
-          accept(event.dataTransfer.files[0]);
-        }}
-      >
-        <Upload className="mx-auto h-8 w-8 text-teal-800" aria-hidden />
-        <p className="mt-3 font-medium">Drop a PNG, JPG, WEBP, or PDF here</p>
-        <p className="mt-1 text-sm text-slate-600">Maximum {config?.max_upload_mb ?? 10} MB. Up to {config?.max_pdf_pages ?? 5} PDF pages.</p>
-        <button
-          type="button"
-          className="mt-4 rounded-md bg-teal-800 px-4 py-2 text-white"
-          onClick={() => inputRef.current?.click()}
+        <ol className="grid gap-3 sm:grid-cols-3">
+          {[
+            { step: "1", title: "Upload", text: "Photo or PDF of the form" },
+            { step: "2", title: "Tap a box", text: "See what it asks for" },
+            { step: "3", title: "Write & preview", text: "Copy onto the official form" },
+          ].map((item) => (
+            <li key={item.step} className="rounded-2xl border-2 border-softline bg-foam px-4 py-3">
+              <p className="font-display text-2xl text-leaf">{item.step}</p>
+              <p className="mt-1 font-semibold text-ink">{item.title}</p>
+              <p className="mt-1 text-sm text-pine">{item.text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="space-y-4">
+        <div
+          className={`rounded-3xl border-2 border-dashed px-6 py-10 text-center transition duration-200 ${
+            drag ? "border-leaf bg-leaf/5 shadow-lift" : "border-softline bg-foam shadow-soft"
+          }`}
+          onDragOver={(event) => {
+            event.preventDefault();
+            setDrag(true);
+          }}
+          onDragLeave={() => setDrag(false)}
+          onDrop={(event) => {
+            event.preventDefault();
+            setDrag(false);
+            accept(event.dataTransfer.files[0]);
+          }}
         >
-          Choose file
-        </button>
-        <input
-          ref={inputRef}
-          type="file"
-          className="sr-only"
-          accept=".png,.jpg,.jpeg,.webp,.pdf"
-          onChange={(event) => accept(event.target.files?.[0])}
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-mist text-leaf">
+            <FileUp className="h-7 w-7" aria-hidden />
+          </div>
+          <p className="mt-4 text-lg font-semibold text-ink">Drop a PNG, JPG, WEBP, or PDF here</p>
+          <p className="mt-1 text-sm text-pine/80">
+            Maximum {config?.max_upload_mb ?? 10} MB. Up to {config?.max_pdf_pages ?? 5} PDF pages.
+          </p>
+          <button type="button" className="fs-btn-primary mt-5" onClick={() => inputRef.current?.click()}>
+            Choose file
+          </button>
+          <input
+            ref={inputRef}
+            type="file"
+            className="sr-only"
+            accept=".png,.jpg,.jpeg,.webp,.pdf"
+            onChange={(event) => accept(event.target.files?.[0])}
+          />
+        </div>
+
+        {error ? (
+          <p role="alert" className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-900">
+            {error}
+          </p>
+        ) : null}
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="fs-label">
+            Form category
+            <select
+              className="fs-field capitalize"
+              value={category}
+              onChange={(event) => onCategory(event.target.value as DocumentCategory)}
+            >
+              {CATEGORIES.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+          <LanguageSelector value={language} onChange={onLanguage} />
+        </div>
+
+        <PrivacyNotice
+          notice={config?.privacy_notice ?? "Uploaded forms stay on this machine for the demonstration."}
+          allowAi={allowAi}
+          aiEnabled={Boolean(config?.llm_configured)}
+          onAllowAi={onAllowAi}
         />
-      </div>
-      {error ? <p role="alert" className="text-red-800">{error}</p> : null}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm font-medium text-slate-700">
-          Form category
-          <select
-            className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 capitalize"
-            value={category}
-            onChange={(event) => onCategory(event.target.value as DocumentCategory)}
-          >
-            {CATEGORIES.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </label>
-        <LanguageSelector value={language} onChange={onLanguage} />
-      </div>
-      <PrivacyNotice
-        notice={config?.privacy_notice ?? "Uploaded forms stay on this machine for the demonstration."}
-        allowAi={allowAi}
-        aiEnabled={Boolean(config?.llm_configured)}
-        onAllowAi={onAllowAi}
-      />
-      <button type="button" className="text-teal-800 underline" onClick={onDemo}>
-        Try a synthetic Demo Bank form
-      </button>
+
+        <button type="button" className="fs-btn-secondary w-full" onClick={onDemo}>
+          <Sparkles className="h-4 w-4 text-coral" aria-hidden />
+          Try a synthetic Demo Bank form
+        </button>
+      </section>
     </div>
   );
 }

@@ -26,23 +26,19 @@ export function FieldInput({ field, value, onChange }: Props) {
 
   if (field.field_type === "signature") {
     return (
-      <p className="rounded bg-slate-100 p-3 text-sm">
+      <p className="rounded-xl bg-mist p-3 text-sm text-ink">
         Sign the official paper by hand. FormSathi never creates a signature.
       </p>
     );
   }
 
   if (field.filled_by === "office" || rule?.kind === "office_use") {
-    return (
-      <p className="rounded bg-slate-100 p-3 text-sm">
-        This space is filled in by the office. Leave it blank.
-      </p>
-    );
+    return <p className="rounded-xl bg-mist p-3 text-sm text-ink">This space is filled in by the office. Leave it blank.</p>;
   }
 
   if (field.field_type === "checkbox" || field.field_type === "radio") {
     return (
-      <label className="flex items-center gap-2">
+      <label className="flex items-center gap-2 text-ink">
         <input
           type={field.field_type}
           checked={value === "true"}
@@ -59,12 +55,12 @@ export function FieldInput({ field, value, onChange }: Props) {
 
   return (
     <div>
-      <label className="block text-sm font-medium" htmlFor={field.id}>
+      <label className="fs-label" htmlFor={field.id}>
         Your answer
       </label>
       <Tag
         id={field.id}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
+        className="fs-field"
         value={value}
         rows={multiline ? 3 : undefined}
         /* The answer is the user's own, in whatever script they write it, so the browser
@@ -72,12 +68,12 @@ export function FieldInput({ field, value, onChange }: Props) {
         dir="auto"
         inputMode={numeric && !multiline ? "numeric" : undefined}
         maxLength={rule?.max_length ?? undefined}
-        placeholder={rule?.format ?? undefined}
+        placeholder={rule?.format ?? "Type your answer here"}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${field.id}-error` : undefined}
         onChange={(event) => onChange(event.target.value)}
       />
-      {rule?.format && !error ? <p className="mt-1 text-xs text-slate-600">Format: {rule.format}</p> : null}
+      {rule?.format && !error ? <p className="mt-1 text-xs text-pine/75">Format: {rule.format}</p> : null}
       {error ? (
         <p id={`${field.id}-error`} className="mt-1 text-sm text-red-800">
           {error}

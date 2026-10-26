@@ -10,12 +10,18 @@ interface Props {
 
 export function FieldOverlay({ field, active, completed, onSelect }: Props) {
   const low = field.confidence < 0.55;
-  const color = active ? "border-amber-500 bg-amber-300/25" : completed ? "border-teal-700 bg-teal-600/15" : low ? "border-red-700 bg-red-500/10" : "border-sky-700 bg-sky-500/10";
+  const color = active
+    ? "border-coral bg-coral/20 ring-2 ring-coral/30"
+    : completed
+      ? "border-leaf bg-leaf/15"
+      : low
+        ? "border-red-700 bg-red-500/10"
+        : "border-leaf/70 bg-leaf/10 hover:bg-leaf/15";
   return (
     <button
       type="button"
       aria-label={field.label || field.id}
-      className={`absolute border-2 ${color}`}
+      className={`absolute border-2 transition ${color}`}
       style={overlayStyle(field.input_box)}
       onClick={() => onSelect(field.id)}
     />

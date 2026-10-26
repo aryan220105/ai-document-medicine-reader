@@ -57,7 +57,11 @@ export function GuidancePanel({
   askAnswer,
 }: Props) {
   if (!field) {
-    return <p className="p-4 text-slate-600">Select a field on the form to see guidance.</p>;
+    return (
+      <p className="p-5 text-pine/80">
+        Tap a highlighted box on the form, or pick a field from the checklist, to see what to write.
+      </p>
+    );
   }
 
   const availableLanguages = bundle ? (Object.keys(bundle.languages) as Language[]) : undefined;
@@ -66,21 +70,25 @@ export function GuidancePanel({
 
   return (
     <aside className="space-y-4 overflow-auto p-4" data-testid="guidance-panel">
-      <DirectionalText as="h2" language={labelLanguage} className="font-serif text-xl">
-        {fieldTitle(field)}
-      </DirectionalText>
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-leaf">Current field</p>
+        <DirectionalText as="h2" language={labelLanguage} className="mt-1 font-display text-2xl text-ink">
+          {fieldTitle(field)}
+        </DirectionalText>
+      </div>
       {field.caption && field.caption !== fieldTitle(field) ? (
-        <p className="-mt-2 text-xs text-slate-600">
+        <p className="-mt-2 text-xs text-pine/80">
           Printed on the form as <span dir="auto">“{field.caption}”</span>
           {field.column_header ? (
             <>
-              {" "}under <span dir="auto">“{field.column_header}”</span>
+              {" "}
+              under <span dir="auto">“{field.column_header}”</span>
             </>
           ) : null}
         </p>
       ) : null}
       {field.filled_by === "office" ? (
-        <p role="note" className="rounded bg-slate-100 p-2 text-sm text-slate-800" data-testid="office-notice">
+        <p role="note" className="rounded-xl bg-mist p-3 text-sm text-ink" data-testid="office-notice">
           This part is filled in by the office, not by you. Leave it blank.
         </p>
       ) : null}
@@ -88,86 +96,89 @@ export function GuidancePanel({
       <LanguageSelector value={language} onChange={onLanguage} available={availableLanguages} />
 
       {field.confidence < 0.55 ? (
-        <p role="alert" className="rounded bg-red-50 p-2 text-sm text-red-900">
+        <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-900">
           Low-confidence detection. Verify this box against the printed form.
         </p>
       ) : null}
 
       {guidance ? (
-        <div data-testid="guidance-body" data-language={language}>
-          <div className="mb-2 flex flex-wrap gap-2">
+        <div className="space-y-3 rounded-2xl border border-softline bg-mist/40 p-3" data-testid="guidance-body" data-language={language}>
+          <div className="flex flex-wrap gap-2">
             <SourceBadge source={guidance.source} />
             <ConfidenceBadge value={guidance.confidence} verify={guidance.requires_verification} />
             {guidance.inferred ? (
-              <span className="rounded bg-amber-100 px-2 py-0.5 text-xs text-amber-900" data-testid="inferred-badge">
+              <span className="fs-chip bg-amber-100 text-amber-900" data-testid="inferred-badge">
                 Inferred from the printed wording
               </span>
             ) : null}
           </div>
 
-          <DirectionalText language={language} className="font-medium">
+          <DirectionalText language={language} className="text-lg font-semibold text-ink">
             {guidance.simple_label}
           </DirectionalText>
-          <DirectionalText language={language}>{guidance.what_to_enter}</DirectionalText>
+          <DirectionalText language={language} className="leading-relaxed text-pine">
+            {guidance.what_to_enter}
+          </DirectionalText>
           {guidance.why_needed ? (
-            <DirectionalText language={language} className="text-sm text-slate-700">
+            <DirectionalText language={language} className="text-sm text-pine/85">
               {guidance.why_needed}
             </DirectionalText>
           ) : null}
           {guidance.example ? (
-            <p className="text-sm">
+            <p className="rounded-xl bg-foam px-3 py-2 text-sm text-ink">
               <strong>Example (fictional):</strong> <span dir="auto">{guidance.example}</span>
             </p>
           ) : null}
           {guidance.format_hint ? (
-            <DirectionalText language={language} className="text-sm">
+            <DirectionalText language={language} className="text-sm text-pine">
               {guidance.format_hint}
             </DirectionalText>
           ) : null}
           {guidance.verify_notice ? (
-            <DirectionalText language={language} className="mt-2 text-xs text-slate-600">
+            <DirectionalText language={language} className="text-xs text-pine/75">
               {guidance.verify_notice}
             </DirectionalText>
           ) : null}
 
-          <div className="mt-3">
-            <VoiceButton
-              onPlay={onPlay}
-              onStop={onStop}
-              speaking={speaking}
-              available={available}
-              hasLanguageVoice={hasLanguageVoice}
-              language={language}
-              canSpeak={canSpeak}
-              voiceLanguage={voiceLanguage}
-              provider={provider}
-              configured={configured}
-              loading={loading}
-              error={error}
-            />
-          </div>
+          <VoiceButton
+            onPlay={onPlay}
+            onStop={onStop}
+            speaking={speaking}
+            available={available}
+            hasLanguageVoice={hasLanguageVoice}
+            language={language}
+            canSpeak={canSpeak}
+            voiceLanguage={voiceLanguage}
+            provider={provider}
+            configured={configured}
+            loading={loading}
+            error={error}
+          />
         </div>
       ) : (
-        <p>Loading guidance…</p>
+        <p className="text-sm text-pine/80">Loading guidance…</p>
       )}
 
-      <FieldInput field={field} value={value} onChange={onChange} />
+      <div className="rounded-2xl border border-leaf/25 bg-leaf/5 p-3">
+        <FieldInput field={field} value={value} onChange={onChange} />
+      </div>
 
-      <div>
-        <label className="block text-sm font-medium" htmlFor="ask">
+      <div className="rounded-2xl border border-softline bg-white p-3">
+        <label className="fs-label" htmlFor="ask">
           Ask about this field
         </label>
         <input
           id="ask"
-          className="mt-1 w-full rounded-md border px-3 py-2"
+          className="fs-field"
           value={question}
           onChange={(event) => onQuestion(event.target.value)}
+          placeholder="e.g. Where should I write this?"
         />
-        <button type="button" className="mt-2 rounded bg-slate-800 px-3 py-2 text-white" onClick={onAsk}>
+        <button type="button" className="fs-btn-secondary mt-2" onClick={onAsk}>
           Ask
         </button>
         {askAnswer ? (
-          <DirectionalText language={language} className="mt-2 text-sm">
+          <DirectionalText language={language} className="mt-2 text-sm text-pine">
             {askAnswer}
           </DirectionalText>
         ) : null}
