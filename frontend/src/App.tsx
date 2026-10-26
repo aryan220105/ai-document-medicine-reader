@@ -356,6 +356,7 @@ export default function App() {
               zoom={zoom}
               onZoom={setZoom}
               onSelect={setSelectedId}
+              onAnswer={(id, value) => setAnswers((current) => ({ ...current, [id]: value }))}
               onPage={setPageIndex}
             />
             <div className="fs-panel overflow-hidden">

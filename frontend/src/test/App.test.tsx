@@ -263,7 +263,7 @@ describe("unknown-form flow", () => {
     const heading = screen.getByRole("heading", { name: urduField.label });
     expect(heading).toHaveAttribute("dir", "rtl");
 
-    const answerBox = screen.getByLabelText("Your answer") as HTMLInputElement;
+    const answerBox = screen.getByRole("textbox", { name: urduField.label }) as HTMLInputElement;
     await user.type(answerBox, "Mahesh Rao");
     expect(answerBox.value).toBe("Mahesh Rao");
 
@@ -275,16 +275,16 @@ describe("unknown-form flow", () => {
     expect(screen.getByText(GUIDANCE_TEXT.en)).toBeInTheDocument();
     expect(screen.queryByText(GUIDANCE_TEXT.ur)).not.toBeInTheDocument();
     // ...while the answer and the printed label did not.
-    expect((screen.getByLabelText("Your answer") as HTMLInputElement).value).toBe("Mahesh Rao");
+    expect((screen.getByRole("textbox", { name: urduField.label }) as HTMLInputElement).value).toBe("Mahesh Rao");
     expect(screen.getByRole("heading", { name: urduField.label })).toHaveAttribute("dir", "rtl");
 
     await user.selectOptions(select, "kn");
     await waitFor(() => expect(screen.getByText(GUIDANCE_TEXT.kn)).toBeInTheDocument());
-    expect((screen.getByLabelText("Your answer") as HTMLInputElement).value).toBe("Mahesh Rao");
+    expect((screen.getByRole("textbox", { name: urduField.label }) as HTMLInputElement).value).toBe("Mahesh Rao");
 
     await user.selectOptions(select, "hi");
     await waitFor(() => expect(screen.getByText(GUIDANCE_TEXT.hi)).toBeInTheDocument());
-    expect((screen.getByLabelText("Your answer") as HTMLInputElement).value).toBe("Mahesh Rao");
+    expect((screen.getByRole("textbox", { name: urduField.label }) as HTMLInputElement).value).toBe("Mahesh Rao");
   });
 
   it("remembers the chosen language instead of re-applying the form's script", async () => {
@@ -304,6 +304,42 @@ describe("workspace widgets", () => {
     expect(screen.getByText("Detecting fields")).toBeInTheDocument();
   });
 
+  it("types into the field on the form and keeps the letters centered", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const { rerender } = render(
+      <div className="relative h-40 w-40">
+        <FieldOverlay field={field} active value="" completed={false} onSelect={vi.fn()} onChange={onChange} />
+      </div>,
+    );
+    const box = screen.getByRole("textbox", { name: "Full Name" });
+    expect(box.className).toContain("field-ink-input");
+    await user.type(box, "A");
+    expect(onChange).toHaveBeenCalledWith("p0-f0", "A");
+
+    rerender(
+      <div className="relative h-40 w-40">
+        <FieldOverlay field={field} active={false} value="Ananya" completed onSelect={vi.fn()} onChange={onChange} />
+      </div>,
+    );
+    const shown = screen.getByRole("button", { name: "Full Name" });
+    expect(shown).toHaveTextContent("Ananya");
+    expect(shown.className).toContain("field-ink-button");
+  });
+
+  it("ticks a checkbox on the form itself", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const box: DetectedField = { ...field, id: "tick", label: "Nominee present", field_type: "checkbox", confidence: 0.9 };
+    render(
+      <div className="relative h-40 w-40">
+        <FieldOverlay field={box} active={false} value="" completed={false} onSelect={vi.fn()} onChange={onChange} />
+      </div>,
+    );
+    await user.click(screen.getByRole("button", { name: "Nominee present" }));
+    expect(onChange).toHaveBeenCalledWith("tick", "true");
+  });
+
   it("positions overlays from normalized coordinates", () => {
     const style = overlayStyle({ x: 0.2, y: 0.3, width: 0.4, height: 0.05 });
     expect(style.left).toBe("20%");
@@ -317,10 +353,10 @@ describe("workspace widgets", () => {
     const onSelect = vi.fn();
     const { rerender } = render(
       <div className="relative h-40 w-40">
-        <FieldOverlay field={field} active={false} completed={false} onSelect={onSelect} />
+        <FieldOverlay field={field} active={false} completed={false} value="" onSelect={onSelect} onChange={vi.fn()} />
       </div>,
     );
-    await user.click(screen.getByLabelText("Full Name"));
+    await user.click(screen.getByRole("button", { name: "Full Name" }));
     expect(onSelect).toHaveBeenCalledWith("p0-f0");
     rerender(
       <FieldNavigator

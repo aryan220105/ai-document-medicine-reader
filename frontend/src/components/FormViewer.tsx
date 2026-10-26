@@ -13,6 +13,7 @@ interface Props {
   zoom: number;
   onZoom: (value: number) => void;
   onSelect: (id: string) => void;
+  onAnswer: (id: string, value: string) => void;
   onPage: (index: number) => void;
 }
 
@@ -26,6 +27,7 @@ export function FormViewer({
   zoom,
   onZoom,
   onSelect,
+  onAnswer,
   onPage,
 }: Props) {
   return (
@@ -90,7 +92,9 @@ export function FormViewer({
                 field={field}
                 active={selectedId === field.id}
                 completed={Boolean(answers[field.id])}
+                value={answers[field.id] ?? ""}
                 onSelect={onSelect}
+                onChange={onAnswer}
               />
             ))}
         </div>
