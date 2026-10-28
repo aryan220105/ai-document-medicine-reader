@@ -432,7 +432,7 @@ When the optional AI is enabled, a reply is **rejected if it is not written in t
 
 ```bash
 cd backend
-pytest -q                 # about 135 tests, including tests/test_unknown_forms.py and tests/test_sir_form.py
+pytest -q                 # 178 tests, including tests/test_unknown_forms.py and tests/test_sir_form.py
 python -m compileall app
 ruff check .
 
