@@ -2,7 +2,7 @@
 
 FormSathi analyzes an uploaded form, detects fillable fields, explains each field in simple language, highlights where the answer belongs, provides English, Hindi, Kannada, and Urdu text and voice guidance, collects answers locally, and generates a **Completed Reference Preview** for the user to copy onto the official form.
 
-It works on forms it has never seen before. An **unknown form** in any of the four supported scripts is resolved field by field against a multilingual field dictionary, so an unrecognised form behaves like a known one: every field gets a name, a plain-language description, an expected format, a validation rule, and an answer box that feeds the same reference preview.
+It works on forms it has never seen before. An **unknown form** in any of the four supported scripts is resolved field by field against a multilingual field dictionary, so an unrecognised form behaves like a known one: every field gets a name, a plain-language description, an expected format, a validation rule, and a blank on the page you click and type into. Those answers feed the same reference preview.
 
 The **explanation language can be switched at any moment** and changes only the guidance. The uploaded form is never translated, re-read, or altered, and answers already typed are never disturbed.
 
@@ -67,9 +67,12 @@ Users remain responsible for verifying official instructions. Avoid highly sensi
   separates two cells both captioned `Name:` under different headings, recognises
   `AC Name` as an Assembly Constituency rather than a person, and tells a field the
   applicant fills from one the office fills
-- **Office-use fields are marked and have no answer box**, so the applicant is never
+- **Office-use fields are marked and cannot be typed**, so the applicant is never
   invited to complete a block meant for a verifying officer
 - Known-form fingerprint matching against the seeded knowledge base
+- **Special Intensive Revision layout pass**: when the page fingerprints as an SIR
+  declaration form, blanks are renamed and missing ones inserted from the official
+  layout, so Hindi, Kannada, and Urdu copies of that form get the same field names
 - **Multilingual common-field dictionary**: 56 fields, 927 printed wordings across English, Hindi, Kannada, and Urdu, matched in native script
 - **Noise-tolerant matching**: exact wording, contained wording, and token-aligned fuzzy matching, so `Dato of Birlh` still resolves to date of birth
 - **Honest fallbacks**: a label the dictionary does not know is described by what it *asks for* (a name, a number, a date, an amount, an address, a choice, or an office-use block) and labelled as inferred, rather than guessed at
@@ -78,7 +81,13 @@ Users remain responsible for verifying official instructions. Avoid highly sensi
 
 ### Using the form
 
+- **Type on the form itself**: click a blank on the page and type there. Letters appear
+  as you type, sit in the centre of the blank, and shrink to stay fully visible. There
+  is no separate answer box on the right; that panel is guidance, Listen, and Ask only.
+  Tick boxes are marked on the page. Signature blanks stay read-only — FormSathi never
+  creates a signature
 - English, Hindi, Kannada, and **Urdu** stored guidance, read aloud with ElevenLabs (browser voice is the fallback)
+- **Easy Read**: larger type, stronger contrast, and bigger controls, toggled from the header
 - **On-the-go explanation language switching**: all four languages arrive in one request, so changing language is instant, works offline, and provably leaves the form and the typed answers untouched
 - Right-to-left rendering for Urdu guidance, applied per element so the form's own labels keep their own direction
 - **Per-field validation rules** for unknown forms too: dates, mobile numbers, PIN codes, Aadhaar, PAN, IFSC, bank accounts, email, amounts, years, and names, with messages in the chosen language
@@ -87,11 +96,12 @@ Users remain responsible for verifying official instructions. Avoid highly sensi
   written in Kannada, not Latin letters. Values that read the same everywhere — a date, a
   PIN code, an IFSC — stay identical across the four languages
 - **Read-aloud uses ElevenLabs for English, Hindi, Kannada, and Urdu**, on known forms and
-  on forms the app has not seen before. Set `ELEVENLABS_API_KEY`. Only the guidance
-  sentence is sent. If the key is missing or the service cannot be reached, the browser
-  voice is used and the panel says so. Kannada and Urdu need the `eleven_v3` model;
-  multilingual v2 does not speak them
-- Non-destructive answer overlay and Completed Reference Preview PDF, with HarfBuzz shaping so answers typed in any of the four scripts render correctly
+  on forms the app has not seen before. Set `ELEVENLABS_API_KEY` and `ELEVENLABS_MODEL_ID=eleven_v3`
+  (multilingual v2 does not speak Kannada or Urdu). Only the guidance sentence is sent.
+  Answers and page images are never sent. If the key is missing or the service cannot be
+  reached, the browser voice is used and the panel says so. On the free plan, a Voice
+  Design voice ID is required; library voices such as Rachel return HTTP 402
+- Non-destructive on-page answers and a Completed Reference Preview PDF, with HarfBuzz shaping so answers typed in any of the four scripts render correctly and stay centred in their blanks
 - Delete and start-over cleanup
 
 ## Architecture
@@ -357,13 +367,15 @@ Copy `.env.example` to `.env`. Never commit `.env`.
 
 Place `GROQ_API_KEY` and `GROQ_MODEL` only in the local `.env` file. The app starts without them. External AI runs only when `EXTERNAL_AI_ENABLED=true` and the user consents in the UI.
 
+For read-aloud, set `ELEVENLABS_API_KEY`, `ELEVENLABS_MODEL_ID=eleven_v3`, and a Voice Design `ELEVENLABS_VOICE_ID` if you are on the free plan. Leave the key empty to use the browser voice only.
+
 ## Sample demonstration
 
 ### Known form
 
 1. Generate samples.
 2. Open http://localhost:5173 and use **Try a synthetic Demo Bank form**, or upload `samples/demo_bank_account_opening.png`.
-3. Confirm the known-form match, inspect overlays, switch languages, enter fictional answers, and download the reference preview.
+3. Confirm the known-form match, click a blank on the page, type a fictional answer there (it appears centred as you type), switch languages, and download the reference preview.
 
 ### Unknown form, in four languages
 
@@ -382,7 +394,7 @@ Things worth checking on an unknown form:
 
 1. The header says **Unknown form** and reports how many fields the dictionary resolved.
 2. The printed script is named, and the explanation language opens in that script's language.
-3. Change the explanation language from the panel. Only the description changes. Type an answer first and confirm it survives the switch, and that the form image and its printed labels do not change.
+3. Click a blank on the form, type an answer there, then change the explanation language from the panel. Only the description changes. The typed answer, the form image, and the printed labels stay as they are.
 4. A field the dictionary does not know carries an **Inferred From Printed Label** badge instead of a confident definition.
 5. Enter a wrong mobile number or PIN code and read the error in each language.
 6. Build the reference preview with answers typed in Devanagari, Kannada, or Urdu and confirm they render correctly.
@@ -406,7 +418,7 @@ Backend normalization:
 
 `normalized_x = x / image_width` (same for y, width, height).
 
-Frontend overlays use percentages inside a wrapper that matches the displayed processed page.
+Frontend overlays use percentages inside a wrapper that matches the displayed processed page. Each blank is also the place you type: the overlay hosts the input, centres the text, and scales it to fit.
 
 ## RAG, LLM privacy, and preview
 
@@ -420,7 +432,7 @@ When the optional AI is enabled, a reply is **rejected if it is not written in t
 
 ```bash
 cd backend
-pytest -q                 # 92 tests, including tests/test_unknown_forms.py
+pytest -q                 # about 135 tests, including tests/test_unknown_forms.py and tests/test_sir_form.py
 python -m compileall app
 ruff check .
 
@@ -428,7 +440,7 @@ cd ../frontend
 npm install
 npm run lint
 npm run build
-npm run test -- --run     # 23 tests
+npm run test -- --run     # about 38 tests
 
 python scripts/evaluate_pipeline.py --samples samples --output evaluation_results.json
 python scripts/evaluate_unknown_flow.py --output unknown_flow_results.json
@@ -473,13 +485,18 @@ CORS is limited to configured origins. Uploads use server-side UUIDs. Path trave
 
 - Field detection is heuristic and weaker on heavy tables and handwriting.
 - Perspective correction uses the processed page as the display surface.
-- Browser voices for Hindi, Kannada, and Urdu depend on the operating system. A substitute voice is used when the exact one is missing, and the panel names it.
+- When ElevenLabs is not configured, browser voices for Hindi, Kannada, and Urdu depend on
+  the operating system. A substitute voice is used when the exact one is missing, and the
+  panel names it. With ElevenLabs configured, that path is only the fallback.
 - Groq is unused unless configured and consented.
 - Confidence scores are heuristics, not calibrated probabilities.
-- **Read-aloud pronunciation is approximate without a matching system voice.** Windows
+- **Read-aloud without ElevenLabs is approximate without a matching system voice.** Windows
   ships few Indic voices by default, so Kannada may be read by a Telugu or Hindi voice and
   Urdu by an Arabic one. The words are right and the sounds are close; the interface names
   the voice in use. Only a device with no voices at all stays silent.
+- **Typed answers are centred in the detected blank.** If detection places a blank a little
+  off the printed line, the letters sit with that blank. A very short line makes a long
+  value small so the whole answer stays visible.
 - **Urdu OCR is the weakest of the four languages.** Tesseract's `urd` model misreads small, crisp Naskh; measured label recovery is 70% on the clean synthetic renders against 100% on the blurred ones. A label that is read does resolve correctly.
 - **The dictionary is finite.** It covers 56 common fields. A form using wording outside it gets an inferred description of the *shape* of the answer, clearly marked as inferred, rather than a definition. That is deliberate, but it is a ceiling.
 - **Dictionary matching is lexical, not semantic.** A wording that means the same thing in different words ("Name of the individual applying") resolves only if its tokens overlap an alias or fuzzily match one.
