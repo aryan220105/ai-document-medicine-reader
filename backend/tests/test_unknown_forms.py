@@ -38,6 +38,15 @@ EXPECTED_SCRIPT = {
     Language.HINDI: "devanagari",
     Language.KANNADA: "kannada",
     Language.URDU: "arabic",
+    Language.BENGALI: "bengali",
+    Language.TELUGU: "telugu",
+    Language.MARATHI: "devanagari",
+    Language.TAMIL: "tamil",
+    Language.GUJARATI: "gujarati",
+    Language.MALAYALAM: "malayalam",
+    Language.ODIA: "odia",
+    Language.PUNJABI: "gurmukhi",
+    Language.ASSAMESE: "bengali",
 }
 
 
@@ -194,9 +203,9 @@ def test_unrecognised_label_falls_back_to_a_pattern_not_a_guess(container):
     assert pattern.pattern.id == "number_like"
 
 
-def test_dictionary_covers_all_four_languages_for_every_field(container):
-    """A field that exists in English but not Kannada would silently fall back to English
-    text under a Kannada heading, which reads as a translation failure to the user."""
+def test_dictionary_covers_all_languages_for_every_field(container):
+    """A field that exists in English but not Telugu would silently fall back to English
+    text under a Telugu heading, which reads as a translation failure to the user."""
     gaps = []
     for entry in container.dictionary.entries:
         for language in ALL_LANGUAGES:
@@ -210,7 +219,7 @@ def test_dictionary_covers_all_four_languages_for_every_field(container):
     assert gaps == [], f"dictionary gaps: {gaps[:10]}"
 
 
-def test_translation_messages_cover_all_four_languages(container):
+def test_translation_messages_cover_all_languages(container):
     assert container.document_service.guidance.translation.coverage() == {}
 
 

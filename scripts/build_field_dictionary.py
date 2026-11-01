@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from field_dictionary import LANGUAGES  # noqa: E402
+from field_dictionary import LANGUAGES, fill_missing_languages, fill_text_map  # noqa: E402
 from field_dictionary import banking, contact, declaration, documents, education, identity, patterns  # noqa: E402
 
 KB = ROOT / "backend" / "knowledge_base"
@@ -60,6 +60,8 @@ def audit(entries: list[dict]) -> None:
 
 def main() -> None:
     entries = collect()
+    patterns.INFERRED_NOTE = fill_text_map(dict(patterns.INFERRED_NOTE))
+    patterns.PATTERNS = [fill_missing_languages(dict(p)) for p in patterns.PATTERNS]
     audit(entries)
     KB.mkdir(parents=True, exist_ok=True)
     (KB / "common_fields.json").write_text(

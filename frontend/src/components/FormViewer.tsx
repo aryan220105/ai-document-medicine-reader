@@ -10,6 +10,7 @@ interface Props {
   fields: DetectedField[];
   selectedId: string | null;
   answers: Record<string, string>;
+  missingRequiredIds?: Set<string>;
   zoom: number;
   onZoom: (value: number) => void;
   onSelect: (id: string) => void;
@@ -24,6 +25,7 @@ export function FormViewer({
   fields,
   selectedId,
   answers,
+  missingRequiredIds = new Set(),
   zoom,
   onZoom,
   onSelect,
@@ -93,6 +95,7 @@ export function FormViewer({
                 active={selectedId === field.id}
                 completed={Boolean(answers[field.id])}
                 value={answers[field.id] ?? ""}
+                missingRequired={missingRequiredIds.has(field.id)}
                 onSelect={onSelect}
                 onChange={onAnswer}
               />

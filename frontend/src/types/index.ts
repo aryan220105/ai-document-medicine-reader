@@ -1,4 +1,17 @@
-export type Language = "en" | "hi" | "kn" | "ur";
+export type Language =
+  | "en"
+  | "hi"
+  | "kn"
+  | "ur"
+  | "bn"
+  | "te"
+  | "mr"
+  | "ta"
+  | "gu"
+  | "ml"
+  | "or"
+  | "pa"
+  | "as";
 export type TextDirection = "ltr" | "rtl";
 export type DocumentCategory = "government" | "banking" | "insurance" | "education" | "financial" | "other";
 export type DocumentStatus = "processing" | "ready" | "failed";

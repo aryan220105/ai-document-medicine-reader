@@ -12,7 +12,7 @@ ENTRIES = [
             "en": ["full name", "name", "name of applicant", "applicant name", "applicant's name", "name in full", "candidate name", "holder name", "name of the applicant"],
             "hi": ["पूरा नाम", "नाम", "आवेदक का नाम", "अभ्यर्थी का नाम", "सम्पूर्ण नाम", "नाम आवेदक"],
             "kn": ["ಪೂರ್ಣ ಹೆಸರು", "ಹೆಸರು", "ಅರ್ಜಿದಾರರ ಹೆಸರು", "ಅಭ್ಯರ್ಥಿಯ ಹೆಸರು", "ಸಂಪೂರ್ಣ ಹೆಸರು"],
-            "ur": ["پورا نام", "نام", "درخواست دہندہ کا نام", "امیدوار کا نام", "مکمل نام"],
+            "ur": ["پورا نام", "نام", "درخواست دہندہ کا نام", "ووٹر کا نام", "امیدوار کا نام", "مکمل نام"],
         },
         keywords={"en": ["name", "applicant"], "hi": ["नाम"], "kn": ["ಹೆಸರು"], "ur": ["نام"]},
         simple_label=t("Full name", "पूरा नाम", "ಪೂರ್ಣ ಹೆಸರು", "پورا نام"),
@@ -130,7 +130,7 @@ ENTRIES = [
             "en": ["brother's name", "brother name", "sister's name", "sister name", "son's name", "son name", "daughter's name", "daughter name", "guardian's name", "guardian name", "name of guardian", "dependant name", "dependent name", "name of relative"],
             "hi": ["भाई का नाम", "बहन का नाम", "पुत्र का नाम", "पुत्री का नाम", "अभिभावक का नाम", "संरक्षक का नाम", "आश्रित का नाम"],
             "kn": ["ಸಹೋದರನ ಹೆಸರು", "ಸಹೋದರಿಯ ಹೆಸರು", "ಮಗನ ಹೆಸರು", "ಮಗಳ ಹೆಸರು", "ಪಾಲಕರ ಹೆಸರು", "ಅವಲಂಬಿತರ ಹೆಸರು"],
-            "ur": ["بھائی کا نام", "بہن کا نام", "بیٹے کا نام", "بیٹی کا نام", "سرپرست کا نام", "زیرِ کفالت کا نام"],
+            "ur": ["بھائی کا نام", "بہن کا نام", "بیٹے کا نام", "بیٹی کا نام", "سرپرست کا نام", "رشتہ دار کا نام", "زیرِ کفالت کا نام"],
         },
         keywords={
             "en": ["brother", "sister", "guardian", "dependant"],
@@ -138,7 +138,7 @@ ENTRIES = [
             "kn": ["ಸಹೋದರ", "ಸಹೋದರಿ", "ಪಾಲಕ"],
             "ur": ["بھائی", "بہن", "سرپرست"],
         },
-        simple_label=t("Relative's name", "संबंधी का नाम", "ಸಂಬಂಧಿಕರ ಹೆಸರು", "رشتہ دار کا نام"),
+        simple_label=t("Relative's name", "संबंधی का नाम", "ಸಂಬಂಧಿಕರ ಹೆಸರು", "رشتہ دار کا نام"),
         what_to_enter=t(
             "Write the full name of the relative the printed label names. Spell it as it appears on that person's own identity document.",
             "छपे लेबल में जिस संबंधी का नाम मांगा गया है उसका पूरा नाम लिखें। वर्तनी उसी व्यक्ति के पहचान पत्र के अनुसार रखें।",

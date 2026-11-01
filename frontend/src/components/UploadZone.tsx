@@ -48,7 +48,7 @@ export function UploadZone({
           FormSathi
         </h1>
         <p className="max-w-xl text-lg leading-relaxed text-ink">
-          Upload a form, see where each answer belongs, and hear the explanation in English, Hindi, Kannada, or Urdu.
+          Upload a form, see where each answer belongs, and hear the explanation in major Indian languages.
         </p>
         <ol className="grid gap-3 sm:grid-cols-3">
           {[

@@ -499,6 +499,15 @@ _SCRIPT_FOR_LANGUAGE = {
     Language.HINDI: "devanagari",
     Language.KANNADA: "kannada",
     Language.URDU: "arabic",
+    Language.BENGALI: "bengali",
+    Language.TELUGU: "telugu",
+    Language.MARATHI: "devanagari",
+    Language.TAMIL: "tamil",
+    Language.GUJARATI: "gujarati",
+    Language.MALAYALAM: "malayalam",
+    Language.ODIA: "odia",
+    Language.PUNJABI: "gurmukhi",
+    Language.ASSAMESE: "bengali",
 }
 
 

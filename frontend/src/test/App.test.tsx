@@ -109,7 +109,21 @@ vi.mock("../api/client", () => ({
     external_ai_enabled: false,
     max_upload_mb: 10,
     max_pdf_pages: 5,
-    languages: ["en", "hi", "kn", "ur"],
+    languages: [
+      "en",
+      "hi",
+      "bn",
+      "te",
+      "mr",
+      "ta",
+      "gu",
+      "kn",
+      "ml",
+      "or",
+      "pa",
+      "as",
+      "ur",
+    ],
     language_details: [],
     categories: ["banking"],
     accepted_types: ["image/png"],
@@ -145,7 +159,21 @@ vi.mock("../api/client", () => ({
   fetchGuidanceBundle: vi.fn(async () => ({
     document_id: "doc-1",
     bundles: [bundleFor("p0-f1")],
-    languages: ["en", "hi", "kn", "ur"],
+    languages: [
+      "en",
+      "hi",
+      "bn",
+      "te",
+      "mr",
+      "ta",
+      "gu",
+      "kn",
+      "ml",
+      "or",
+      "pa",
+      "as",
+      "ur",
+    ],
     llm_used: false,
   })),
   requestGuidance: vi.fn(),
@@ -187,12 +215,13 @@ describe("upload and preferences", () => {
     expect(screen.getByRole("checkbox", { name: /Allow external AI/ })).toBeDisabled();
   });
 
-  it("offers all four explanation languages, Urdu included", async () => {
+  it("offers all explanation languages, Urdu included", async () => {
     render(<App />);
     const select = (await screen.findAllByLabelText(/Explanation language/))[0] as HTMLSelectElement;
     const values = Array.from(select.options).map((option) => option.value);
-    expect(values).toEqual(["en", "hi", "kn", "ur"]);
+    expect(values).toEqual(LANGUAGE_IDS);
     expect(LANGUAGE_IDS).toContain("ur");
+    expect(LANGUAGE_IDS).toHaveLength(13);
     expect(isSupported("ur")).toBe(true);
     expect(isSupported("fr")).toBe(false);
   });
@@ -260,10 +289,10 @@ describe("unknown-form flow", () => {
 
     // The printed label is the form's content. It keeps its own script and direction
     // whatever the explanation language is.
-    const heading = screen.getByRole("heading", { name: urduField.label });
+    const heading = screen.getByRole("heading", { name: new RegExp(urduField.label) });
     expect(heading).toHaveAttribute("dir", "rtl");
 
-    const answerBox = screen.getByRole("textbox", { name: urduField.label }) as HTMLInputElement;
+    const answerBox = screen.getByRole("textbox", { name: new RegExp(urduField.label) }) as HTMLInputElement;
     await user.type(answerBox, "Mahesh Rao");
     expect(answerBox.value).toBe("Mahesh Rao");
 
@@ -275,16 +304,16 @@ describe("unknown-form flow", () => {
     expect(screen.getByText(GUIDANCE_TEXT.en)).toBeInTheDocument();
     expect(screen.queryByText(GUIDANCE_TEXT.ur)).not.toBeInTheDocument();
     // ...while the answer and the printed label did not.
-    expect((screen.getByRole("textbox", { name: urduField.label }) as HTMLInputElement).value).toBe("Mahesh Rao");
-    expect(screen.getByRole("heading", { name: urduField.label })).toHaveAttribute("dir", "rtl");
+    expect((screen.getByRole("textbox", { name: new RegExp(urduField.label) }) as HTMLInputElement).value).toBe("Mahesh Rao");
+    expect(screen.getByRole("heading", { name: new RegExp(urduField.label) })).toHaveAttribute("dir", "rtl");
 
     await user.selectOptions(select, "kn");
     await waitFor(() => expect(screen.getByText(GUIDANCE_TEXT.kn)).toBeInTheDocument());
-    expect((screen.getByRole("textbox", { name: urduField.label }) as HTMLInputElement).value).toBe("Mahesh Rao");
+    expect((screen.getByRole("textbox", { name: new RegExp(urduField.label) }) as HTMLInputElement).value).toBe("Mahesh Rao");
 
     await user.selectOptions(select, "hi");
     await waitFor(() => expect(screen.getByText(GUIDANCE_TEXT.hi)).toBeInTheDocument());
-    expect((screen.getByRole("textbox", { name: urduField.label }) as HTMLInputElement).value).toBe("Mahesh Rao");
+    expect((screen.getByRole("textbox", { name: new RegExp(urduField.label) }) as HTMLInputElement).value).toBe("Mahesh Rao");
   });
 
   it("remembers the chosen language instead of re-applying the form's script", async () => {
@@ -312,7 +341,7 @@ describe("workspace widgets", () => {
         <FieldOverlay field={field} active value="" completed={false} onSelect={vi.fn()} onChange={onChange} />
       </div>,
     );
-    const box = screen.getByRole("textbox", { name: "Full Name" });
+    const box = screen.getByRole("textbox", { name: /Full Name/ });
     expect(box.className).toContain("field-ink-input");
     await user.type(box, "A");
     expect(onChange).toHaveBeenCalledWith("p0-f0", "A");
@@ -322,7 +351,7 @@ describe("workspace widgets", () => {
         <FieldOverlay field={field} active={false} value="Ananya" completed onSelect={vi.fn()} onChange={onChange} />
       </div>,
     );
-    const shown = screen.getByRole("button", { name: "Full Name" });
+    const shown = screen.getByRole("button", { name: /Full Name/ });
     expect(shown).toHaveTextContent("Ananya");
     expect(shown.className).toContain("field-ink-button");
   });
@@ -330,7 +359,14 @@ describe("workspace widgets", () => {
   it("ticks a checkbox on the form itself", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
-    const box: DetectedField = { ...field, id: "tick", label: "Nominee present", field_type: "checkbox", confidence: 0.9 };
+    const box: DetectedField = {
+      ...field,
+      id: "tick",
+      label: "Nominee present",
+      field_type: "checkbox",
+      confidence: 0.9,
+      required: false,
+    };
     render(
       <div className="relative h-40 w-40">
         <FieldOverlay field={box} active={false} value="" completed={false} onSelect={vi.fn()} onChange={onChange} />
@@ -338,6 +374,21 @@ describe("workspace widgets", () => {
     );
     await user.click(screen.getByRole("button", { name: "Nominee present" }));
     expect(onChange).toHaveBeenCalledWith("tick", "true");
+  });
+
+  it("shows a red asterisk for a required field and names the Google Forms legend", () => {
+    render(
+      <FieldNavigator
+        fields={[field]}
+        selectedId={null}
+        excluded={new Set()}
+        answers={{}}
+        onSelect={vi.fn()}
+        onExclude={vi.fn()}
+      />,
+    );
+    expect(screen.getByTestId("required-legend")).toHaveTextContent(/Indicates required question/);
+    expect(screen.getByTestId("required-progress")).toHaveTextContent(/0 of 1 required/);
   });
 
   it("positions overlays from normalized coordinates", () => {
@@ -356,7 +407,7 @@ describe("workspace widgets", () => {
         <FieldOverlay field={field} active={false} completed={false} value="" onSelect={onSelect} onChange={vi.fn()} />
       </div>,
     );
-    await user.click(screen.getByRole("button", { name: "Full Name" }));
+    await user.click(screen.getByRole("button", { name: /Full Name/ }));
     expect(onSelect).toHaveBeenCalledWith("p0-f0");
     rerender(
       <FieldNavigator
@@ -536,11 +587,23 @@ describe("preview and reset", () => {
     vi.clearAllMocks();
   });
 
+  it("blocks the preview until required questions are answered", async () => {
+    const user = userEvent.setup();
+    const { createPreview } = await import("../api/client");
+    render(<App />);
+    await uploadAndWait(user);
+    await user.click(await screen.findByText("Create completed reference preview"));
+    expect(createPreview).not.toHaveBeenCalled();
+    expect(await screen.findByText(/required question marked with \*/i)).toBeInTheDocument();
+    expect(screen.getByTestId("required-error")).toHaveTextContent(/This is a required question/);
+  });
+
   it("requests a preview in the current explanation language and can start a new form", async () => {
     const user = userEvent.setup();
     const { createPreview } = await import("../api/client");
     render(<App />);
     await uploadAndWait(user);
+    await user.type(screen.getByRole("textbox", { name: new RegExp(urduField.label) }), "Mahesh Rao");
     await user.click(await screen.findByText("Create completed reference preview"));
     expect(await screen.findByText("Completed Reference Preview")).toBeInTheDocument();
     expect(screen.getByText("Download PDF")).toBeInTheDocument();

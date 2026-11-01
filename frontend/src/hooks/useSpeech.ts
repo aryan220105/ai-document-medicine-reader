@@ -13,6 +13,15 @@ const VOICE_FALLBACKS: Record<Language, string[]> = {
   hi: ["hi", "mr", "ne", "bn", "gu", "pa", "ta", "te", "kn", "ml", "en-in", "en"],
   kn: ["kn", "te", "ta", "ml", "mr", "hi", "bn", "gu", "en-in", "en"],
   ur: ["ur", "ar", "fa", "ps", "hi", "en-in", "en"],
+  bn: ["bn", "as", "hi", "mr", "en-in", "en"],
+  te: ["te", "kn", "ta", "ml", "hi", "en-in", "en"],
+  mr: ["mr", "hi", "ne", "bn", "gu", "en-in", "en"],
+  ta: ["ta", "te", "ml", "kn", "hi", "en-in", "en"],
+  gu: ["gu", "hi", "mr", "bn", "pa", "en-in", "en"],
+  ml: ["ml", "ta", "te", "kn", "hi", "en-in", "en"],
+  or: ["or", "hi", "bn", "en-in", "en"],
+  pa: ["pa", "hi", "ur", "gu", "en-in", "en"],
+  as: ["as", "bn", "hi", "en-in", "en"],
 };
 
 function normalise(tag: string): string {

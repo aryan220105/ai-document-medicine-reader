@@ -8,6 +8,15 @@ class Language(str, Enum):
     HINDI = "hi"
     KANNADA = "kn"
     URDU = "ur"
+    BENGALI = "bn"
+    TELUGU = "te"
+    MARATHI = "mr"
+    TAMIL = "ta"
+    GUJARATI = "gu"
+    MALAYALAM = "ml"
+    ODIA = "or"
+    PUNJABI = "pa"
+    ASSAMESE = "as"
 
     @property
     def direction(self) -> str:
@@ -19,6 +28,15 @@ ALL_LANGUAGES: tuple["Language", ...] = (
     Language.HINDI,
     Language.KANNADA,
     Language.URDU,
+    Language.BENGALI,
+    Language.TELUGU,
+    Language.MARATHI,
+    Language.TAMIL,
+    Language.GUJARATI,
+    Language.MALAYALAM,
+    Language.ODIA,
+    Language.PUNJABI,
+    Language.ASSAMESE,
 )
 
 

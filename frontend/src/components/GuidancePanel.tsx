@@ -5,6 +5,7 @@ import { LanguageSelector } from "./LanguageSelector";
 import { SourceBadge } from "./SourceBadge";
 import { VoiceButton } from "./VoiceButton";
 import type { DetectedField, FieldGuidance, Language, MultilingualFieldGuidance } from "../types";
+import { isRequiredField, REQUIRED_ERROR } from "../utils/requiredFields";
 import { fieldTitle } from "./FieldNavigator";
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
   onLanguage: (language: Language) => void;
   value: string;
   onChange: (value: string) => void;
+  showRequiredError?: boolean;
   onPlay: () => void;
   onStop: () => void;
   speaking: boolean;
@@ -40,6 +42,7 @@ export function GuidancePanel({
   onLanguage,
   value,
   onChange,
+  showRequiredError = false,
   onPlay,
   onStop,
   speaking,
@@ -67,6 +70,8 @@ export function GuidancePanel({
   const availableLanguages = bundle ? (Object.keys(bundle.languages) as Language[]) : undefined;
   // The printed label keeps its own reading direction: it is the form's content, not ours.
   const labelLanguage = field.label_language ?? bundle?.label_language ?? "en";
+  const required = isRequiredField(field);
+  const missingRequired = showRequiredError && required && !value.trim();
 
   return (
     <aside className="space-y-4 overflow-auto p-4" data-testid="guidance-panel">
@@ -74,6 +79,11 @@ export function GuidancePanel({
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-leaf">Current field</p>
         <DirectionalText as="h2" language={labelLanguage} className="mt-1 font-display text-2xl text-ink">
           {fieldTitle(field)}
+          {required ? (
+            <span className="ml-1 font-semibold text-red-700" aria-label="required">
+              *
+            </span>
+          ) : null}
         </DirectionalText>
       </div>
       {field.caption && field.caption !== fieldTitle(field) ? (
@@ -159,8 +169,13 @@ export function GuidancePanel({
         <p className="text-sm text-pine/80">Loading guidance…</p>
       )}
 
-      <div className="rounded-2xl border border-leaf/25 bg-leaf/5 p-3">
+      <div className={`rounded-2xl border p-3 ${missingRequired ? "border-red-500 bg-red-50" : "border-leaf/25 bg-leaf/5"}`}>
         <FieldInput field={field} value={value} onChange={onChange} />
+        {missingRequired ? (
+          <p className="mt-2 text-sm text-red-800" role="alert" data-testid="required-error">
+            {REQUIRED_ERROR}
+          </p>
+        ) : null}
       </div>
 
       <div className="rounded-2xl border border-softline bg-white p-3">

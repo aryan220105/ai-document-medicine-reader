@@ -29,6 +29,7 @@ import type {
   PreviewResult,
 } from "./types";
 import { isSupported, nativeNameFor, scriptLabel, textForSpeech } from "./utils/languages";
+import { missingRequiredFields, REQUIRED_BLOCKED } from "./utils/requiredFields";
 import { validateUpload } from "./utils/validation";
 
 const LANGUAGE_KEY = "formsathi.language";
@@ -56,6 +57,7 @@ export default function App() {
   const [question, setQuestion] = useState("");
   const [askAnswer, setAskAnswer] = useState("");
   const [preview, setPreview] = useState<PreviewResult | null>(null);
+  const [requiredGate, setRequiredGate] = useState(false);
   const { easyRead, setEasyRead } = useEasyRead();
   const speech = useSpeech(language, Boolean(config?.speech_configured));
 
@@ -238,12 +240,23 @@ export default function App() {
     setAnswers({});
     setError(null);
     setPreview(null);
+    setRequiredGate(false);
   }
 
   async function handlePreview() {
     if (!document) {
       return;
     }
+    const missing = missingRequiredFields(document.fields, answers, excluded);
+    if (missing.length > 0) {
+      setRequiredGate(true);
+      setError(REQUIRED_BLOCKED);
+      const first = missing[0];
+      setSelectedId(first.id);
+      setPageIndex(first.page_index);
+      return;
+    }
+    setRequiredGate(false);
     const payload = Object.entries(answers)
       .filter(([fieldId]) => !excluded.has(fieldId))
       .map(([field_id, value]) => ({ field_id, value }));
@@ -253,6 +266,13 @@ export default function App() {
       setError(err instanceof ApiError ? err.message : "Preview could not be created.");
     }
   }
+
+  const missingRequiredIds = useMemo(() => {
+    if (!document || !requiredGate) {
+      return new Set<string>();
+    }
+    return new Set(missingRequiredFields(document.fields, answers, excluded).map((field) => field.id));
+  }, [document, answers, excluded, requiredGate]);
 
   const unknownForm = document?.form_match.unknown ?? false;
   const resolvedCount = document?.fields.filter((field) => field.semantic_id).length ?? 0;
@@ -265,7 +285,7 @@ export default function App() {
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div>
             <p className="font-display text-2xl font-semibold tracking-tight text-ink">FormSathi</p>
-            <p className="text-sm text-pine/80">Guidance in English, Hindi, Kannada, and Urdu</p>
+            <p className="text-sm text-pine/80">Guidance in your language</p>
           </div>
           <div className="flex flex-wrap items-end gap-3">
             <LanguageSelector value={language} onChange={chooseLanguage} compact />
@@ -344,6 +364,7 @@ export default function App() {
                   }
                   setExcluded(next);
                 }}
+                showRequiredErrors={requiredGate}
               />
             </div>
             <FormViewer
@@ -353,10 +374,16 @@ export default function App() {
               fields={document.fields}
               selectedId={selectedId}
               answers={answers}
+              missingRequiredIds={missingRequiredIds}
               zoom={zoom}
               onZoom={setZoom}
               onSelect={setSelectedId}
-              onAnswer={(id, value) => setAnswers((current) => ({ ...current, [id]: value }))}
+              onAnswer={(id, value) => {
+                setAnswers((current) => ({ ...current, [id]: value }));
+                if (requiredGate && value.trim()) {
+                  setError(null);
+                }
+              }}
               onPage={setPageIndex}
             />
             <div className="fs-panel overflow-hidden">
@@ -398,7 +425,16 @@ export default function App() {
                 language={language}
                 onLanguage={chooseLanguage}
                 value={selected ? answers[selected.id] ?? "" : ""}
-                onChange={(value) => selected && setAnswers((current) => ({ ...current, [selected.id]: value }))}
+                onChange={(value) => {
+                  if (!selected) {
+                    return;
+                  }
+                  setAnswers((current) => ({ ...current, [selected.id]: value }));
+                  if (requiredGate && value.trim()) {
+                    setError(null);
+                  }
+                }}
+                showRequiredError={Boolean(selected && missingRequiredIds.has(selected.id))}
                 onPlay={() =>
                   guidance && speech.speak(textForSpeech(guidance.simple_label, guidance.what_to_enter, language))
                 }

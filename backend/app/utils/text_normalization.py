@@ -14,12 +14,28 @@ LATIN = r"a-z0-9"
 DEVANAGARI = r"ऀ-ॿ"
 KANNADA = r"ಀ-೿"
 ARABIC = r"؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿"
+BENGALI = r"\u0980-\u09FF"
+TELUGU = r"\u0C00-\u0C7F"
+TAMIL = r"\u0B80-\u0BFF"
+GUJARATI = r"\u0A80-\u0AFF"
+MALAYALAM = r"\u0D00-\u0D7F"
+ODIA = r"\u0B00-\u0B7F"
+GURMUKHI = r"\u0A00-\u0A7F"
 
-TOKEN_RE = re.compile(rf"[{LATIN}{DEVANAGARI}{KANNADA}{ARABIC}]+")
+TOKEN_RE = re.compile(
+    rf"[{LATIN}{DEVANAGARI}{KANNADA}{ARABIC}{BENGALI}{TELUGU}{TAMIL}{GUJARATI}{MALAYALAM}{ODIA}{GURMUKHI}]+"
+)
 
 DEVANAGARI_RE = re.compile(rf"[{DEVANAGARI}]")
 KANNADA_RE = re.compile(rf"[{KANNADA}]")
 ARABIC_RE = re.compile(rf"[{ARABIC}]")
+BENGALI_RE = re.compile(rf"[{BENGALI}]")
+TELUGU_RE = re.compile(rf"[{TELUGU}]")
+TAMIL_RE = re.compile(rf"[{TAMIL}]")
+GUJARATI_RE = re.compile(rf"[{GUJARATI}]")
+MALAYALAM_RE = re.compile(rf"[{MALAYALAM}]")
+ODIA_RE = re.compile(rf"[{ODIA}]")
+GURMUKHI_RE = re.compile(rf"[{GURMUKHI}]")
 LATIN_RE = re.compile(r"[A-Za-z]")
 
 # Combining marks that carry no lexical weight for matching. Dropping them makes alias
@@ -53,6 +69,13 @@ SCRIPT_LANGUAGE = {
     "kannada": "kn",
     "arabic": "ur",
     "latin": "en",
+    "bengali": "bn",
+    "telugu": "te",
+    "tamil": "ta",
+    "gujarati": "gu",
+    "malayalam": "ml",
+    "odia": "or",
+    "gurmukhi": "pa",
 }
 
 RTL_SCRIPTS = {"arabic"}
@@ -96,6 +119,13 @@ def script_counts(text: str) -> dict[str, int]:
         "devanagari": len(DEVANAGARI_RE.findall(cleaned)),
         "kannada": len(KANNADA_RE.findall(cleaned)),
         "arabic": len(ARABIC_RE.findall(cleaned)),
+        "bengali": len(BENGALI_RE.findall(cleaned)),
+        "telugu": len(TELUGU_RE.findall(cleaned)),
+        "tamil": len(TAMIL_RE.findall(cleaned)),
+        "gujarati": len(GUJARATI_RE.findall(cleaned)),
+        "malayalam": len(MALAYALAM_RE.findall(cleaned)),
+        "odia": len(ODIA_RE.findall(cleaned)),
+        "gurmukhi": len(GURMUKHI_RE.findall(cleaned)),
         "latin": len(LATIN_RE.findall(cleaned)),
     }
 

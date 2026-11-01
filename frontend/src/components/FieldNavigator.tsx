@@ -1,4 +1,5 @@
 import type { DetectedField } from "../types";
+import { isAnswered, isRequiredField, REQUIRED_LEGEND } from "../utils/requiredFields";
 
 interface Props {
   fields: DetectedField[];
@@ -7,6 +8,7 @@ interface Props {
   onSelect: (id: string) => void;
   onExclude: (id: string) => void;
   answers?: Record<string, string>;
+  showRequiredErrors?: boolean;
 }
 
 /** What to call a field in the list. */
@@ -16,9 +18,19 @@ export function fieldTitle(field: DetectedField): string {
   return field.display_label?.trim() || field.label?.trim() || field.id;
 }
 
-export function FieldNavigator({ fields, selectedId, excluded, onSelect, onExclude, answers = {} }: Props) {
+export function FieldNavigator({
+  fields,
+  selectedId,
+  excluded,
+  onSelect,
+  onExclude,
+  answers = {},
+  showRequiredErrors = false,
+}: Props) {
   const pages = [...new Set(fields.map((field) => field.page_index))].sort((a, b) => a - b);
-  const answered = fields.filter((field) => Boolean(answers[field.id])).length;
+  const answered = fields.filter((field) => isAnswered(field, answers)).length;
+  const requiredFields = fields.filter((field) => isRequiredField(field) && !excluded.has(field.id));
+  const requiredDone = requiredFields.filter((field) => isAnswered(field, answers)).length;
 
   return (
     <div className="space-y-4" data-testid="field-navigator">
@@ -26,6 +38,14 @@ export function FieldNavigator({ fields, selectedId, excluded, onSelect, onExclu
         <p className="text-xs font-semibold uppercase tracking-wide text-leaf">Your checklist</p>
         <p className="mt-1 text-sm text-pine">
           {answered} of {fields.length} answered
+        </p>
+        {requiredFields.length > 0 ? (
+          <p className="mt-1 text-sm text-pine" data-testid="required-progress">
+            {requiredDone} of {requiredFields.length} required
+          </p>
+        ) : null}
+        <p className="mt-1 text-xs text-pine/80" data-testid="required-legend">
+          <span className="font-semibold text-red-700">*</span> {REQUIRED_LEGEND.replace(/^\*\s*/, "")}
         </p>
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white">
           <div
@@ -42,7 +62,9 @@ export function FieldNavigator({ fields, selectedId, excluded, onSelect, onExclu
               .filter((field) => field.page_index === page)
               .map((field, index) => {
                 const office = field.filled_by === "office";
-                const done = Boolean(answers[field.id]);
+                const done = isAnswered(field, answers);
+                const required = isRequiredField(field);
+                const missing = showRequiredErrors && required && !done;
                 const active = selectedId === field.id;
                 return (
                   <li key={field.id}>
@@ -50,24 +72,33 @@ export function FieldNavigator({ fields, selectedId, excluded, onSelect, onExclu
                       type="button"
                       dir="auto"
                       className={`w-full rounded-xl border px-3 py-2.5 text-left transition ${
-                        active
-                          ? "border-coral/50 bg-coral/10 shadow-sm"
-                          : done
-                            ? "border-leaf/30 bg-leaf/5"
-                            : "border-softline bg-white hover:border-leaf/35"
+                        missing
+                          ? "border-red-500 bg-red-50"
+                          : active
+                            ? "border-coral/50 bg-coral/10 shadow-sm"
+                            : done
+                              ? "border-leaf/30 bg-leaf/5"
+                              : "border-softline bg-white hover:border-leaf/35"
                       } ${office ? "opacity-70" : ""}`}
                       onClick={() => onSelect(field.id)}
                     >
                       <span className="flex items-start gap-2">
                         <span
                           className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-bold ${
-                            done ? "bg-leaf text-white" : active ? "bg-coral text-white" : "bg-mist text-pine"
+                            done ? "bg-leaf text-white" : missing ? "bg-red-700 text-white" : active ? "bg-coral text-white" : "bg-mist text-pine"
                           }`}
                         >
                           {done ? "✓" : index + 1}
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block font-medium text-ink">{fieldTitle(field)}</span>
+                          <span className="block font-medium text-ink">
+                            {fieldTitle(field)}
+                            {required ? (
+                              <span className="ml-1 font-semibold text-red-700" aria-hidden>
+                                *
+                              </span>
+                            ) : null}
+                          </span>
                           <span className="text-xs uppercase tracking-wide text-pine/70">{field.field_type}</span>
                           {office ? (
                             <span

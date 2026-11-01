@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { fitFieldText, measureTextWidth, type FittedFieldText } from "../utils/fieldText";
+import { isRequiredField } from "../utils/requiredFields";
 import { overlayStyle, validateAnswer } from "../utils/validation";
 import type { DetectedField } from "../types";
 
@@ -8,6 +9,7 @@ interface Props {
   active: boolean;
   completed: boolean;
   value: string;
+  missingRequired?: boolean;
   onSelect: (id: string) => void;
   onChange: (id: string, value: string) => void;
 }
@@ -22,7 +24,7 @@ function canType(field: DetectedField): boolean {
   return true;
 }
 
-export function FieldOverlay({ field, active, completed, value, onSelect, onChange }: Props) {
+export function FieldOverlay({ field, active, completed, value, missingRequired = false, onSelect, onChange }: Props) {
   const low = field.confidence < 0.55;
   const typing = canType(field);
   const choice = field.field_type === "checkbox" || field.field_type === "radio";
@@ -33,13 +35,16 @@ export function FieldOverlay({ field, active, completed, value, onSelect, onChan
   const [boxHeight, setBoxHeight] = useState(0);
   const error = typing ? validateAnswer(field, value) : null;
   const multiline = field.field_type === "multiline";
-  const color = active
-    ? "border-coral bg-coral/15 ring-2 ring-coral/30"
-    : completed
-      ? "border-leaf bg-leaf/10"
-      : low
-        ? "border-red-700 bg-red-500/10"
-        : "border-leaf/70 bg-leaf/10 hover:bg-leaf/15";
+  const required = isRequiredField(field);
+  const color = missingRequired
+    ? "border-red-600 bg-red-500/15 ring-2 ring-red-500/30"
+    : active
+      ? "border-coral bg-coral/15 ring-2 ring-coral/30"
+      : completed
+        ? "border-leaf bg-leaf/10"
+        : low
+          ? "border-red-700 bg-red-500/10"
+          : "border-leaf/70 bg-leaf/10 hover:bg-leaf/15";
 
   useEffect(() => {
     if (active && typing) {
@@ -67,7 +72,7 @@ export function FieldOverlay({ field, active, completed, value, onSelect, onChan
     return () => observer.disconnect();
   }, [value, multiline, active]);
 
-  const label = field.label || field.id;
+  const label = `${field.label || field.id}${required ? " *" : ""}`;
 
   const inkStyle = {
     fontSize: fit.fontSize,

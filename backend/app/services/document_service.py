@@ -32,6 +32,7 @@ from app.services.label_association_service import LabelAssociationService
 from app.services.ocr_service import OCRService
 from app.services.pdf_service import PdfService
 from app.services.preview_service import PreviewService
+from app.services.required_field_service import assign_required
 from app.services.sir_form_service import SirFormService
 from app.services.storage_service import StorageService
 from app.services.validation_service import ValidationService
@@ -195,6 +196,7 @@ class DocumentService:
             for field in renamed:
                 self.label_association.tag_script(field)
             self._resolve_semantics(renamed)
+            assign_required(fields)
             record.pages = pages
             record.ocr = ocr_pages
             record.fields = fields
@@ -272,19 +274,33 @@ class DocumentService:
         return self.validation.validate(self.field(record, answer.field_id), answer, language)
 
     def create_preview(self, document_id: str, request: PreviewRequest) -> PreviewResult:
+        from app.models.preview import PreviewWarning
+        from app.services.required_field_service import is_applicant_blank
+
         record = self._ready(document_id)
-        overflow = []
+        answered = {item.field_id: item for item in request.answers if (item.value or "").strip()}
+        overflow: list[PreviewWarning] = []
+        for field in record.fields:
+            if not field.required or not is_applicant_blank(field):
+                continue
+            if field.id not in answered:
+                overflow.append(
+                    PreviewWarning(
+                        field_id=field.id,
+                        code="missing_required",
+                        message=self.validation.translation.message("required", request.language),
+                    )
+                )
         for answer in request.answers:
             result = self.validation.validate(self.field(record, answer.field_id), answer, request.language)
             if not result.ok:
-                overflow.append(result.message or "Invalid value")
+                overflow.append(
+                    PreviewWarning(field_id=answer.field_id, code="invalid_value", message=result.message or "Invalid value")
+                )
+        if any(item.code == "missing_required" for item in overflow):
+            return PreviewResult(preview_id="", warnings=overflow)
         built = self.preview.render(record, request)
-        if overflow:
-            from app.models.preview import PreviewWarning
-
-            built.warnings.extend(
-                PreviewWarning(field_id="validation", code="invalid_value", message=item) for item in overflow if item
-            )
+        built.warnings.extend(overflow)
         if built.pdf_path:
             built.pdf_url = f"/api/documents/{document_id}/previews/{built.preview_id}.pdf"
         return built

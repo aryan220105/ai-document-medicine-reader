@@ -12,7 +12,16 @@ export interface LanguageInfo {
 export const LANGUAGES: LanguageInfo[] = [
   { id: "en", label: "English", native: "English", locale: "en-IN", direction: "ltr" },
   { id: "hi", label: "Hindi", native: "हिन्दी", locale: "hi-IN", direction: "ltr" },
+  { id: "bn", label: "Bengali", native: "বাংলা", locale: "bn-IN", direction: "ltr" },
+  { id: "te", label: "Telugu", native: "తెలుగు", locale: "te-IN", direction: "ltr" },
+  { id: "mr", label: "Marathi", native: "मराठी", locale: "mr-IN", direction: "ltr" },
+  { id: "ta", label: "Tamil", native: "தமிழ்", locale: "ta-IN", direction: "ltr" },
+  { id: "gu", label: "Gujarati", native: "ગુજરાતી", locale: "gu-IN", direction: "ltr" },
   { id: "kn", label: "Kannada", native: "ಕನ್ನಡ", locale: "kn-IN", direction: "ltr" },
+  { id: "ml", label: "Malayalam", native: "മലയാളം", locale: "ml-IN", direction: "ltr" },
+  { id: "or", label: "Odia", native: "ଓଡ଼ିଆ", locale: "or-IN", direction: "ltr" },
+  { id: "pa", label: "Punjabi", native: "ਪੰਜਾਬੀ", locale: "pa-IN", direction: "ltr" },
+  { id: "as", label: "Assamese", native: "অসমীয়া", locale: "as-IN", direction: "ltr" },
   { id: "ur", label: "Urdu", native: "اردو", locale: "ur-IN", direction: "rtl" },
 ];
 
@@ -35,6 +44,15 @@ const SCRIPT_PATTERN: Record<Language, RegExp> = {
   hi: /[\u0900-\u097F]/,
   kn: /[\u0C80-\u0CFF]/,
   ur: /[\u0600-\u06FF]/,
+  bn: /[\u0980-\u09FF]/,
+  te: /[\u0C00-\u0C7F]/,
+  mr: /[\u0900-\u097F]/,
+  ta: /[\u0B80-\u0BFF]/,
+  gu: /[\u0A80-\u0AFF]/,
+  ml: /[\u0D00-\u0D7F]/,
+  or: /[\u0B00-\u0B7F]/,
+  pa: /[\u0A00-\u0A7F]/,
+  as: /[\u0980-\u09FF]/
 };
 
 /** True when the text is written in the script of the explanation language. */
@@ -72,6 +90,13 @@ export const SCRIPT_NAMES: Record<string, string> = {
   devanagari: "Devanagari",
   kannada: "Kannada",
   arabic: "Arabic / Urdu",
+  bengali: "Bengali / Assamese",
+  telugu: "Telugu",
+  tamil: "Tamil",
+  gujarati: "Gujarati",
+  malayalam: "Malayalam",
+  odia: "Odia",
+  gurmukhi: "Gurmukhi / Punjabi",
 };
 
 export function scriptLabel(script: string): string {

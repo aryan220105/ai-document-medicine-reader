@@ -10,6 +10,15 @@ LANGUAGE_NAMES = {
     Language.HINDI: {"label": "Hindi", "native": "हिन्दी", "locale": "hi-IN"},
     Language.KANNADA: {"label": "Kannada", "native": "ಕನ್ನಡ", "locale": "kn-IN"},
     Language.URDU: {"label": "Urdu", "native": "اردو", "locale": "ur-IN"},
+    Language.BENGALI: {"label": "Bengali", "native": "বাংলা", "locale": "bn-IN"},
+    Language.TELUGU: {"label": "Telugu", "native": "తెలుగు", "locale": "te-IN"},
+    Language.MARATHI: {"label": "Marathi", "native": "मराठी", "locale": "mr-IN"},
+    Language.TAMIL: {"label": "Tamil", "native": "தமிழ்", "locale": "ta-IN"},
+    Language.GUJARATI: {"label": "Gujarati", "native": "ગુજરાતી", "locale": "gu-IN"},
+    Language.MALAYALAM: {"label": "Malayalam", "native": "മലയാളം", "locale": "ml-IN"},
+    Language.ODIA: {"label": "Odia", "native": "ଓଡ଼ିଆ", "locale": "or-IN"},
+    Language.PUNJABI: {"label": "Punjabi", "native": "ਪੰਜਾਬੀ", "locale": "pa-IN"},
+    Language.ASSAMESE: {"label": "Assamese", "native": "অসমীয়া", "locale": "as-IN"},
 }
 
 
