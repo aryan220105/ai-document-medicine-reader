@@ -52,6 +52,20 @@ def test_urdu_presentation_forms_fold_to_letters():
     assert "\ufe8d" not in pdf_word_text(shaped)
 
 
+def test_dotted_leader_tokens_are_kept_as_pdf_words():
+    """Passport forms print fill-in dots as their own PDF words. Dropping them lost the blank."""
+    from app.services.pdf_service import _keep_pdf_word
+
+    assert _keep_pdf_word("…………..")
+    assert _keep_pdf_word("....................")
+    assert _keep_pdf_word("........;")
+    assert _keep_pdf_word("...")
+    assert not _keep_pdf_word("..")
+    assert not _keep_pdf_word("12")
+    assert _keep_pdf_word("Name")
+    assert _keep_pdf_word(":")
+
+
 def test_a_misencoded_devanagari_layer_is_left_to_ocr():
     from app.models.common import PixelBoundingBox
     from app.models.ocr import OCRWord

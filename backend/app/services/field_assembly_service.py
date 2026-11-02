@@ -30,6 +30,7 @@ ORIGIN_TYPES = {
     "table_cell": FieldType.TEXT,
     "inline_cell": FieldType.TEXT,
     "colon_gap": FieldType.TEXT,
+    "dot_leader": FieldType.TEXT,
     "ruled_line": FieldType.TEXT,
     "space_below": FieldType.SIGNATURE,
 }
@@ -65,6 +66,24 @@ class FieldAssemblyService:
                     page_index,
                     len(legacy) - len(usable),
                 )
+            # Once the page text already names several writing spaces (dotted leaders,
+            # colon gaps), the shape detector's leftover radio/text boxes are noise --
+            # on the passport declaration they invented fields on statute paragraphs.
+            # Tick boxes are still useful; keep those.
+            named = sum(
+                1
+                for blank in layout.blanks
+                if blank.origin in {"dot_leader", "colon_gap", "space_below"} and blank.caption
+            )
+            if named >= 3:
+                before = len(usable)
+                usable = [field for field in usable if field.field_type == FieldType.CHECKBOX]
+                if len(usable) < before:
+                    logger.debug(
+                        "page %s: dropped %s shape text candidates; structure already named blanks",
+                        page_index,
+                        before - len(usable),
+                    )
             fields.extend(self._merge_in(usable, fields))
         else:
             logger.debug("page %s is ruled; shape detector results not merged", page_index)

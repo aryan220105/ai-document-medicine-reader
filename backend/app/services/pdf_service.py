@@ -24,6 +24,19 @@ def pdf_word_text(raw: str) -> str:
     return "".join(char for char in normalized if char.isprintable()).strip()
 
 
+_LEADER_MARKS = frozenset(".…·•_⋯‥")
+
+
+def _keep_pdf_word(text: str) -> bool:
+    if not text:
+        return False
+    if any(ch.isalpha() for ch in text):
+        return True
+    if ":" in text or "：" in text:
+        return True
+    return sum(1 for ch in text if ch in _LEADER_MARKS) >= 3
+
+
 _LANG_FOR_SCRIPT = {
     "devanagari": "hin",
     "kannada": "kan",
@@ -97,7 +110,9 @@ class PdfService:
                 text = pdf_word_text(raw)
                 # A colon is its own token in these PDFs. Dropping it makes
                 # "Elector name :" look like a heading, so the row is never offered.
-                if not any(ch.isalpha() for ch in text) and ":" not in text and "：" not in text:
+                # Pure dotted leaders ("…………..") have no letters either, but they are
+                # the writing space on passport-style forms and must be kept.
+                if not _keep_pdf_word(text):
                     continue
                 letters += sum(1 for ch in text if ch.isalpha())
                 words.append(

@@ -182,6 +182,148 @@ def test_short_caption_with_a_colon_is_a_field(tmp_path):
     assert all(blank.origin == "colon_gap" for blank in layout.blanks)
 
 
+def _ocr_lined(lines_spec):
+    """OCR where several words share one visual line (passport-style dotted leaders)."""
+    words = []
+    ocr_lines = []
+    word_index = 0
+    for line_id, line_words in enumerate(lines_spec):
+        ids = []
+        texts = []
+        for text, x, y in line_words:
+            word_id = f"w{word_index}"
+            word = OCRWord(
+                id=word_id,
+                text=text,
+                confidence=90,
+                page_index=0,
+                pixel=PixelBoundingBox(
+                    x=x, y=y, width=max(20, len(text) * 8), height=22,
+                    image_width=WIDTH, image_height=HEIGHT,
+                ),
+                line_id=line_id,
+                block_id=1,
+            )
+            words.append(word)
+            ids.append(word_id)
+            texts.append(text)
+            word_index += 1
+        line_words = [w for w in words if w.line_id == line_id]
+        ocr_lines.append(
+            OCRLine(
+                id=line_id,
+                text=" ".join(texts),
+                word_ids=ids,
+                box=line_words[0].box,
+            )
+        )
+    return OCRResult(
+        page_index=0,
+        full_text="\n".join(line.text for line in ocr_lines),
+        image_width=WIDTH,
+        image_height=HEIGHT,
+        words=words,
+        lines=ocr_lines,
+    )
+
+
+def test_dotted_leader_after_a_colon_is_a_field(tmp_path):
+    """Passport-style PDFs glue the writing dots to the label: `Birth:........`."""
+    path = tmp_path / "dots.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    ocr = _ocr_lined(
+        [
+            [("Date", 100, 200), ("of", 150, 200), ("Birth:....................", 180, 200)],
+            [("Email", 100, 260), ("ID......................", 160, 260)],
+        ]
+    )
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    captions = {blank.caption for blank in layout.blanks}
+    assert captions == {"Date of Birth", "Email ID"}
+    assert all(blank.origin == "dot_leader" for blank in layout.blanks)
+    assert all(blank.width >= 40 for blank in layout.blanks)
+
+
+def test_two_dotted_leaders_on_one_line_are_two_fields(tmp_path):
+    """Father and mother columns share a row; each dotted run is its own blank."""
+    path = tmp_path / "two.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    ocr = _ocr_lined(
+        [
+            [
+                ("Name", 80, 200),
+                ("of", 140, 200),
+                ("father...................", 170, 200),
+                ("Name", 520, 200),
+                ("of", 580, 200),
+                ("Mother..................", 610, 200),
+            ],
+            [
+                ("Citizenship........................", 80, 260),
+                ("Citizenship........................", 520, 260),
+            ],
+        ]
+    )
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    captions = [blank.caption for blank in layout.blanks]
+    assert captions.count("Name of father") == 1
+    assert captions.count("Name of Mother") == 1
+    assert captions.count("Citizenship") == 2
+    assert all(blank.origin == "dot_leader" for blank in layout.blanks)
+
+
+def test_dotted_leader_line_is_not_also_a_colon_gap(tmp_path):
+    """Stripping dots makes `Name:...` look like a colon caption; only the leader counts."""
+    path = tmp_path / "once.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    ocr = _ocr_lined(
+        [[("Name", 100, 200), ("of", 160, 200), ("child:....................", 190, 200)]]
+    )
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    child = [blank for blank in layout.blanks if blank.caption == "Name of child"]
+    assert len(child) == 1
+    assert child[0].origin == "dot_leader"
+
+
+def test_mid_sentence_leader_uses_parenthetical_caption(tmp_path):
+    """`of........(name of the minor child)` is labeled by the parentheses, not 'of'."""
+    path = tmp_path / "paren.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    ocr = _ocr_lined(
+        [
+            [
+                ("of.......................(name", 100, 200),
+                ("of", 420, 200),
+                ("the", 450, 200),
+                ("minor", 490, 200),
+                ("child)", 560, 200),
+            ],
+            [
+                ("................", 100, 260),
+                ("(name", 220, 260),
+                ("of", 280, 260),
+                ("the", 310, 260),
+                ("minor", 350, 260),
+                ("child)", 420, 260),
+            ],
+        ]
+    )
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    captions = [blank.caption for blank in layout.blanks if blank.origin == "dot_leader"]
+    assert captions == ["name of the minor child", "name of the minor child"]
+
+
+def test_leader_only_word_keeps_pending_label(tmp_path):
+    """`Aadhaar Card No` then a separate dotted token still names the blank."""
+    path = tmp_path / "aadhaar.png"
+    cv2.imencode(".png", np.full((HEIGHT, WIDTH, 3), 255, np.uint8))[1].tofile(str(path))
+    ocr = _ocr_lined(
+        [[("Aadhaar", 100, 200), ("Card", 190, 200), ("No", 250, 200), ("....................;", 290, 200)]]
+    )
+    layout = PageStructureService().analyse(str(path), ocr, 0)
+    assert any(blank.caption == "Aadhaar Card No" for blank in layout.blanks)
+
+
 # --- interpreter ------------------------------------------------------------------
 
 

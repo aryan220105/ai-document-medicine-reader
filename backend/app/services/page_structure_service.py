@@ -170,13 +170,90 @@ def _tidy_caption(text: str) -> str:
     return " ".join(kept)
 
 
+# Dotted / dashed leaders printed as the writing space on many government PDFs
+# ("Name:...................."). Embedded text often glues them to the label.
+_LEADER_CHARS = frozenset(".…·•_⋯‥")
+_LEADER_STOPWORDS = frozenset(
+    {
+        "a",
+        "an",
+        "and",
+        "as",
+        "at",
+        "by",
+        "for",
+        "in",
+        "of",
+        "on",
+        "or",
+        "the",
+        "to",
+        "with",
+    }
+)
+
+
+def _leader_run(text: str) -> tuple[int, int] | None:
+    """Character span of the longest blank-leader run in `text`, if long enough to write in."""
+    best: tuple[int, int] | None = None
+    index = 0
+    length = len(text)
+    while index < length:
+        if text[index] not in _LEADER_CHARS:
+            index += 1
+            continue
+        end = index
+        while end < length and text[end] in _LEADER_CHARS:
+            end += 1
+        if end - index >= 3 and (best is None or end - index > best[1] - best[0]):
+            best = (index, end)
+        index = end
+    return best
+
+
+def _strip_trailing_leaders(text: str) -> str:
+    end = len(text)
+    while end > 0 and text[end - 1] in _LEADER_CHARS:
+        end -= 1
+    return text[:end].rstrip()
+
+
+def _parenthetical_hint(suffix: str, following: list[OCRWord]) -> str | None:
+    """Caption printed in parentheses right after a dotted blank.
+
+    Passport declarations write `........(name of the minor child)`. The words before
+    the dots are sentence glue ("of", "child"); the real label is inside the parentheses.
+    """
+    parts: list[str] = []
+    if suffix.strip():
+        parts.append(suffix.strip())
+    for word in following:
+        parts.append(word.text)
+        joined = " ".join(parts)
+        open_at = joined.find("(")
+        close_at = joined.find(")", open_at + 1) if open_at >= 0 else -1
+        if open_at < 0 or close_at < 0:
+            if len(joined) > 80:
+                return None
+            continue
+        inner = joined[open_at + 1 : close_at].strip()
+        inner = _strip_trailing_leaders(inner).rstrip(":：").strip()
+        if not inner or len(inner) < 3:
+            return None
+        if len(inner.split()) > MAX_CAPTION_WORDS or len(inner) > MAX_CAPTION_CHARS:
+            return None
+        return inner
+    return None
+
+
 def question_caption(text: str) -> str | None:
     """The label of a line that invites an answer, without the colon.
 
     Urdu OCR sometimes leaves the colon on the left of the phrase even after the words
-    are ordered. Both ends count.
+    are ordered. Both ends count. Trailing dotted leaders are stripped first so a PDF
+    that prints `Name:........` still reads as a caption.
     """
-    stripped = text.strip()
+    stripped = _strip_trailing_leaders(text.strip())
     for mark in (":", "："):
         if stripped.endswith(mark):
             caption = stripped[: -len(mark)].strip()
@@ -187,7 +264,15 @@ def question_caption(text: str) -> str | None:
     return None
 
 
+def _line_has_leader(line: TextLine) -> bool:
+    return any(_leader_run(word.text) is not None for word in line.words)
+
+
 def _is_short_caption(line: TextLine, widest: float) -> bool:
+    # A dotted leader is itself the invitation to write; those lines often run long
+    # because the dots fill the measure, so the width test does not apply.
+    if _line_has_leader(line):
+        return True
     if question_caption(line.text) is None:
         return False
     return widest > 0 and line.width < widest * PROSE_CAPTION_WIDTH
@@ -262,7 +347,7 @@ class Blank:
     y: int
     width: int
     height: int
-    origin: str  # table_cell | inline_cell | ruled_line | colon_gap | mark
+    origin: str  # table_cell | inline_cell | ruled_line | colon_gap | dot_leader | mark | space_below
     caption: str = ""
     column_header: str = ""
     row_header: str = ""
@@ -722,6 +807,9 @@ class PageStructureService:
                             column=cell.column,
                         )
                     )
+        # Dotted leaders are printed writing spaces. They stay even when the rest of the
+        # page reads as prose, because the dots themselves mark where to write.
+        blanks.extend(self._leader_blanks(layout))
         if layout.looks_like_prose:
             # An instruction sheet. A sentence that happens to end in a colon is not an
             # invitation to write, and a field drawn over a paragraph is worse than no
@@ -730,6 +818,82 @@ class PageStructureService:
             return blanks
         blanks.extend(self._free_blanks(layout, gray))
         blanks.extend(self._space_below_captions(layout))
+        return blanks
+
+    def _leader_blanks(self, layout: PageLayout) -> list[Blank]:
+        """Blanks marked by dotted or dashed leaders glued to a label in the OCR text.
+
+        Passport and similar PDFs print `Date of Birth:........` as one run of characters.
+        The caption is everything before the leader; the blank is the leader's own span.
+        Two leaders on one line (father / mother columns) each become their own field.
+        Mid-sentence leaders use the following parentheses: `.....(name of the minor child)`.
+        """
+        blanks: list[Blank] = []
+        for index, line in enumerate(layout.text_lines):
+            words = sorted(line.words, key=lambda item: item.pixel.x)
+            pending: list[OCRWord] = []
+            field_i = 0
+            word_i = 0
+            while word_i < len(words):
+                word = words[word_i]
+                run = _leader_run(word.text)
+                if run is None:
+                    pending.append(word)
+                    word_i += 1
+                    continue
+                start, end = run
+                prefix = word.text[:start].rstrip()
+                suffix = word.text[end:]
+                # An aside glued before the dots -- "(preferably)...." -- is not the label.
+                if prefix.startswith("("):
+                    prefix = ""
+                caption_bits = [item.text for item in pending]
+                if prefix:
+                    caption_bits.append(prefix)
+                caption = _tidy_caption(" ".join(caption_bits)).strip()
+                caption = _strip_trailing_leaders(caption).rstrip(":：").strip()
+                pending = []
+                hint = _parenthetical_hint(suffix, words[word_i + 1 :])
+                if hint:
+                    caption = hint
+                elif not caption or len(caption) < 3 or caption.lower() in _LEADER_STOPWORDS:
+                    word_i += 1
+                    continue
+                if len(caption.split()) > MAX_CAPTION_WORDS or len(caption) > MAX_CAPTION_CHARS:
+                    word_i += 1
+                    continue
+                if len(caption) > 42 and len(caption.split()) >= 4:
+                    word_i += 1
+                    continue
+                char_count = max(len(word.text), 1)
+                blank_x = word.pixel.x + int(word.pixel.width * start / char_count)
+                blank_w = int(word.pixel.width * (end - start) / char_count)
+                word_right = word.pixel.x + word.pixel.width
+                if blank_w < MIN_BLANK_W:
+                    blank_w = word_right - blank_x
+                if blank_w < MIN_BLANK_W:
+                    word_i += 1
+                    continue
+                blanks.append(
+                    Blank(
+                        id=f"p{layout.page_index}-dot{index}-{field_i}",
+                        x=blank_x,
+                        y=line.y - 2,
+                        width=blank_w,
+                        height=max(MIN_BLANK_H, line.height + 6),
+                        origin="dot_leader",
+                        caption=caption,
+                    )
+                )
+                field_i += 1
+                word_i += 1
+                # Skip words that close a trailing "(label)" so they are not the next caption.
+                if hint and ")" not in suffix:
+                    while word_i < len(words):
+                        current = words[word_i]
+                        word_i += 1
+                        if ")" in current.text:
+                            break
         return blanks
 
     def _space_below_captions(self, layout: PageLayout) -> list[Blank]:
@@ -742,8 +906,12 @@ class PageStructureService:
         blanks: list[Blank] = []
         lines = layout.text_lines
         for index, line in enumerate(lines):
-            caption = line.text.strip().rstrip(":").strip()
+            caption = _strip_trailing_leaders(line.text.strip()).rstrip(":：").strip()
             if not caption or len(caption.split()) > SIGNATURE_CAPTION_WORDS:
+                continue
+            # A document checklist line that happens to mention "stamp" or "visa" is not
+            # a place to sign; real attestation captions stay short.
+            if len(caption) > 48:
                 continue
             if not any(term in fold(caption) for term in ATTESTATION_TERMS):
                 continue
@@ -1013,6 +1181,10 @@ class PageStructureService:
         page_right = int(layout.image_width * 0.93)
         page_left = int(layout.image_width * 0.07)
         for index, line in enumerate(layout.text_lines):
+            # A dotted leader on this line is already the writing space; inventing a
+            # second gap past the dots duplicates "Date of Birth" and similar fields.
+            if _line_has_leader(line):
+                continue
             caption = question_caption(line.text)
             if caption is None:
                 continue
