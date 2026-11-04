@@ -37,7 +37,7 @@
 
 % ------------------------------------------------------------------
 \begin{abstract}
-Government and public-service forms can be difficult to complete because of dense layouts, specialised terminology, and multiple scripts. We present \textbf{FormSathi}, a computer-vision and retrieval-based assistant that locates fillable regions, explains fields, and provides text and speech guidance in English, Hindi, Kannada, and Urdu. For unseen forms it uses a 56-concept, 927-wording multilingual dictionary and deterministic layout analysis; Groq-hosted generation is an optional external fallback, disabled by default. The system does not contain a local generative LLM: local guidance is supplied by authored knowledge, dictionary matching, and retrieval. On eight synthetic unknown-form image variants, field-box recall is 1.00 (72/72 fields) and semantic recall is 0.90 (65/72). User-entered values are not sent to the external LLM and reach the backend only when the user requests a reference-preview render.
+It can be challenging for a person to fill out government and public service forms owing to the dense form design, domain-specific terminologies, and the presence of text written in multiple languages. In this work we propose \textbf{FormSathi}, an assistive computer vision and retrieval based system which can find fillable regions on a form page, explain field semantics, and provide text and speech guidance in English, Hindi, Kannada and Urdu. To do so for unseen forms, we utilize a multi-concept, multi-language dictionary of 56 concepts and 927 wordings, together with deterministic layout analysis; Groq-hosted generation is our external fallback system for generation and is optional. Our system does not use a local LLM. Local guidance is provided using curated knowledge, dictionary look-up and retrieval.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -47,35 +47,35 @@ form understanding, optical character recognition, retrieval-augmented generatio
 % ------------------------------------------------------------------
 \section{Introduction}
 
-Public-service forms often use dense layouts, domain-specific abbreviations such as \textit{EPIC}, \textit{AC Number}, and \textit{IFSC}, and printed instructions in multiple scripts. Scanned pages and PDF annexures may also represent a fill-in region as a dotted leader within a sentence rather than as a separate input box. Form understanding research has demonstrated the importance of combining text with page layout and field relationships \cite{funsd,layoutlm,formnet}; these requirements motivate an explainable, multilingual workflow that preserves field coordinates.
+Public service forms can have dense layout, domain-specific abbreviations like \textit{EPIC}, \textit{AC Number} and \textit{IFSC}, and instructions in multiple languages. Also, scanned images and PDF annexures can represent fill-in boxes within the body of a sentence with the help of dotted leaders. The previous works on form understanding have shown that text along with page layout and field relationships are important \cite{funsd,layoutlm,formnet}, thus necessitating an explainable and multilingual approach which preserves field coordinates.
 
-Existing assistive tools take one of three approaches. (i) \textit{Pure OCR}: text is extracted but no semantic interpretation is provided, leaving the user no better informed. (ii) \textit{Generic chatbots}: a large language model is asked about a field name, but without seeing the page it cannot locate where the answer goes or respect the form's own layout. (iii) \textit{Form-specific parsers}: hand-coded extractors built for one specific template that break the moment the form version changes.
+There are three kinds of existing assistive systems for filling out forms. (i) \textit{Pure OCR}: text is extracted but no semantic interpretation is provided, leaving the user clueless. (ii) \textit{Generic chatbots}: a large language model is queried about the meaning of a field name, but without looking at the page it cannot say where the answer belongs or follow the layout of the form. (iii) \textit{Form-specific parsers}: hand-coded extractors trained on one specific template which breaks the moment the form version changes.
 
-None of these approaches combines localisation (knowing \emph{where} a field is on the page), interpretation (knowing \emph{what} the field asks), and multilingual explanation (telling the user \emph{what to write}, in their own language).
+None of these systems combine localisation (knowing \emph{where} the field is), interpretation (knowing \emph{what} it asks) and multilingual explanation (\emph{what to write} in the user's language).
 
 \textbf{Contributions.} This paper makes the following contributions:
 \begin{enumerate}
-  \item A deterministic page-structure service that recovers ruled grid tables, assigns OCR words to cells, detects caption-and-blank cohabitation, finds signature areas, detects dotted-leader blanks native to PDF government forms, and suppresses proposal of fields over printed text.
-  \item A three-tier, noise-tolerant multilingual field-dictionary matcher operating in four languages and four scripts without any external service call.
-  \item A RAG pipeline layered over a per-form knowledge base and a common-field dictionary, with a transparent resolution ladder whose confidence level is shown to the user.
-  \item A privacy-conscious design that never sends user-entered answers to the external LLM; answers reach the backend only when the user requests a reference preview.
-  \item Evaluation on four seeded known forms, five unknown-form identification samples, and eight unknown-form language/quality image variants; reported results are limited to the committed evaluation artefacts.
+  \item Deterministic page-structure service for restoring ruled-grid tables, mapping OCR words to cells, detecting caption-and-blank overlap, finding signatures, detecting dotted-leader blanks intrinsic to PDF government forms, and blocking the suggestion of fields overlapping printed text.
+  \item Multilingual field-dictionary matcher running in a three-tier fashion, tolerant to noise, working in four languages and four scripts without any external service calls.
+  \item RAG pipeline running on top of per-form knowledge base and common-field dictionary with transparency in the resolution hierarchy where confidence level is indicated to the user.
+  \item Privacy-preserving design never sending user-entered answers to the external LLM and transmitting answers to the backend only on user request for the preview of references.
+  \item Evaluation on four seeded known forms, five identification samples of unknown-forms and eight language/quality image variants of unknown-forms; experimental results are limited to the committed evaluation artifacts.
 \end{enumerate}
 
-The remainder of this paper is organised as follows. Section~\ref{sec:related} surveys related work. Section~\ref{sec:system} describes the system architecture. Section~\ref{sec:pagestructure} details the page-structure service. Section~\ref{sec:understanding} covers field understanding and the multilingual guidance pipeline. Section~\ref{sec:implementation} describes the implementation. Section~\ref{sec:evaluation} presents experimental results. Section~\ref{sec:conclusion} concludes.
+The rest of this paper is organized as follows. Section~\ref{sec:related} gives the survey of related works. Section~\ref{sec:system} describes system architecture. Section~\ref{sec:pagestructure} describes the page-structure service. Section~\ref{sec:understanding} describes field understanding and the multilingual guidance pipeline. Section~\ref{sec:implementation} describes the implementation. Section~\ref{sec:evaluation} describes experimental results. Section~\ref{sec:conclusion} concludes.
 
 % ------------------------------------------------------------------
 \section{Related Work}
 \label{sec:related}
 
-Form understanding research has moved from OCR and spatial analysis toward learned models that jointly represent text, image, and layout. FUNSD provides 199 annotated noisy forms and benchmarks text detection, OCR, spatial layout, and entity linking \cite{funsd}. LayoutLM combines text and spatial position, while LayoutLMv3 learns multimodal text/image representations; FormNet and FormNetV2 explicitly model structural relationships between fields \cite{layoutlm,layoutlmv3,formnet,formnetv2}. These methods establish strong document extraction baselines, but require model inference and do not by themselves provide authored, reader-facing explanations in the four target scripts.
+In the area of form understanding research, we observe a trend away from OCR and layout analysis to models that jointly represent text, image, and layout. FUNSD gives 199 annotated noisy forms and benchmarks text detection, OCR, spatial layout, and entity linking \cite{funsd}. LayoutLM combines text and layout position, and LayoutLMv3 learns multimodal text/image representations. FormNet and FormNetV2 explicitly model the structure of field relationships \cite{layoutlm,layoutlmv3,formnet,formnetv2}. Such approaches establish a strong baseline for document extraction, but they require a model to run and in themselves do not give authored explanations in the four target scripts.
 
-OCR-free systems such as Donut integrate reading and document understanding, while multilingual OCR research addresses recognition across scripts through script-aware recognition components \cite{donut,multilingual_ocr}. FormSathi instead retains OCR word coordinates and uses deterministic page geometry so a detected answer region can be highlighted and audited. Prior robustness work documents sensitivity of learned field extractors to layout and OCR perturbations; this motivates testing both clean and degraded input, while the current synthetic evaluation remains too small to establish general robustness \cite{form_attacks}. Recent interactive form-filling benchmarks also report difficult field-to-instruction alignment for multimodal agents, a problem FormSathi narrows by keeping the user in control and never submitting values automatically \cite{formfactory}.
+OCR-free systems such as Donut combine reading and document understanding, and multilingual OCR research focuses on script-aware recognition components for document recognition across scripts \cite{donut,multilingual_ocr}. In contrast, FormSathi preserves word coordinates via OCR and relies on deterministic page geometry so that a detected answer region can be highlighted and audited. Previous work on robustness of learned field extractors highlights their sensitivity to layout and OCR perturbation, and thus motivates our testing of both clean and degraded input, while our current synthetic evaluation does not have sufficient coverage for robustness assessment \cite{form_attacks}. Interactive form-filling benchmarks have recently identified difficulties of multimodal agents to align fields to instructions, which FormSathi addresses by maintaining control of the user and avoiding automatic value submission \cite{formfactory}.
 
 \subsection{Focused Literature Search}
 \label{sec:prisma}
 
-We report a focused literature search using the PRISMA 2020 flow format \cite{prisma2020}; it is not an exhaustive review of all scholarly databases. On 4 November 2026, the arXiv API was queried for records submitted from 2015 through the search date in categories cs.CV, cs.CL, or cs.IR. The six exact phrases were \texttt{"form understanding"}, \texttt{"multilingual OCR"}, \texttt{"form filling"}, \texttt{"OCR-free document understanding"}, \texttt{"form document information extraction"}, and \texttt{"form field extraction"}. The queries returned 68 records (29, 16, 14, 6, 2, and 1, respectively); the arXiv identifiers were distinct. Citation tracing added one report on Donut. Titles and abstracts were screened against the scope of document/form layout, OCR, field extraction, or form-filling assistance. Nine reports were retrieved and assessed in full; all nine met the relevance criteria. Thus 60 records were excluded at title/abstract screening and nine studies were included in the narrative synthesis. Screening was performed by one reviewer; this is a limitation, not an independent duplicate-review process.
+We provide the detailed results of a systematic literature search in PRISMA 2020 flow chart format \cite{prisma2020}; this is not an exhaustive review of all scholarly databases. The arXiv API was searched for records submitted in categories cs.CV, cs.CL, or cs.IR during the period from 2015 until the search date (4 November 2026). The six keywords were \texttt{"form understanding"}, \texttt{"multilingual OCR"}, \texttt{"form filling"}, \texttt{"OCR-free document understanding"}, \texttt{"form document information extraction"}, and \texttt{"form field extraction"}. The searches resulted in 68 records (29, 16, 14, 6, 2, and 1, respectively); all arXiv record identifiers were unique. Citation searching found an additional one study on Donut. The titles and abstracts were screened according to the scope of the document/layout, OCR, field extraction, or form-filling assistance. Nine records were reviewed in full; all nine passed the relevance screening. Thus, 60 records were excluded at title/abstract screening and nine studies included into narrative synthesis. Screening was done by one reviewer only, and this is a limitation.
 
 \begin{figure*}[t]
 \centering
@@ -109,7 +109,7 @@ We report a focused literature search using the PRISMA 2020 flow format \cite{pr
   \draw[arrow] (screen.east) -- (excluded.west);
   \draw[arrow] (assessed) -- (included);
 \end{tikzpicture}
-\caption{PRISMA-style flow for the focused literature search. Counts are from the stated arXiv queries and citation tracing; screening was performed by one reviewer.}
+\caption{Flow diagram for the literature search according to PRISMA guidelines. The numbers correspond to the arXiv queries and citation tracing.}
 \label{fig:prisma}
 \end{figure*}
 
@@ -117,7 +117,7 @@ We report a focused literature search using the PRISMA 2020 flow format \cite{pr
 \section{System Architecture}
 \label{sec:system}
 
-FormSathi is composed of a React/TypeScript frontend and a FastAPI/Python backend connected by a REST API. Figure~\ref{fig:architecture} shows the high-level data flow.
+FormSathi consists of a React/TypeScript front-end and a FastAPI/Python back-end, communicating via a REST API. See Figure~\ref{fig:architecture} for a high-level overview of data flow.
 
 \begin{figure*}[t]
 \centering
@@ -170,14 +170,14 @@ FormSathi is composed of a React/TypeScript frontend and a FastAPI/Python backen
   \draw[optional] (merge.east) -- (groq.north);
   \draw[optional] (groq.west) -- (user.east);
 \end{tikzpicture}
-\caption{End-to-end FormSathi workflow. At label/context association, an optional Groq compound-model web search uses the printed form title, issuing authority, and unexplained abbreviations to retrieve background context before field interpretation. This context informs either form branch; it is not treated as an instruction about what the user should enter. Both known and unseen forms share the page rendering, OCR, and computer-vision stages. Dashed arrows denote optional external Groq processing; Groq is not part of local inference.}
+\caption{End-to-end FormSathi process. The optional Groq compound-model search of webpages based on the printed title, issuing authority, and abbreviations is used as the background information at the label/context association step. The resulting information is provided to either form branch; it is not considered as an instruction of what the user should write. Known and unseen forms go through the same page rendering, OCR and computer vision procedures.}
 \label{fig:architecture}
 \end{figure*}
 
-\subsection{Local Knowledge and Optional Model Architecture}
+\subsection{External Groq Processing and Local Knowledge}
 \label{sec:localarchitecture}
 
-FormSathi does not ship or execute a local generative LLM, so there are no local LLM decoder or generation layers to specify. Its local language-related components are (i) authored per-form knowledge and a 56-concept multilingual dictionary, (ii) exact, contained, and fuzzy-token matching, and (iii) a sentence-transformer embedding model with ChromaDB/lexical retrieval when direct matches are insufficient. The configured encoder is \texttt{paraphrase-multilingual-MiniLM-L12-v2}; it produces retrieval vectors rather than user-facing generated text. Figure~\ref{fig:localstack} separates these local steps from the optional Groq API. No model-specific internal layer count is claimed for a generative model that is not present.
+FormSathi has no local generative LLM and no local LLM decoder and generation layers to be specified. Its local language-related components include (i) per-form knowledge and a multilingual 56-concepts dictionary, (ii) exact, contained, and fuzzy-token matching, and (iii) sentence-transformer embedding model with ChromaDB/lexical retrieval in case of lack of exact match. The selected encoder is \texttt{paraphrase-multilingual-MiniLM-L12-v2}; it provides retrieval vectors, not a generative text output. Figure~\ref{fig:localstack} depicts the difference between local inference and optional Groq API call. There are no claims of specific number of internal layers of a nonexistent generative model.
 
 \begin{figure*}[t]
 \centering
@@ -212,67 +212,66 @@ FormSathi does not ship or execute a local generative LLM, so there are no local
   \draw[remote] (match.south) |- (groq.west);
   \draw[remote] (groq.east) -- (answer.west);
 \end{tikzpicture}
-\caption{Local guidance stack and external fallback. The embedding model retrieves relevant text; it is not a generative LLM. Only the dashed branch calls Groq, and user-entered answers are excluded from that request.}
+\caption{Local knowledge stack and external fallback. The embedding model retrieves relevant text; it is not a generative LLM. The Groq call is made only along the dashed arrow and user-provided answers are not included in the request.}
 \label{fig:localstack}
 \end{figure*}
 
-The distinction between known and unknown forms is made by the form fingerprint before field guidance is resolved. A known form first uses its per-form field entry; an unknown form relies on multilingual matching and a higher retrieval threshold. If context-aware interpretation is enabled, page text is used to disambiguate labels and headers for either branch. If no local source is adequate, an external request is possible only when the deployment is configured and the user allows it; otherwise the service returns an inferred description or an explicit unavailable result.
+The form fingerprint determines whether the form is seen or unseen at the stage of field guidance resolution. A seen form will use its per-form field entry first; an unseen form relies on multilingual matching and higher retrieval threshold. In case of context-aware interpretation, page text is used to disambiguate labels and headers in either case. In case of lack of relevant local source, an external request is made only if the deployment configuration and user permissions allow it; otherwise the inference provides an explanation or unavailable message respectively.
 
 \subsection{Frontend}
 
-The frontend renders the processed page image and lays pixel-precise overlay elements over each detected blank. Clicking a blank opens an in-place input; text is centred and scaled to stay visible. A guidance panel shows the plain-language explanation in the user's chosen language, with a read-aloud button. Switching the explanation language is a local lookup: all four languages are bundled in a single API response, so no re-read of the form occurs and typed answers are never disturbed.
+Frontend displays the processed page image with pixel-exact overlay elements over each blank field. On click, an in-place input appears and the text is centered and resized to keep it visible. Guidance panel displays the plain-language explanation in the selected language, with a button to hear it aloud. Language change of explanation is a local lookup: all four languages are provided in one API response, therefore no re-reading of the form happens and typed answers remain intact.
 
 \subsection{Backend}
 
 The backend is a FastAPI application. Key services are:
 \begin{itemize}
-  \item \textbf{PdfService}: renders PDF pages to PNG at 2$\times$ resolution; reads the embedded text layer when it is well-formed.
-  \item \textbf{ImageService}: deskews, contrast-normalises, and optionally crops to the form boundary.
-  \item \textbf{OCRService}: runs Tesseract with script detection; merges two passes (rules-erased and rules-intact) word by word.
-  \item \textbf{PageStructureService}: detects ruled grids, derives cells, and locates free blanks.
-  \item \textbf{FieldAssemblyService}: merges structural blanks with shape-detector candidates.
-  \item \textbf{FieldSemanticsService}: matches labels against the multilingual dictionary.
-  \item \textbf{GuidanceService}: retrieves and formats guidance from the knowledge base.
+  \item \textbf{PdfService}: renders PDF pages to PNG at 2$\times$ resolution; parses the embedded text layer if it is in correct format.
+  \item \textbf{ImageService}: deskews, normalizes the contrast and optionally crops to form boundaries.
+  \item \textbf{OCRService}: runs Tesseract with script detection; concatenates two OCR passes (rules-erased and rules-intact).
+  \item \textbf{PageStructureService}: detects the ruled grids, generates cell locations and finds free-blanks.
+  \item \textbf{FieldAssemblyService}: combines structural blanks with shape detector candidates.
+  \item \textbf{FieldSemanticsService}: performs matching of labels against multilingual dictionary.
+  \item \textbf{GuidanceService}: retrieves and formats the guidance from knowledge base.
 \end{itemize}
 
 % ------------------------------------------------------------------
 \section{Page Structure Service}
 \label{sec:pagestructure}
 
-The page-structure service is the primary contribution distinguishing FormSathi from OCR-only approaches. Its design was driven by observed failure modes: a naive box-detector on the ECI Annexure-IV form found 121 rectangles, kept the outer table border, and discarded every cell inside it, yielding 2 fields from a 30-field form.
+The page-structure service is the main innovation behind FormSathi, compared to the approach based only on OCR. The service's development was motivated by the observed failure cases: a simple box detector applied to the ECI Annexure-IV form detected 121 rectangles, retained the outer border of the table and removed all cells inside it, resulting in 2 fields out of a total of 30 fields.
 
 \subsection{Ruled-Grid Recovery}
 
-The service finds horizontal and vertical ink runs with morphological opening, dilates them to close scan breaks, and intersects them to derive cell rectangles. A cell smaller than 24$\times$14 pixels is treated as a rule artefact. Cells whose rows share a header are marked; the remaining blank cells become fields.
+The service detects horizontal and vertical ink lines using morphological opening, dilates them to close scan breaks and intersects to obtain cells as rectangular areas. The cell smaller than 24$\times$14 pixels is considered to be a rule artifact. Cells that share the same row header are flagged; the rest of the cells become fields.
 
 \subsection{Caption-and-Blank Cohabitation}
 
-Many government forms print a caption and its blank in one cell: \texttt{Elector Name: \_\_\_\_\_}. A cell whose OCR text ends in a colon, and whose right portion (at least 35\% of the cell width) is ink-free, yields an \textit{inline blank} placed at the free region.
+Many government forms print a caption and its corresponding blank in one cell: \texttt{Elector Name: \_\_\_\_\_}. A cell whose OCR text ends with a colon, and whose right part (at least 35\% of the cell width) is ink-free, results in an \textit{inline blank}, which is placed at the free area.
 
 \subsection{Free-Standing Caption Detection}
 
-On unruled forms, captions that end in a colon and whose line occupies less than 60\% of the page width are treated as invitations to write; the blank is the space to the right (or left, for right-to-left pages).
+In unruled forms, captions ending with a colon and occupying less than 60\% of the page width are considered invitations for writing. In this case, the blank is the area to the right (or left, for right-to-left pages).
 
 \subsection{Dotted-Leader Blank Detection}
 \label{sec:dotleaders}
+In PDF native government forms, such as the passport parent-declaration annexures, the fill-in space is printed as a run of dot or ellipsis characters merged with the caption into one PDF word: \texttt{Date of Birth:......}. This structure is invisible for a colon gap detector and does not produce any ink rule for a morphological detector to detect.
 
-PDF-native government forms---such as passport parent-declaration annexures---print fill-in spaces as a run of dot or ellipsis characters fused with the caption in a single PDF word: \texttt{Date of Birth:......}. These are invisible to a colon-gap detector and produce no ink rule for a morphological detector to find.
+For each text line the service searches the longest run of periods, ellipses, middle dots, bullets, underscores, and similar leader characters that are present at least for three consecutive characters. Caption is the text before the run (without trailing leader characters); the blank occupies the pixel width of the leader run. If two leader runs are found in one text line, the service creates two separate fields for these runs, allowing father and mother columns in a single line.
 
-The service scans each text line for the longest run of periods, ellipses, middle dots, bullets, underscores, and related leader characters spanning at least three characters. The caption is the text preceding the run (stripped of trailing leaders); the blank occupies the pixel span of the leader run. Two leaders on one line each produce their own field, supporting side-by-side father/mother columns.
+If the prefix of the mid-sentence leader is a stop word ("of", "the", "to", and so forth), the parenthetical text after the dots serves as the caption: \texttt{of...(name of the minor child)} will yield the caption \textit{name of the minor child}.
 
-A mid-sentence leader whose prefix is a stopword (``of'', ``the'', ``to'', \dots) uses the parenthetical text that follows the dots as its caption: \texttt{of...(name of the minor child)} produces the caption \textit{name of the minor child}.
-
-Pure-leader PDF words (no alphabetic characters) were previously discarded by the text-layer filter. The filter was extended to retain any word whose leader-character count is at least 3.
+Previously, pure leader PDF words without alphabetic characters were filtered out during the text-layer processing. The filter was improved to keep any word having leader-character count of at least 3.
 
 \subsection{Prose Detection}
 
-An instruction sheet must not be treated as a form. The service classifies a page as prose when: (i) it has no ruled grid; (ii) it has at least 8 text lines; and (iii) the median line width exceeds 60\% of the widest line, or at least 4 lines span more than 42\% of the page width. Pages containing at least 2 short colon-caption lines are never classified as prose regardless.
+An instruction sheet should not be treated like a form. A service considers a page to be a prose page in case: (i) there is no grid on the page; (ii) there are at least 8 text lines; and (iii) either the median line width is larger than 60\% of the widest line or at least 4 lines are wider than 42\% of the page width. Pages with at least 2 lines with a short colon-caption are never regarded as prose pages.
 
-Dotted-leader lines override the prose gate: they contain their own writing space and are extracted before the gate is checked.
+Dotted leader lines break the prose gate --- each line contains its own writing area and is extracted prior to prose gate evaluation.
 
 \subsection{Overlap Suppression}
 
-Every proposed blank is checked against all words in the OCR result. A blank whose bounding box overlaps any printed word is discarded: a blank is somewhere to write, which means somewhere not already written.
+Each suggested blank is checked against all words in the OCR result. Blank that partially or fully overlaps with printed word is ignored: a blank is something to write, and hence is something that is not written yet.
 
 % ------------------------------------------------------------------
 \section{Field Understanding and Multilingual Guidance}
@@ -280,24 +279,24 @@ Every proposed blank is checked against all words in the OCR result. A blank who
 
 \subsection{Multilingual Field Dictionary}
 
-The common-field dictionary covers 56 fields and 927 printed wordings across English, Hindi, Kannada, and Urdu. Each entry carries: a canonical identifier; aliases in all four scripts; a validation kind (date, mobile, PAN, IFSC, amount, name, text, \dots); plain-language \textit{what to enter} and \textit{why needed} text in native script; and a worked example also written in the reader's script.
+The common-field dictionary includes 56 fields and 927 wordings in English, Hindi, Kannada and Urdu. Each entry contains: canonical identifier; aliases in all 4 scripts; validation type (date, mobile, PAN, IFSC, amount, name, text, \dots); plain-language \textit{what to enter} and \textit{why needed} text in native script; and an example in native script.
 
-All multilingual strings are authored by hand. No translation service is invoked at runtime.
+All multilingual strings are authored manually. Translation services are not used at run-time.
 
 \subsection{Three-Tier Matching}
 
-Given a printed label, matching proceeds in order of decreasing confidence:
+Given a printed label, matching is done in order of decreasing confidence:
 \begin{enumerate}
-  \item \textbf{Exact}: the script-aware folded label equals a folded alias.
-  \item \textbf{Contained}: the alias is wholly contained in the label, or the label in the alias, and the shorter term explains at least half of the longer.
-  \item \textbf{Fuzzy token}: the fraction of label tokens that align with alias tokens (by Jaro-Winkler similarity) exceeds a per-tier floor.
+  \item \textbf{Exact}: the folded label in the script-sensitive way equals a folded alias.
+  \item \textbf{Contained}: the alias is fully contained in the label, or vice versa, and the shorter word explains at least half of the meaning of the longer.
+  \item \textbf{Fuzzy token}: the ratio of tokens in the label that correspond to tokens in the alias (based on Jaro-Winkler similarity metric) exceeds a floor value specific for the tier.
 \end{enumerate}
 
-Tiers 1 and 2 return confident guidance; tier 3 returns guidance marked for user verification. Each step below tier 1 is shown in the interface so the user knows how sure the system is.
+Tiers 1 and 2 give confident guidance; tier 3 gives the guidance that should be verified by user. Every step from tier 1 is presented to the user as part of the UI so he could understand how much the system trusts the guidance.
 
 \subsection{Resolution Ladder}
 
-Guidance sources are considered in the order shown in Table~\ref{tab:resolution}. Page-context interpretation is available only when configured; external field generation additionally requires the user's opt-in.
+Sources of guidance are taken into account in the order given in Table~\ref{tab:resolution}. Contextual interpretation of a page is available only in case it is configured; generation of a field by external field generator additionally requires user consent.
 
 \begin{table}[htbp]
 \caption{FormSathi Resolution Ladder}
@@ -309,20 +308,20 @@ Guidance sources are considered in the order shown in Table~\ref{tab:resolution}
 \textbf{Source} & \textbf{When used} & \textbf{UI indicator} \\
 \midrule
 Known-form KB & Recognised fingerprint and matching field & Known Form KB \\
-Page context & Configured contextual reading resolves field & Read From Page \\
+Page context & Configured contextual interpretation resolves field & Read From Page \\
 Common dictionary & Exact or contained wording match & Common Dictionary \\
 Plausible dictionary & Fuzzy match; verification needed & Common Dictionary (verify) \\
-Local retrieval & Relevant result clears threshold & Retrieved Guidance (verify) \\
+Local retrieval & Relevant result cleared the threshold & Retrieved Guidance (verify) \\
 Groq API & Configured and explicitly allowed & AI Guidance (verify) \\
 Label pattern & Only answer shape can be inferred & Inferred \\
-Unavailable & No supported interpretation & Guidance unavailable \\
+Unavailable & No interpretation supported & Guidance unavailable \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsection{Known-Form Knowledge Base and RAG}
 
-For a recognised form, FormSathi first looks up its field in a per-form JSON entry. If no known entry or page-context interpretation applies, it tries multilingual exact, contained, and fuzzy-token matches against the common-field dictionary. Retrieval then searches local knowledge using a multilingual sentence embedding and ChromaDB, with a stricter score floor for unknown forms; lexical retrieval is also available \cite{rag}. Retrieved chunks retain source metadata. These are local retrieval and matching stages, not local text generation.
+For a recognised known form, FormSathi checks for its fields in a per-form JSON entry. Failing both the known form and page-context interpretation, it attempts exact, contained, and fuzzy-token matches to the common-field dictionary. Retrieval uses the multilingual sentence embedding and ChromaDB for the more demanding case of unknown form; there is also an option for lexical retrieval \cite{rag}. Retrieved chunks keep the source metadata. This is the local retrieval and matching step, not the local text generation.
 
 \subsection{Known and Unknown Form Paths}
 
@@ -332,13 +331,13 @@ The known-form fingerprint matcher scores each candidate form on the fraction of
 
 \subsection{Context-Aware Page Interpretation}
 
-When external AI is configured, page-level interpretation extracts a title, purpose, glossary, and completion context from printed text. Field-level requests can include a caption, column header, section heading, and that page context; this helps distinguish identical labels under different headings and interpret abbreviations such as \textit{AC Name}. Requests are batched by the implementation to constrain response size.
+Page-level interpretation for configured external AI fetches a title, purpose, glossary, and completion context from the printed text. Field-level requests include caption, column header, section header, and that page context; this allows to distinguish between identical labels in various contexts and interpret abbreviations like \textit{AC Name}. Requests are batched by the implementation in order to limit the response size.
 
-The external model receives text rather than page images or user-entered answers. A generated answer is rejected if it is not written in the requested script; rejected output falls through to a local inference or unavailable state. This project has no locally hosted generative model.
+The external model is fed text rather than page images or user-entered answers. Answer generated by it is discarded if it is not written in the requested script; thus, rejected output leads to a local inference or unavailable state. This project does not have any locally hosted generative model.
 
 \subsection{Per-Field Validation}
 
-Every field carries a validation rule inferred from its semantic identifier. Supported kinds include: date (DD/MM/YYYY with regional digit acceptance), Indian mobile, PIN code, Aadhaar, PAN, IFSC, bank account, email, amount, year, and name. Validation messages are authored in all four languages.
+Each field has a validation rule derived from its semantic identifier. The kinds supported are date (DD/MM/YYYY with regional digit acceptances), Indian mobile, PIN code, Aadhaar, PAN, IFSC, bank account, email, amount, year, and name. Messages of validation are authored in all four languages.
 
 % ------------------------------------------------------------------
 \section{Implementation}
@@ -347,29 +346,29 @@ Every field carries a validation rule inferred from its semantic identifier. Sup
 \subsection{Technology Stack}
 
 \begin{itemize}
-  \item \textbf{Frontend}: React 18, TypeScript, Vite, Tailwind CSS, Vitest (approximately 38 tests).
+  \item \textbf{Frontend}: React 18, TypeScript, Vite, Tailwind CSS, Vitest (about 38 tests).
   \item \textbf{Backend}: FastAPI, Pydantic v2, OpenCV, Pillow, PyMuPDF, Tesseract 5, SQLite, ChromaDB, Sentence Transformers, HarfBuzz/FreeType (Indic text shaping in previews) \cite{fastapi,opencv,pymupdf,chroma,sentence_transformers,harfbuzz}.
-  \item \textbf{Generative model}: optional external Groq OpenAI-compatible API; disabled unless configured and permitted. No local generative LLM is deployed.
+  \item \textbf{Generative model}: optional external Groq OpenAI-compatible API; enabled only if configured and permitted. No local generative LLM is deployed.
   \item \textbf{Voice}: ElevenLabs multilingual-v3 (falls back to browser speech synthesis).
 \end{itemize}
 
 \subsection{Script-Aware OCR}
 
-Before reading, the service detects the dominant Unicode block of the page text. It then runs Tesseract with the matching language model plus English \cite{tesseract,multilingual_ocr}. This avoids loading every alphabet simultaneously while preserving cross-script forms (e.g.\ a Kannada form that prints \textit{EPIC} in Latin).
+The service first determines the dominant Unicode block among the page text, and then uses Tesseract with the corresponding language model and the English language model \cite{tesseract,multilingual_ocr}. This allows us to load alphabets one-by-one, but retain cross-script glyphs (like the Kannada \textit{EPIC} in the Latin script).
 
-Two passes are taken per page: one with horizontal rules erased (so letters obscured by rules are readable) and one with rules intact (so a rule is not mistaken for a blank row of text). The passes are merged word by word by confidence, selecting the higher-confidence reading at each position.
+Two passes are made per page: with rules removed (to make letters behind the rules readable), and with rules intact (so that the rule is not misinterpreted as a blank line). The results of these passes are merged word-by-word based on confidence, preferring the higher-confidence reading at every point.
 
 \subsection{Reference Preview Generation}
 
-Typed answers are rendered back onto the processed page image using HarfBuzz and FreeType, which correctly shape Devanagari, Kannada, and Urdu (right-to-left). Each answer is scaled to stay fully visible within its detected blank. The preview is exported as a PDF for the user to print and use as a reference while filling the official form by hand.
+The user-typed answers are rendered back onto the image using HarfBuzz and FreeType, that accurately shape Devanagari, Kannada and Urdu (right-to-left script). Each answer is resized to fit completely into its blank. The preview is outputted as a PDF for the user to print out as a reference when completing the official form manually.
 
 \subsection{Privacy Design}
 
-User-typed answers are held in browser state and sent to the backend only when the user requests preview rendering, where they are written onto the image. They are never sent to the external LLM. The external model receives printed form text only. CORS is restricted to configured origins; uploads use server-side UUIDs to avoid user-controlled paths.
+User-typed answers are stored in the browser state and sent to the backend only when the user requests the preview rendering. They are never transmitted to the external LLM. The external model gets only the text from the printed form. CORS access is restricted to whitelisted origins. Uploads get server-side-generated UUID filenames. 
 
 \subsection{Reliability Controls}
 
-A circuit breaker suspends the optional LLM after three consecutive failures and resumes after a cooldown period. Failed batches are bisected and partially recovered. Up to two configured API keys and the configured model/fallback sequence are tried on rate limits or server errors. Results are cached by a hash of the page structure.
+A circuit breaker suspends the optional LLM after three failures in a row and resumes after some cooldown time. Failed batches are bisected and partially recovered. Up to two whitelisted API keys and the LLM / fallback model sequence can be tried in case of rate limits or server errors. Results are cached by page structure hash.
 
 % ------------------------------------------------------------------
 \section{Experimental Evaluation}
@@ -377,7 +376,7 @@ A circuit breaker suspends the optional LLM after three consecutive failures and
 
 \subsection{Evaluation Setup}
 
-We report two committed evaluation artefacts. The pipeline evaluation contains four seeded known-form images and five unknown-form images; the unknown-flow evaluation contains four synthetic form templates in English, Hindi, Kannada, and Urdu, each rendered as a \textit{clean} image and a \textit{noisy} image (15-degree rotation, Gaussian blur, 70\% brightness, and salt-and-pepper speckle). Each unknown-flow image has nine ground-truth fields. Ground truth is derived from the repository's sample-generation scripts. Field detection precision, recall, and F1 use an IoU threshold of 0.3. The unknown-flow semantic metric checks whether each expected canonical field identifier is resolved.
+We supply two artifacts with the committed evaluation results. The pipeline evaluation has four seeded known-form images and five unknown-form images; the unknown-flow evaluation has four synthetic form templates in English, Hindi, Kannada and Urdu, each of them rendered as \textit{clean} and \textit{noisy} images (15-degree rotation, Gaussian blur, 70\% brightness and salt-and-pepper noise). All unknown-flow images have nine ground-truth fields. The ground truth was obtained from the sample generation scripts in the repository. Field box precision, recall and F1 were measured with IoU = 0.3 threshold. The unknown-flow semantic measure checks that all expected canonical field identifiers were found.
 
 Metrics:
 \begin{itemize}
@@ -412,7 +411,7 @@ Unknown Urdu & Noisy & 9 & 9 & 1.00 \\
 \end{tabular}
 \end{table}
 
-Field-box recall is 1.00 for the 28 ground-truth fields in the known-form images and for all 72 fields in the eight unknown-flow image variants. These results describe the supplied synthetic test set, not expected performance on arbitrary real forms.
+The field-box recall is 1.00 for 28 ground-truth fields in known-form images and for all 72 fields in eight unknown-flow image variants. These numbers characterize the provided synthetic test set, not the expected performance on arbitrary real forms.
 
 \subsection{Semantic Resolution Results}
 
@@ -441,13 +440,13 @@ Urdu     & Noisy & 6 & 9 & 0.67 \\
 \end{tabular}
 \end{table}
 
-Semantic recall is not reported for the known-form group because the committed known-form evaluation measures field localization and fingerprint identification, not canonical-meaning correctness. In the unknown-form group, English and Hindi achieve 9/9 on both variants. Kannada scores 8/9 on clean and 9/9 on noisy input; Urdu scores 6/9 on each. These results do not isolate OCR errors from downstream matching errors, so the observed misses cannot be attributed to one component alone.
+The semantic recall is not reported for the known-form group because the committed known-form evaluation tests the field localization and form fingerprinting, but not the accuracy of canonical meanings. In the unknown-form group, English and Hindi get 9/9 on both variants; Kannada scores 8/9 and 9/9 on clean and noisy inputs respectively; Urdu gets 6/9 on each variant. The errors in semantic recall do not separate OCR errors from downstream ones, hence these misses cannot be blamed on a particular component alone.
 
-The unknown-flow script check examined each of 87 detected fields in four guidance languages (348 field-language outputs). The recorded run had zero missing-language outputs and zero wrong-script outputs. This check covers generated guidance outputs, not user comprehension or factual correctness.
+The unknown-flow script check looked at 87 detected fields in four guidance languages (348 field-language outputs). There were zero missing-language outputs and zero wrong-script outputs in the recorded run. This check concerns generated guidance outputs only, not user understanding or factual accuracy.
 
 \subsection{Multilingual Script Fidelity}
 
-Dictionary guidance is authored in the target scripts rather than machine-translated. The optional LLM output is separately checked for the requested script. Neither property establishes that the explanation is factually correct; a human review is still needed for that metric.
+Guidance text is authored in the target scripts instead of machine translation. The optional LLM text is independently validated for the target script. Neither property ensures factual accuracy; human validation is still required for that measure.
 
 \subsection{Known-Form Identification}
 
@@ -468,7 +467,7 @@ Unknown forms correctly rejected & 5 & 5 & 1.00 \\
 \end{tabular}
 \end{table}
 
-The five unknown-form identification images are the samples in \texttt{evaluation\_results.json}; the eight clean/noisy language variants in the separate unknown-flow run are not additional identification trials. The stored JSON does not contain raw known-form fingerprint scores, so no per-form score is claimed.
+The five unknown-form identification images are the samples in \texttt{evaluation\_results.json}; the eight clean/noisy language combinations in the separate unknown flow are not additional identification trials. Raw known-form fingerprint scores are not present in the saved JSON file, so there is no per-form score claimed here.
 
 \begin{table}[htbp]
 \caption{Pipeline Metrics by Form Group}
@@ -485,38 +484,38 @@ Unknown forms & 5 & 0.874 & 1.000 & 0.930 & 4.83 \\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:groups} reports unweighted means over the per-image values in \texttt{evaluation\_results.json}; time is mean processing time per image in that run. It is not a controlled comparison of model families or hardware configurations.
+Table~\ref{tab:groups} shows unweighted means across the per-image values in \texttt{evaluation\_results.json}; time represents the mean time per image in that run. This is not a controlled experiment of model family and hardware setup comparisons.
 
 \subsection{Test Coverage}
 
-The repository's automated tests cover page-structure extraction, form interpretation, multilingual dictionary matching, label association (including right-to-left text), pipeline integration, validation, and dotted-leader detection. Test pass counts are not used as research-performance metrics.
+The automated tests in the repository cover page structure, form analysis, multilingual dictionary, label association (with right-to-left text), pipeline integration, validity check, and dotted-leader detection. Counts of test pass results are not reported as performance measures of the research system.
 
 % ------------------------------------------------------------------
 \section{Discussion}
 
 \subsection{Design Choices}
 
-\textbf{Authored multilingual strings over machine translation.} Machine translation of guidance text would allow rapid expansion to more languages, but it introduces two failure modes: incorrect technical terminology in the target language, and the risk of answers being generated in a mixed or wrong script. Authored strings eliminate both at the cost of manual effort per language.
+\textbf{Authoring multilingual strings instead of machine translation}. While machine translation of the guidance text would enable quick extension into more languages, it opens up two possible failure modes: misuse of technical terms in the target language, and generation of an answer in the mixed or incorrect script. Authoring strings solves both problems at the expense of manual labor per language.
 
-\textbf{Structural detection over pure deep learning.} Learned document-understanding models such as LayoutLM or Donut can provide joint text/layout representations, but use pretrained model weights and additional inference resources. FormSathi's deterministic page-structure service is designed for CPU use and is explainable: each blank can be traced to the cell, dotted-leader, or caption-gap rule that generated it.
+\textbf{Structural detection instead of pure deep learning}. While learned models such as LayoutLM or Donut are capable of producing joint text/layout representation, they require pretrained model weights and inference time. FormSathi's deterministic page structure service is meant for CPU usage and explainability: every blank is generated by a particular cell, dotted-leader, or caption-gap rule.
 
-\textbf{Privacy by design.} Answers stay in browser state during form completion and are sent to the backend only for a user-requested reference-preview render. They are never sent to Groq. This avoids forwarding personal answers to an external model, while still requiring users to trust the deployment that receives the preview request.
+\textbf{Privacy by design}. Answer data stays in the browser during the form fill process and only moves to the backend when a user makes a request for a reference render of the form with those answers. No information is ever sent to Groq, thus preventing the forward of personal answers to an external model while maintaining the need to trust the deployment receiving the reference render request.
 
 \subsection{Limitations}
 
-Urdu semantic recall is the lowest in the synthetic sample set, but the available measurements do not separate OCR from later matching errors. The current local OCR path uses Tesseract and has not been compared against a vision-language OCR system. Any external vision model would also change the deployment's privacy and network assumptions.
+Urdu semantic recall is the lowest among all of the synthetic sample languages, however the measurements cannot separate OCR errors from errors in matching. Current local OCR implementation is based on Tesseract and has not been tested against the vision-language OCR. An external vision model would also change the privacy assumptions of the deployment.
 
-The field dictionary covers 56 concepts. A form using terminology outside it may receive only an inferred description of the answer's shape rather than a definition. The evaluation uses synthetic forms authored alongside the generator and does not include human judgments of explanation correctness, task completion, or usability. The focused literature search also used one reviewer and one repository, so it should not be read as an exhaustive systematic review.
+The field dictionary contains definitions for 56 concepts. Forms using terminology not included in the field dictionary would get an inferred description of the answer shape instead of a definition. Synthetic forms created by the same author as the generator were used for the evaluation and do not include any judgments of explanation accuracy, task completeness, or usability. The literature search also involved one reviewer and one repository, so it should not be viewed as a systematic review.
 
 % ------------------------------------------------------------------
 \section{Conclusion}
 \label{sec:conclusion}
 
-We have presented FormSathi, a hybrid computer-vision and retrieval system for multilingual form assistance. The committed evaluation records 1.00 field-box recall on its known and synthetic unknown samples, and 0.90 semantic recall on 72 unknown-form fields. These are small, project-generated samples rather than evidence of general performance. Deterministic grid recovery, authored multilingual strings, source/confidence indicators, and privacy-conscious handling form the basis of the system.
+FormSathi is a hybrid computer vision and retrieval system for multilingual form assistance. Committed evaluation shows 1.00 field-box recall on known and synthetic unknown samples, and 0.90 semantic recall on 72 unknown-form fields. The samples are project-generated and small, rather than evidence of general performance. Grid recovery, authoring multilingual strings, source/confidence indicators, and privacy-aware handling form the foundation of the system.
 
-The dotted-leader detection contribution extends the system to PDF-native government annexures in which fill-in spaces are expressed as typographic leader characters rather than empty boxes or ruled lines. The parenthetical-caption recovery handles mid-sentence leaders whose caption is printed after the dots.
+Dotted-leader detection feature allows the system to be used with the PDF-native form annexes where the fill-in spaces are represented as typographic leader characters, rather than empty boxes or ruled lines. Parenthetical captions recovery enables mid-sentence leaders where captions are printed after the dots.
 
-Future work includes testing on externally collected forms, reporting confidence calibration, adding a human-rated evaluation of guidance correctness and completion time, expanding the dictionary, and comparing local OCR with alternative multilingual OCR systems.
+Future directions include experiments with externally collected forms, confidence calibration, human-rater evaluation of guidance accuracy and time to complete the task, field dictionary expansion, and comparison between Tesseract-based OCR and alternative multilingual OCR services.
 
 % ------------------------------------------------------------------
 % ------------------------------------------------------------------
