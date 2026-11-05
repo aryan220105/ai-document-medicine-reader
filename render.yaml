@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: formsathi
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATA_DIR
+        value: /data
+      - key: KNOWLEDGE_BASE_DIR
+        value: /app/knowledge_base
+      - key: USE_LIGHT_EMBEDDINGS
+        value: "true"
+      - key: EXTERNAL_AI_ENABLED
+        value: "false"
+      - key: PYTHONUNBUFFERED
+        value: "1"

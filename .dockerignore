@@ -1,0 +1,15 @@
+.git
+.env
+**/.env
+**/.venv
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+data
+backend/data
+backend/tessdata
+frontend/dist
+samples
+*.md
+research-paper.tex
+prisma.txt
