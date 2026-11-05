@@ -21,6 +21,7 @@ async def upload_document(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     category: DocumentCategory = Form(DocumentCategory.OTHER),
+    supporting: list[UploadFile] | None = File(default=None),
 ) -> DocumentResponse:
     container = _container(request)
     client = request.client.host if request.client else "unknown"
@@ -33,7 +34,11 @@ async def upload_document(
             f"Too many uploads from this address. Try again in about {retry_after} seconds.",
             retry_after,
         )
-    record = await container.document_service.create_from_upload(file, category=category)
+    record = await container.document_service.create_from_upload(
+        file,
+        category=category,
+        supporting=supporting,
+    )
     background_tasks.add_task(container.document_service.process, record.id)
     return container.document_service.to_response(record)
 

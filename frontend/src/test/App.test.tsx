@@ -204,6 +204,40 @@ describe("upload and preferences", () => {
     vi.clearAllMocks();
   });
 
+  it("keeps supporting documents optional and fills boxes when they are returned", async () => {
+    const user = userEvent.setup();
+    const { uploadDocument } = await import("../api/client");
+    vi.mocked(uploadDocument).mockResolvedValueOnce({
+      id: "doc-1",
+      original_filename: "form.png",
+      status: "ready",
+      stage: "ready",
+      category: "other",
+      page_count: 1,
+      fields: [urduField],
+      form_match: {
+        form_id: null,
+        display_name: null,
+        category: null,
+        score: 0.1,
+        matched_terms: [],
+        unknown: true,
+      },
+      scripts: ["arabic"],
+      suggested_language: "ur",
+      error_message: null,
+      llm_configured: false,
+      created_at: new Date().toISOString(),
+      suggestions: [{ field_id: "p0-f1", value: "Mahesh Rao", source: "Aadhaar" }],
+    });
+    render(<App />);
+    expect(await screen.findByRole("button", { name: "Add documents" })).toBeInTheDocument();
+    await uploadAndWait(user);
+    expect(uploadDocument).toHaveBeenCalledWith(expect.any(File), "other", []);
+    expect(await screen.findByTestId("supporting-fill")).toHaveTextContent("Filled 1 box");
+    expect(screen.getByRole("textbox", { name: new RegExp(urduField.label) })).toHaveValue("Mahesh Rao");
+  });
+
   it("renders upload, category, language, and privacy controls", async () => {
     render(<App />);
     expect(await screen.findByRole("heading", { name: "FormSathi" })).toBeInTheDocument();

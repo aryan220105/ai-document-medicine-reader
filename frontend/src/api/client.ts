@@ -33,10 +33,17 @@ export async function fetchConfig(): Promise<AppConfig> {
   const response = await fetch(API.config);
   return parse(response) as Promise<AppConfig>;
 }
-export async function uploadDocument(file: File, category: DocumentCategory): Promise<DocumentResponse> {
+export async function uploadDocument(
+  file: File,
+  category: DocumentCategory,
+  supporting: File[] = [],
+): Promise<DocumentResponse> {
   const body = new FormData();
   body.append("file", file);
   body.append("category", category);
+  for (const document of supporting) {
+    body.append("supporting", document);
+  }
   const response = await fetch(API.upload, { method: "POST", body });
   return parse(response) as Promise<DocumentResponse>;
 }

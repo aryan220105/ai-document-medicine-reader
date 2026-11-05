@@ -31,6 +31,12 @@ class KnownFormMatch(BaseModel):
     unknown: bool = True
 
 
+class SuggestedAnswer(BaseModel):
+    field_id: str
+    value: str
+    source: str
+
+
 class DocumentRecord(BaseModel):
     id: str
     original_filename: str
@@ -56,6 +62,8 @@ class DocumentRecord(BaseModel):
     # What the document turned out to be, read once before any field was described.
     form_context: FormContext | None = None
     error_message: str | None = None
+    supporting_paths: list[str] = Field(default_factory=list)
+    suggestions: list[SuggestedAnswer] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -74,5 +82,6 @@ class DocumentResponse(BaseModel):
     interpreter_used: bool = False
     form_context: FormContext | None = None
     error_message: str | None = None
+    suggestions: list[SuggestedAnswer] = Field(default_factory=list)
     llm_configured: bool = False
     created_at: datetime

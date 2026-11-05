@@ -33,12 +33,15 @@ from app.services.ocr_service import OCRService
 from app.services.pdf_service import PdfService
 from app.services.preview_service import PreviewService
 from app.services.required_field_service import assign_required
+from app.services.supporting_document_service import match_fields, read_facts
 from app.services.sir_form_service import SirFormService
 from app.services.storage_service import StorageService
 from app.services.validation_service import ValidationService
 from app.utils.text_normalization import match_tokens
 
 logger = logging.getLogger(__name__)
+
+MAX_SUPPORTING_DOCUMENTS = 3
 
 # How far from a blank to look when re-reading a missing label. Matches the label search
 # span used during association.
@@ -88,6 +91,7 @@ class DocumentService:
         self,
         upload: UploadFile,
         category: DocumentCategory = DocumentCategory.OTHER,
+        supporting: list[UploadFile] | None = None,
     ) -> DocumentRecord:
         payload = await upload.read()
         if not payload:
@@ -101,12 +105,14 @@ class DocumentService:
         document_id = str(uuid4())
         original_path = self.settings.uploads_dir / f"{document_id}{suffix}"
         original_path.write_bytes(payload)
+        supporting_paths = await self._store_supporting(document_id, supporting or [])
         record = DocumentRecord(
             id=document_id,
             original_filename=Path(upload.filename or "form").name,
             original_path=str(original_path),
             mime_type=mime,
             category=category,
+            supporting_paths=supporting_paths,
             status=DocumentStatus.PROCESSING,
             stage=ProcessingStage.VALIDATING,
         )
@@ -197,6 +203,7 @@ class DocumentService:
                 self.label_association.tag_script(field)
             self._resolve_semantics(renamed)
             assign_required(fields)
+            record.suggestions = self._suggestions_from_supporting(document_id, record.supporting_paths, fields)
             record.pages = pages
             record.ocr = ocr_pages
             record.fields = fields
@@ -231,6 +238,8 @@ class DocumentService:
         if record is None:
             raise not_found("missing_document", "This form is no longer available.")
         self.storage.delete_tree(record.original_path)
+        for path in record.supporting_paths:
+            self.storage.delete_tree(path)
         self.storage.delete_tree(self.settings.processed_dir / document_id)
         self.storage.delete_tree(self.settings.previews_dir / document_id)
         for page in record.pages:
@@ -341,6 +350,7 @@ class DocumentService:
             suggested_language=record.suggested_language,
             interpreter_used=record.interpreter_used,
             form_context=record.form_context,
+            suggestions=record.suggestions,
             created_at=record.created_at,
         )
 
@@ -662,6 +672,67 @@ class DocumentService:
         if record.status != DocumentStatus.READY:
             raise conflict("not_ready", record.error_message or "The form is still being prepared.")
         return record
+
+    async def _store_supporting(self, document_id: str, uploads: list[UploadFile]) -> list[str]:
+        paths: list[str] = []
+        for index, upload in enumerate(uploads[:MAX_SUPPORTING_DOCUMENTS]):
+            payload = await upload.read()
+            if not payload:
+                continue
+            if len(payload) > self.settings.max_upload_bytes:
+                raise bad_request(
+                    "file_too_large",
+                    f"Please upload a supporting document smaller than {self.settings.max_upload_mb} MB.",
+                )
+            suffix, _mime = self._sniff(payload, upload.content_type, upload.filename)
+            path = self.settings.uploads_dir / f"{document_id}-support-{index}{suffix}"
+            path.write_bytes(payload)
+            paths.append(str(path))
+        return paths
+
+    def _suggestions_from_supporting(
+        self,
+        document_id: str,
+        paths: list[str],
+        fields: list[DetectedField],
+    ) -> list:
+        facts: dict[str, str] = {}
+        sources: dict[str, str] = {}
+        for path in paths:
+            text = self._read_supporting(document_id, path)
+            if not text.strip():
+                continue
+            found, kind = read_facts(text)
+            for key, value in found.items():
+                if key not in facts:
+                    facts[key] = value
+                    sources[key] = kind
+        return match_fields(fields, facts, sources)
+
+    def _read_supporting(self, document_id: str, path: str) -> str:
+        source = Path(path)
+        try:
+            if source.suffix.lower() == ".pdf":
+                rendered = self.pdf_service.render_pages(
+                    source,
+                    self.settings.processed_dir / document_id / "supporting",
+                    1,
+                )
+                if not rendered:
+                    return ""
+                image = rendered[0]
+            else:
+                image = source
+            destination = self.settings.processed_dir / document_id / f"{source.stem}.png"
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            text = self.ocr_service.provider.read_plain(str(image))
+            if len(text.split()) >= 8:
+                return text
+            prepared = self.image_service.preprocess(str(image), str(destination))
+            return self.ocr_service.provider.read_plain(prepared.processed_path)
+        except Exception:
+            logger.exception("Supporting document could not be read: %s", source.name)
+            return ""
 
     def _prepare_pages(self, record: DocumentRecord) -> list[Path]:
         source = Path(record.original_path)

@@ -93,6 +93,12 @@ export interface KnownFormMatch {
   unknown: boolean;
 }
 
+export interface SuggestedAnswer {
+  field_id: string;
+  value: string;
+  source: string;
+}
+
 export interface DocumentResponse {
   id: string;
   original_filename: string;
@@ -107,6 +113,7 @@ export interface DocumentResponse {
   interpreter_used?: boolean;
   form_context?: FormContext | null;
   error_message: string | null;
+  suggestions?: SuggestedAnswer[];
   llm_configured: boolean;
   created_at: string;
 }

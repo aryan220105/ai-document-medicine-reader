@@ -51,6 +51,7 @@ export default function App() {
   const [bundles, setBundles] = useState<Record<string, MultilingualFieldGuidance>>({});
   const [bundleLoading, setBundleLoading] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [filledFromDocuments, setFilledFromDocuments] = useState(0);
   const [excluded, setExcluded] = useState<Set<string>>(new Set());
   const [pageIndex, setPageIndex] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -156,6 +157,31 @@ export default function App() {
     }
   }, [document?.id, document?.status, document?.suggested_language]);
 
+  // Apply values read from optional supporting documents once, and only into boxes
+  // the user has not already typed in. Uploading the form alone leaves this empty.
+  useEffect(() => {
+    if (!document || document.status !== "ready") {
+      return;
+    }
+    const suggestions = document.suggestions ?? [];
+    if (suggestions.length === 0) {
+      return;
+    }
+    setAnswers((current) => {
+      const next = { ...current };
+      let changed = false;
+      for (const item of suggestions) {
+        if ((next[item.field_id] ?? "").trim()) {
+          continue;
+        }
+        next[item.field_id] = item.value;
+        changed = true;
+      }
+      return changed ? next : current;
+    });
+    setFilledFromDocuments(suggestions.length);
+  }, [document?.id, document?.status]);
+
   // One request covers every field in every language. Re-run only when the document
   // changes or the user changes their consent to use the optional AI -- never on a
   // language switch, which is a local lookup.
@@ -200,17 +226,23 @@ export default function App() {
   // The language switch is this lookup, and nothing more.
   const guidance = bundle ? bundle.languages[language] ?? bundle.languages.en ?? null : null;
 
-  async function handleFile(file: File) {
+  async function handleFile(file: File, supporting: File[] = []) {
     const message = validateUpload(file, config?.max_upload_mb ?? 10);
     if (message) {
       setError(message);
       return;
     }
+    const tooLarge = supporting.find((item) => validateUpload(item, config?.max_upload_mb ?? 10));
+    if (tooLarge) {
+      setError(validateUpload(tooLarge, config?.max_upload_mb ?? 10));
+      return;
+    }
     setError(null);
     try {
-      const created = await uploadDocument(file, category);
+      const created = await uploadDocument(file, category, supporting);
       setDocument(created);
       setAnswers({});
+      setFilledFromDocuments(0);
       setBundles({});
       setExcluded(new Set());
       setPreview(null);
@@ -238,6 +270,7 @@ export default function App() {
     setSelectedId(null);
     setBundles({});
     setAnswers({});
+    setFilledFromDocuments(0);
     setError(null);
     setPreview(null);
     setRequiredGate(false);
@@ -413,6 +446,12 @@ export default function App() {
                   <p className="text-xs" data-testid="interpreter-off">
                     Context reading is off, so fields are matched by their printed wording alone. Dense tables with
                     repeated labels may be described imprecisely.
+                  </p>
+                ) : null}
+                {filledFromDocuments > 0 ? (
+                  <p className="text-xs" data-testid="supporting-fill">
+                    Filled {filledFromDocuments} {filledFromDocuments === 1 ? "box" : "boxes"} from your supporting
+                    documents. You can change any of them.
                   </p>
                 ) : null}
                 {bundleLoading ? <p className="text-xs">Preparing guidance in all languages…</p> : null}

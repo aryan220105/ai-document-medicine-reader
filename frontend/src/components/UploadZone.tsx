@@ -14,7 +14,7 @@ interface Props {
   onCategory: (category: DocumentCategory) => void;
   allowAi: boolean;
   onAllowAi: (value: boolean) => void;
-  onFile: (file: File) => void;
+  onFile: (file: File, supporting: File[]) => void;
   onDemo: () => void;
   error: string | null;
 }
@@ -32,12 +32,21 @@ export function UploadZone({
   error,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const supportingRef = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
+  const [supporting, setSupporting] = useState<File[]>([]);
 
   function accept(file: File | undefined) {
     if (file) {
-      onFile(file);
+      onFile(file, supporting);
     }
+  }
+
+  function addSupporting(list: FileList | null) {
+    if (!list?.length) {
+      return;
+    }
+    setSupporting((current) => [...current, ...Array.from(list)].slice(0, 3));
   }
 
   return (
@@ -98,6 +107,45 @@ export function UploadZone({
             accept=".png,.jpg,.jpeg,.webp,.pdf"
             onChange={(event) => accept(event.target.files?.[0])}
           />
+        </div>
+
+        <div className="rounded-2xl border-2 border-softline bg-foam px-4 py-3 text-sm text-ink">
+          <p className="font-semibold">Supporting documents, optional</p>
+          <p className="mt-1 text-pine">
+            Add an Aadhaar card, PAN card, or a similar photo. Matching boxes are filled for you. Skip this and the
+            form works as before.
+          </p>
+          <button type="button" className="fs-btn-secondary mt-3" onClick={() => supportingRef.current?.click()}>
+            Add documents
+          </button>
+          <input
+            ref={supportingRef}
+            type="file"
+            className="sr-only"
+            accept=".png,.jpg,.jpeg,.webp,.pdf"
+            multiple
+            aria-label="Supporting documents"
+            onChange={(event) => {
+              addSupporting(event.target.files);
+              event.target.value = "";
+            }}
+          />
+          {supporting.length > 0 ? (
+            <ul className="mt-3 space-y-1">
+              {supporting.map((file) => (
+                <li key={`${file.name}-${file.size}`} className="flex items-center justify-between gap-2">
+                  <span className="truncate">{file.name}</span>
+                  <button
+                    type="button"
+                    className="fs-btn-ghost"
+                    onClick={() => setSupporting((current) => current.filter((item) => item !== file))}
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
         {error ? (

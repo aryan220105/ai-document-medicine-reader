@@ -62,6 +62,19 @@ class TesseractOCRProvider:
         if (bundled / "hin.traineddata").is_file() and (bundled / "kan.traineddata").is_file() and (bundled / "urd.traineddata").is_file():
             os.environ["TESSDATA_PREFIX"] = str(bundled)
 
+    def read_plain(self, image_path: str) -> str:
+        """Read a supporting document as one block of text.
+
+        Identity cards are not forms. The form reader merges two layout passes and that
+        mix-up scrambles a simple card, so this keeps a single top-to-bottom reading.
+        """
+        lang = "eng+hin" if (BACKEND_DIR / "tessdata" / "hin.traineddata").is_file() else "eng"
+        try:
+            return pytesseract.image_to_string(Image.open(image_path), lang=lang, config="--psm 6")
+        except Exception:
+            logger.exception("Plain OCR failed for %s", image_path)
+            return ""
+
     def available(self) -> bool:
         configured = (self.settings.tesseract_cmd or "").strip()
         if configured:
