@@ -10,6 +10,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SAMPLE = ROOT / "samples" / "demo_bank_account_opening.png"
 UNKNOWN = ROOT / "samples" / "demo_unknown_library_card.png"
+MULTILINGUAL = [
+    ("hi", ROOT / "samples" / "demo_unknown_hi_panchayat.png"),
+    ("kn", ROOT / "samples" / "demo_unknown_kn_grama.png"),
+    ("ur", ROOT / "samples" / "demo_unknown_ur_welfare.png"),
+]
+LANGUAGES = ["en", "hi", "kn", "ur"]
 BASE = "http://127.0.0.1:8000"
 
 
@@ -94,7 +100,57 @@ def main() -> None:
     assert status == 200 and umatch.get("unknown") is True, umatch
     request("DELETE", f"/api/documents/{uploaded['id']}")
     request("DELETE", f"/api/documents/{unknown['id']}")
+    print("known and unknown form flows ok")
+
+    check_multilingual_unknown_forms()
     print("smoke test passed")
+
+
+def check_multilingual_unknown_forms() -> None:
+    """Every unknown form must describe every field in every supported language.
+
+    This is the property the multilingual guidance exists to provide, and the one that
+    fails silently: a system that quietly answers in English under a Kannada heading looks
+    fine until someone who needs Kannada reads it.
+    """
+    status, config = request("GET", "/api/config")
+    assert status == 200, config
+    assert config["languages"] == LANGUAGES, config["languages"]
+
+    for code, sample in MULTILINGUAL:
+        if not sample.exists():
+            print(f"  skip {code}: {sample.name} missing, run scripts/generate_unknown_samples.py")
+            continue
+        status, uploaded = request(
+            "POST",
+            "/api/documents/upload",
+            multipart(sample, "government"),
+            "multipart/form-data; boundary=----formsathi",
+        )
+        assert status == 200, uploaded
+        document_id = uploaded["id"]
+        doc = wait(document_id)
+        assert doc["status"] == "ready", doc
+        assert doc["form_match"]["unknown"] is True, doc["form_match"]
+
+        body = json.dumps({"field_ids": None, "languages": None, "allow_external_ai": False}).encode()
+        status, bundle = request("POST", f"/api/documents/{document_id}/guidance/bundle", body, "application/json")
+        assert status == 200, bundle
+        assert bundle["languages"] == LANGUAGES, bundle["languages"]
+        assert bundle["bundles"], "no fields described"
+
+        for item in bundle["bundles"]:
+            for language in LANGUAGES:
+                guidance = item["languages"].get(language)
+                assert guidance, f"{sample.name}: field {item['field_id']} has no {language} guidance"
+                assert guidance["what_to_enter"].strip(), f"{sample.name}: empty {language} guidance"
+
+        resolved = sum(1 for item in bundle["bundles"] if item["semantic_id"])
+        print(
+            f"  {code}: {len(bundle['bundles'])} fields, {resolved} resolved, "
+            f"script={doc['scripts']}, opens in {doc['suggested_language']}"
+        )
+        request("DELETE", f"/api/documents/{document_id}")
 
 
 if __name__ == "__main__":

@@ -43,13 +43,26 @@ def radio(draw: ImageDraw.ImageDraw, x: int, y: int) -> tuple[int, int, int, int
     return (x, y, 16, 16)
 
 
-def field_gt(field_id: str, label: str, ftype: str, pixel: tuple[int, int, int, int], options: list[str] | None = None) -> dict:
+def field_gt(
+    field_id: str,
+    label: str,
+    ftype: str,
+    pixel: tuple[int, int, int, int],
+    options: list[str] | None = None,
+    image_height: int = 1754,
+) -> dict:
+    """Ground truth for one field.
+
+    `image_height` must match the page the field was drawn on. The library-card form is
+    1400px tall, not 1754, and recording the wrong height normalised its boxes against the
+    wrong denominator -- every field was detected correctly but scored as a miss.
+    """
     x, y, w, h = pixel
     return {
         "field_id": field_id,
         "label": label,
         "type": ftype,
-        "pixel": {"x": x, "y": y, "width": w, "height": h, "image_width": 1240, "image_height": 1754},
+        "pixel": {"x": x, "y": y, "width": w, "height": h, "image_width": 1240, "image_height": image_height},
         "options": options or [],
     }
 
@@ -198,19 +211,20 @@ def government() -> None:
 
 
 def unknown() -> None:
-    image = Image.new("RGB", (1240, 1400), (252, 250, 246))
+    height = 1400
+    image = Image.new("RGB", (1240, height), (252, 250, 246))
     draw = ImageDraw.Draw(image)
     header(draw, "Demo Community Library Card Request", "Unknown to the knowledge base")
     body = font(20)
     fields = []
     draw.text((64, 180), "Full Name", fill=(20, 30, 45), font=body)
-    fields.append(field_gt("full_name", "Full Name", "text", box(draw, 360, 174, 740, 40)))
+    fields.append(field_gt("full_name", "Full Name", "text", box(draw, 360, 174, 740, 40), image_height=height))
     draw.text((64, 260), "Date of Birth", fill=(20, 30, 45), font=body)
-    fields.append(field_gt("date_of_birth", "Date of Birth", "date", underline(draw, 360, 256, 300)))
+    fields.append(field_gt("date_of_birth", "Date of Birth", "date", underline(draw, 360, 256, 300), image_height=height))
     draw.text((64, 340), "Favourite Genre", fill=(20, 30, 45), font=body)
-    fields.append(field_gt("favourite_genre", "Favourite Genre", "text", box(draw, 360, 334, 740, 40)))
+    fields.append(field_gt("favourite_genre", "Favourite Genre", "text", box(draw, 360, 334, 740, 40), image_height=height))
     draw.text((64, 420), "Membership Code", fill=(20, 30, 45), font=body)
-    fields.append(field_gt("membership_code", "Membership Code", "text", box(draw, 360, 414, 400, 40)))
+    fields.append(field_gt("membership_code", "Membership Code", "text", box(draw, 360, 414, 400, 40), image_height=height))
     save(image, "demo_unknown_library_card", fields, None)
 
 

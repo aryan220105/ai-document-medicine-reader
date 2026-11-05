@@ -12,6 +12,9 @@ class OCRWord(BaseModel):
     pixel: PixelBoundingBox
     line_id: int = 0
     block_id: int = 0
+    # Set when the source already lists words in reading order. PDF text layers do.
+    # Their x positions are not a safe sort key for Urdu.
+    reading_index: int | None = None
 
     @property
     def box(self) -> NormalizedBoundingBox:
@@ -33,6 +36,13 @@ class OCRResult(BaseModel):
     image_height: int = 0
     words: list[OCRWord] = Field(default_factory=list)
     lines: list[OCRLine] = Field(default_factory=list)
+
+    # Which script the page turned out to be printed in, and which Tesseract models were
+    # used to read it. Reported so the interface can offer a sensible default explanation
+    # language; the form's own text is never translated.
+    script: str = "unknown"
+    languages_used: list[str] = Field(default_factory=list)
+    rtl: bool = False
 
     @property
     def has_useful_text(self) -> bool:

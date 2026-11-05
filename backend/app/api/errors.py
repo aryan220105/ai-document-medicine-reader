@@ -19,3 +19,7 @@ def not_found(code: str, message: str) -> AppError:
 
 def conflict(code: str, message: str) -> AppError:
     return AppError(409, code, message)
+
+
+def too_many_requests(code: str, message: str, retry_after: int) -> AppError:
+    return AppError(429, code, message, {"retry_after_seconds": str(retry_after)})

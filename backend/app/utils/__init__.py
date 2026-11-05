@@ -1,4 +1,6 @@
-from app.utils.bounding_boxes import clamp_box, iou, normalize_box
-from app.utils.text_normalization import fold, normalize_text
+"""Utility helpers.
 
-__all__ = ["clamp_box", "fold", "iou", "normalize_box", "normalize_text"]
+Deliberately empty: re-exporting from here created an import cycle
+(app.utils -> bounding_boxes -> app.models -> ocr -> app.utils). Import the submodule you
+need directly, which is what every caller already does.
+"""

@@ -90,6 +90,28 @@ def test_label_stays_on_the_same_row():
     assert associated[0].field_type == FieldType.TEXT
 
 
+def test_known_form_urdu_guidance_is_in_urdu_script(container):
+    """Known forms used to fall back to English, so Urdu read-aloud spoke English."""
+    from app.utils.text_normalization import dominant_script
+
+    box = normalize_box(PixelBoundingBox(x=1, y=1, width=10, height=10, image_width=100, image_height=100))
+    nominee = DetectedField(
+        id="n", page_index=0, label="Nominee", field_type=FieldType.TEXT, input_box=box, confidence=0.9
+    )
+    bundle = container.document_service.guidance.bundle_for_field(
+        nominee, "demo_bank_account_opening_v1", []
+    )
+    assert dominant_script(bundle.languages[Language.URDU].what_to_enter) == "arabic"
+    assert dominant_script(bundle.languages[Language.URDU].example or "") == "arabic"
+    ward = DetectedField(
+        id="w", page_index=0, label="Ward Number", field_type=FieldType.TEXT, input_box=box, confidence=0.9
+    )
+    civic = container.document_service.guidance.bundle_for_field(
+        ward, "demo_government_service_v1", []
+    )
+    assert dominant_script(civic.languages[Language.URDU].what_to_enter) == "arabic"
+
+
 def test_known_and_unknown_forms(container):
     from app.models.common import DocumentCategory
     from app.models.ocr import OCRResult
@@ -229,3 +251,43 @@ def test_validation_and_preview_signature(container, tmp_path):
     assert any(item.code == "text_overflow" for item in overflowed.warnings)
     container.document_service.delete("doc-preview")
     assert container.documents.get("doc-preview") is None
+
+
+def test_preview_draws_a_short_answer_in_the_middle_of_the_box(container, tmp_path):
+    from app.models.common import DocumentCategory, DocumentStatus, ProcessingStage
+    from app.models.document import DocumentPage, DocumentRecord
+
+    page = tmp_path / "page.png"
+    Image.new("RGB", (400, 200), (255, 255, 255)).save(page)
+    field = DetectedField(
+        id="name",
+        page_index=0,
+        label="Name",
+        field_type=FieldType.TEXT,
+        input_box=normalize_box(PixelBoundingBox(x=100, y=40, width=200, height=50, image_width=400, image_height=200)),
+        confidence=0.9,
+    )
+    record = DocumentRecord(
+        id="doc-center",
+        original_filename="x.png",
+        original_path=str(page),
+        mime_type="image/png",
+        category=DocumentCategory.OTHER,
+        status=DocumentStatus.READY,
+        stage=ProcessingStage.READY,
+        pages=[DocumentPage(index=0, original_path=str(page), processed_path=str(page), width=400, height=200)],
+        fields=[field],
+    )
+    built = container.document_service.preview.render(
+        record,
+        PreviewRequest(answers=[FieldAnswer(field_id="name", value="Ana")]),
+    )
+    image = Image.open(built.image_paths[0])
+    ink = [
+        x
+        for y in range(40, 90)
+        for x in range(100, 300)
+        if image.getpixel((x, y))[0] < 80
+    ]
+    assert ink
+    assert abs(sum(ink) / len(ink) - 200) < 30

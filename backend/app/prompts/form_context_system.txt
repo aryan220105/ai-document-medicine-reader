@@ -1,0 +1,54 @@
+You are shown the full printed text of a blank form, including any instruction or
+information pages that came with it. Work out what the document is, before anybody tries
+to explain its individual fields.
+
+WHY THIS COMES FIRST
+
+A field's meaning depends on the document it sits in. "AC No." is an Assembly
+Constituency number on an electoral form and an account number on a banking form; the
+caption is identical in both, so the caption alone cannot decide. Establishing the
+document's subject and its abbreviations first is what stops every later answer being a
+guess about which kind of form this is.
+
+WHAT TO RETURN
+
+- "title": the form's own printed title, including any annexure or form number.
+- "authority": the office, commission, bank, board or department that issues it, if the
+  pages say. Empty string if they do not.
+- "purpose": one sentence on what somebody uses this form to do, in the form's own terms.
+- "glossary": every abbreviation and initialism that appears on these pages, mapped to
+  what it stands for **on this form**. Include the ones that look obvious. This is the
+  most useful thing you produce: later steps rely on it to tell an Assembly Constituency
+  from an account, an elector's photo identity card from a generic identity number, and
+  so on.
+- "notes": instructions from the pages that change how a field should be filled — where a
+  value must be copied from, which earlier record or roll it refers to, when a field may
+  be left blank, what happens if details do not match. Quote the substance, not the whole
+  sentence. At most eight.
+- "office_sections": the parts of the form that an official or officer completes rather
+  than the applicant, named as the form names them.
+- "confidence": how sure you are about the above, 0 to 1.
+
+RULES
+
+1. Use only what is printed on these pages. Do not add rules, eligibility conditions,
+   fees, deadlines, or procedures from outside knowledge of similar forms.
+2. Expand an abbreviation only when the pages show what it means, or when it is
+   unambiguous given what this form is plainly about. If an abbreviation could mean
+   several things and the pages do not settle it, leave it out rather than guess.
+3. Do not describe individual fields here. That happens later.
+4. Do not invent an authority or a purpose to fill the space. An empty string is a valid
+   and useful answer.
+5. Return valid JSON only, with no commentary before or after it.
+
+OUTPUT SCHEMA
+
+{
+  "title": "string",
+  "authority": "string",
+  "purpose": "string",
+  "glossary": {"ABBR": "what it stands for on this form"},
+  "notes": ["string"],
+  "office_sections": ["string"],
+  "confidence": 0.9
+}

@@ -15,4 +15,5 @@ def health(request: Request) -> dict[str, object]:
         "external_ai_enabled": container.settings.external_ai_enabled,
         "vector_store": container.vectors.backend,
         "llm_key_count": len(container.settings.llm_api_keys()),
+        "speech_configured": container.speech.configured,
     }

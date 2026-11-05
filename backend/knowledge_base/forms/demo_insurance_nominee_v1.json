@@ -44,12 +44,14 @@
       "what_to_enter": {
         "en": "Copy the policy number exactly as printed on the policy schedule.",
         "hi": "Policy schedule par chhapa number vaise hi likhen.",
-        "kn": "Policy schedulealli iruva numberannu nijavagiyu baredi."
+        "kn": "Policy schedulealli iruva numberannu nijavagiyu baredi.",
+        "ur": "پالیسی نمبر بالکل ویسے ہی لکھیں جیسے پالیسی شیڈول پر چھپا ہے۔"
       },
       "why_needed": {
         "en": "The office matches this form to a policy record.",
         "hi": "Form ko policy se jodne ke liye.",
-        "kn": "Formannu policy dakhalege sariyaadisalu."
+        "kn": "Formannu policy dakhalege sariyaadisalu.",
+        "ur": "دفتر اس فارم کو پالیسی کے ریکارڈ سے ملاتا ہے۔"
       },
       "example": "DEMO-INS-4421",
       "validation": {
@@ -112,12 +114,14 @@
       "what_to_enter": {
         "en": "Enter the share percentage the form asks for, using numbers only.",
         "hi": "Jo hisse ki pratishat form maange, keval ank likhen.",
-        "kn": "Form keluva palada pratisatavannu sankhyegala maatra baredi."
+        "kn": "Form keluva palada pratisatavannu sankhyegala maatra baredi.",
+        "ur": "فارم جو حصہ فیصد مانگے اسے صرف ہندسوں میں لکھیں۔"
       },
       "why_needed": {
         "en": "Some demo forms split a benefit across nominees.",
         "hi": "Kuch demo form hisse baantte hain.",
-        "kn": "Kela demo formgalu palavannu hanchuttave."
+        "kn": "Kela demo formgalu palavannu hanchuttave.",
+        "ur": "کچھ نمائشی فارم فائدے کو نامزد افراد میں بانٹتے ہیں۔"
       },
       "example": "100",
       "validation": {

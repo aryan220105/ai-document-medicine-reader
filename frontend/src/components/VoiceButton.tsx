@@ -1,4 +1,6 @@
-import { Square, Volume2 } from "lucide-react";
+import { Loader2, Square, Volume2 } from "lucide-react";
+import type { Language } from "../types";
+import { nativeNameFor } from "../utils/languages";
 
 interface Props {
   onPlay: () => void;
@@ -6,23 +8,81 @@ interface Props {
   speaking: boolean;
   available: boolean;
   hasLanguageVoice: boolean;
+  language?: Language;
+  canSpeak?: boolean;
+  voiceLanguage?: string;
+  provider?: "elevenlabs" | "browser";
+  configured?: boolean;
+  loading?: boolean;
+  error?: string | null;
 }
 
-export function VoiceButton({ onPlay, onStop, speaking, available, hasLanguageVoice }: Props) {
-  if (!available) {
-    return <p className="text-sm text-slate-600">Voice is not available in this browser. Text guidance remains below.</p>;
+export function VoiceButton({
+  onPlay,
+  onStop,
+  speaking,
+  available,
+  hasLanguageVoice,
+  language,
+  canSpeak = true,
+  voiceLanguage = "",
+  provider = "browser",
+  configured = false,
+  loading = false,
+  error = null,
+}: Props) {
+  if (!available && provider !== "elevenlabs") {
+    return <p className="text-sm text-pine/80">Voice is not available in this browser. Text guidance remains below.</p>;
   }
+
+  const name = language ? nativeNameFor(language) : "this language";
+  const busy = speaking || loading;
   return (
-    <div className="space-y-1">
-      <div className="flex gap-2">
-        <button type="button" aria-label="Play guidance" className="rounded border border-slate-300 px-3 py-2" onClick={onPlay}>
-          <Volume2 className="h-4 w-4" />
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          aria-label="Play guidance"
+          className="fs-btn-primary disabled:opacity-40"
+          onClick={onPlay}
+          disabled={!canSpeak || loading}
+        >
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Volume2 className="h-4 w-4" />}
+          {loading ? "Preparing" : speaking ? "Reading" : "Listen"}
         </button>
-        <button type="button" aria-label="Stop guidance" className="rounded border border-slate-300 px-3 py-2" onClick={onStop} disabled={!speaking}>
+        <button type="button" aria-label="Stop guidance" className="fs-btn-secondary disabled:opacity-40" onClick={onStop} disabled={!busy}>
           <Square className="h-4 w-4" />
+          Stop
         </button>
       </div>
-      {!hasLanguageVoice ? <p className="text-sm text-slate-600">No matching system voice for this language. Text guidance is still available.</p> : null}
+      {provider === "elevenlabs" ? (
+        <p className="text-sm text-pine/80" data-testid="elevenlabs-notice">
+          {name} is read aloud by ElevenLabs. Only this explanation is sent, not your answers or the form.
+        </p>
+      ) : null}
+      {provider !== "elevenlabs" && configured && canSpeak ? (
+        <p className="text-sm text-pine/80" data-testid="substitute-voice-notice">
+          ElevenLabs audio did not play, so this device voice is being used
+          {voiceLanguage ? ` (${voiceLanguage})` : ""}.
+        </p>
+      ) : null}
+      {provider !== "elevenlabs" && !configured && !hasLanguageVoice && canSpeak ? (
+        <p className="text-sm text-pine/80" data-testid="substitute-voice-notice">
+          ElevenLabs is not configured, and this device has no {name} voice, so the reading uses the closest one installed
+          {voiceLanguage ? ` (${voiceLanguage})` : ""}. Add an ElevenLabs key to hear {name}. Pronunciation is approximate
+          until then.
+        </p>
+      ) : null}
+      {!canSpeak ? (
+        <p className="text-sm text-pine/80" data-testid="no-voice-notice">
+          Nothing can read {name} aloud on this device. The text below is complete.
+        </p>
+      ) : null}
+      {error ? (
+        <p className="text-sm text-red-800" role="status">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

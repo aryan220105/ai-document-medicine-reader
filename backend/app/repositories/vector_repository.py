@@ -42,20 +42,53 @@ class VectorRepository:
         if self._collection is None:
             return
         try:
-            existing = self._collection.get()
-            if existing and existing.get("ids"):
-                self._collection.delete(ids=existing["ids"])
-            texts = [chunk["text"] for chunk in chunks]
-            vectors = self.embeddings.embed(texts)
-            self._collection.add(
-                ids=[chunk["id"] for chunk in chunks],
-                documents=texts,
-                embeddings=vectors,
-                metadatas=[self._safe_metadata(chunk["metadata"]) for chunk in chunks],
-            )
+            self._write(chunks)
+        except Exception as exc:
+            # A collection created by the hashing embedder is 256-wide. The
+            # sentence-transformer embedder is 384-wide. Chroma keeps the old width
+            # on disk and then refuses every new vector, so retrieval silently
+            # drops to the lexical index. Recreate once and write again.
+            if "dimension" not in str(exc).lower():
+                logger.warning("Vector indexing failed; lexical fallback remains active")
+                self.backend = "lexical"
+                return
+            logger.info("Recreating the vector collection after an embedding-size change")
+            self._reset_collection()
+            try:
+                self._write(chunks)
+            except Exception:
+                logger.warning("Vector indexing failed; lexical fallback remains active")
+                self.backend = "lexical"
+
+    def _write(self, chunks: list[dict[str, Any]]) -> None:
+        if self._collection is None:
+            return
+        existing = self._collection.get()
+        if existing and existing.get("ids"):
+            self._collection.delete(ids=existing["ids"])
+        texts = [chunk["text"] for chunk in chunks]
+        vectors = self.embeddings.embed(texts)
+        self._collection.add(
+            ids=[chunk["id"] for chunk in chunks],
+            documents=texts,
+            embeddings=vectors,
+            metadatas=[self._safe_metadata(chunk["metadata"]) for chunk in chunks],
+        )
+
+    def _reset_collection(self) -> None:
+        import chromadb
+        from chromadb.config import Settings as ChromaSettings
+
+        client = chromadb.PersistentClient(
+            path=str(self.settings.chroma_dir),
+            settings=ChromaSettings(anonymized_telemetry=False),
+        )
+        try:
+            client.delete_collection("formsathi_fields")
         except Exception:
-            logger.warning("Vector indexing failed; lexical fallback remains active")
-            self.backend = "lexical"
+            logger.info("No previous vector collection to replace")
+        self._collection = client.get_or_create_collection("formsathi_fields")
+        self.backend = "chroma"
 
     def query(self, text: str, n_results: int = 5, where: dict[str, Any] | None = None) -> list[dict[str, Any]]:
         if self._collection is not None and self.backend == "chroma":

@@ -10,7 +10,9 @@ from app.api.routes.config import router as config_router
 from app.api.routes.documents import router as documents_router
 from app.api.routes.guidance import router as guidance_router
 from app.api.routes.health import router as health_router
+from app.api.routes.metrics import router as metrics_router
 from app.api.routes.previews import router as previews_router
+from app.api.routes.speech import router as speech_router
 from app.config import get_settings
 from app.dependencies import build_container
 from app.logging_config import configure_logging
@@ -61,10 +63,12 @@ def create_app() -> FastAPI:
         return JSONResponse(status_code=exc.status_code, content=exc.detail)
 
     application.include_router(health_router, prefix="/api")
+    application.include_router(metrics_router, prefix="/api")
     application.include_router(config_router, prefix="/api")
     application.include_router(documents_router, prefix="/api")
     application.include_router(guidance_router, prefix="/api")
     application.include_router(previews_router, prefix="/api")
+    application.include_router(speech_router, prefix="/api")
     return application
 
 

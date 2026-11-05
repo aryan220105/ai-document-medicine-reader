@@ -7,6 +7,37 @@ class Language(str, Enum):
     ENGLISH = "en"
     HINDI = "hi"
     KANNADA = "kn"
+    URDU = "ur"
+    BENGALI = "bn"
+    TELUGU = "te"
+    MARATHI = "mr"
+    TAMIL = "ta"
+    GUJARATI = "gu"
+    MALAYALAM = "ml"
+    ODIA = "or"
+    PUNJABI = "pa"
+    ASSAMESE = "as"
+
+    @property
+    def direction(self) -> str:
+        return "rtl" if self is Language.URDU else "ltr"
+
+
+ALL_LANGUAGES: tuple["Language", ...] = (
+    Language.ENGLISH,
+    Language.HINDI,
+    Language.KANNADA,
+    Language.URDU,
+    Language.BENGALI,
+    Language.TELUGU,
+    Language.MARATHI,
+    Language.TAMIL,
+    Language.GUJARATI,
+    Language.MALAYALAM,
+    Language.ODIA,
+    Language.PUNJABI,
+    Language.ASSAMESE,
+)
 
 
 class DocumentStatus(str, Enum):
@@ -48,6 +79,8 @@ class GuidanceSource(str, Enum):
     KNOWN_FORM = "known_form_knowledge_base"
     COMMON_DICTIONARY = "common_field_dictionary"
     FORM_TEXT = "printed_form_text"
+    LABEL_HEURISTIC = "label_pattern_heuristic"
+    PAGE_INTERPRETATION = "page_interpretation"
     GENERAL_AI = "general_ai_guidance"
     UNAVAILABLE = "unavailable"
 

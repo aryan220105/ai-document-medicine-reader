@@ -1,0 +1,445 @@
+{
+  "form_id": "passport_parent_declaration_english_v1",
+  "display_name": "Passport Parent Declaration (Annexure, English)",
+  "category": "government",
+  "version": "1",
+  "disclaimer": "FormSathi guidance for the English parent/guardian passport declaration layout. Not official Ministry of External Affairs advice. Always follow the printed instructions on the government form.",
+  "fingerprint_terms": [
+    "minor child",
+    "passport application",
+    "physical custody",
+    "passport issuing authority",
+    "arn no",
+    "name of father",
+    "name of mother",
+    "shri/smt",
+    "bharatiya nyaya sanhita"
+  ],
+  "fields": [
+    {
+      "field_id": "minor_child_name",
+      "aliases": [
+        "name of the minor child",
+        "minor child"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Write the minor child's full name exactly as it appears on the passport application.",
+        "hi": "नाबालिग बच्चे का पूरा नाम पासपोर्ट आवेदन में छपे नाम के अनुसार लिखें।",
+        "kn": "ಪಾಸ್‌ಪೋರ್ಟ್ ಅರ್ಜಿಯಲ್ಲಿರುವಂತೆ ಅಪ್ರಾಪ್ತ ಮಗುವಿನ ಪೂರ್ಣ ಹೆಸರನ್ನು ಬರೆಯಿರಿ।",
+        "ur": "نابالغ بچے کا پورا نام پاسپورٹ درخواست میں چھپے ہوئے نام کے مطابق لکھیں۔"
+      },
+      "why_needed": {
+        "en": "Links this declaration to the child named on the passport application.",
+        "hi": "यह घोषणा पासपोर्ट आवेदन में नामित बच्चे से जुड़ती है।",
+        "kn": "ಈ ಘೋಷಣೆಯನ್ನು ಪಾಸ್‌ಪೋರ್ಟ್ ಅರ್ಜಿಯ ಮಗುವಿಗೆ ಜೋಡಿಸುತ್ತದೆ।",
+        "ur": "یہ اقرار نامہ پاسپورٹ درخواست میں درج بچے سے منسلک ہوتا ہے۔"
+      },
+      "example": "Aarav Sharma",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "date_of_birth",
+      "aliases": [
+        "date of birth",
+        "birth"
+      ],
+      "type": "date",
+      "what_to_enter": {
+        "en": "Enter the minor child's date of birth in DD/MM/YYYY as on the birth proof.",
+        "hi": "जन्म प्रमाण के अनुसार बच्चे की जन्म तिथि DD/MM/YYYY में लिखें।",
+        "kn": "ಜನನ ಪುರಾವೆಯಂತೆ ಮಗುವಿನ ಜನ್ಮ ದಿನಾಂಕವನ್ನು DD/MM/YYYY ನಲ್ಲಿ ಬರೆಯಿರಿ।",
+        "ur": "پیدائش کے ثبوت کے مطابق بچے کی تاریخ پیدائش DD/MM/YYYY میں لکھیں۔"
+      },
+      "why_needed": {
+        "en": "Confirms the child's identity on the declaration.",
+        "hi": "घोषणा पर बच्चे की पहचान की पुष्टि करता है।",
+        "kn": "ಘೋಷಣೆಯಲ್ಲಿ ಮಗುವಿನ ಗುರುತನ್ನು ದೃಢಪಡಿಸುತ್ತದೆ।",
+        "ur": "اقرار نامے پر بچے کی شناخت کی تصدیق کرتا ہے۔"
+      },
+      "example": "15/08/2018",
+      "validation": {
+        "kind": "date",
+        "format": "DD/MM/YYYY"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "father_name",
+      "aliases": [
+        "name of father",
+        "father"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the father's full name as on his identity or passport document.",
+        "hi": "पिता का पूरा नाम उनके पहचान/पासपोर्ट दस्तावेज़ के अनुसार लिखें।",
+        "kn": "ತಂದೆಯ ಪೂರ್ಣ ಹೆಸರನ್ನು ಅವರ ಗುರುತು/ಪಾಸ್‌ಪೋರ್ಟ್ ದಾಖಲೆಯಂತೆ ಬರೆಯಿರಿ।",
+        "ur": "والد کا پورا نام ان کے شناختی/پاسپورٹ دستاویز کے مطابق لکھیں۔"
+      },
+      "why_needed": {
+        "en": "Records the father's particulars on the annexure.",
+        "hi": "परिशिष्ट पर पिता का विवरण दर्ज करता है।",
+        "kn": "ಅನುಬಂಧದಲ್ಲಿ ತಂದೆಯ ವಿವರಗಳನ್ನು ದಾಖಲಿಸುತ್ತದೆ।",
+        "ur": "ضمیمہ پر والد کی تفصیلات درج کرتا ہے۔"
+      },
+      "example": "Rohan Sharma",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "mother_name",
+      "aliases": [
+        "name of mother",
+        "mother"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the mother's full name as on her identity or passport document.",
+        "hi": "माता का पूरा नाम उनके पहचान/पासपोर्ट दस्तावेज़ के अनुसार लिखें।",
+        "kn": "ತಾಯಿಯ ಪೂರ್ಣ ಹೆಸರನ್ನು ಅವರ ಗುರುತು/ಪಾಸ್‌ಪೋರ್ಟ್ ದಾಖಲೆಯಂತೆ ಬರೆಯಿರಿ।",
+        "ur": "والدہ کا پورا نام ان کے شناختی/پاسپورٹ دستاویز کے مطابق لکھیں۔"
+      },
+      "why_needed": {
+        "en": "Records the mother's particulars on the annexure.",
+        "hi": "परिशिष्ट पर माता का विवरण दर्ज करता है।",
+        "kn": "ಅನುಬಂಧದಲ್ಲಿ ತಾಯಿಯ ವಿವರಗಳನ್ನು ದಾಖಲಿಸುತ್ತದೆ।",
+        "ur": "ضمیمہ پر والدہ کی تفصیلات درج کرتا ہے۔"
+      },
+      "example": "Neha Sharma",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "parent_citizenship",
+      "aliases": [
+        "citizenship"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Write the parent's citizenship as printed options require (often Indian).",
+        "hi": "माता/पिता की नागरिकता फॉर्म के विकल्प के अनुसार लिखें (अक्सर भारतीय)।",
+        "kn": "ತಂದೆ/ತಾಯಿಯ ಪೌರತ್ವವನ್ನು ಫಾರ್ಮ್‌ನ ಆಯ್ಕೆಯಂತೆ ಬರೆಯಿರಿ (ಸಾಮಾನ್ಯವಾಗಿ Indian).",
+        "ur": "والد/والدہ کی شہریت فارم کے اختیار کے مطابق لکھیں (اکثر بھارتی)۔"
+      },
+      "why_needed": {
+        "en": "States each parent's nationality for the declaration.",
+        "hi": "घोषणा के लिए प्रत्येक माता/पिता की राष्ट्रीयता बताता है।",
+        "kn": "ಘೋಷಣೆಗೆ ಪ್ರತಿ ಪೋಷಕರ ರಾಷ್ಟ್ರೀಯತೆಯನ್ನು ಹೇಳುತ್ತದೆ।",
+        "ur": "اقرار نامے کے لیے ہر سرپرست کی قومیت بتاتا ہے۔"
+      },
+      "example": "Indian",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "parent_passport_no",
+      "aliases": [
+        "passport no",
+        "passport number"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the parent's passport number if they hold one; otherwise leave blank or follow printed options.",
+        "hi": "यदि माता/पिता के पास पासपोर्ट है तो नंबर लिखें; अन्यथा खाली छोड़ें या छपे विकल्प देखें।",
+        "kn": "ತಂದೆ/ತಾಯಿಗೆ ಪಾಸ್‌ಪೋರ್ಟ್ ಇದ್ದರೆ ಸಂಖ್ಯೆ ಬರೆಯಿರಿ; ಇಲ್ಲದಿದ್ದರೆ ಖಾಲಿ ಬಿಡಿ ಅಥವಾ ಮುದ್ರಿತ ಆಯ್ಕೆ ನೋಡಿ।",
+        "ur": "اگر والد/والدہ کے پاس پاسپورٹ ہے تو نمبر لکھیں؛ ورنہ خالی چھوڑیں یا چھپے اختیارات دیکھیں۔"
+      },
+      "why_needed": {
+        "en": "Identifies the declaring parent when a passport exists.",
+        "hi": "पासपोर्ट होने पर घोषणाकर्ता अभिभावक की पहचान करता है।",
+        "kn": "ಪಾಸ್‌ಪೋರ್ಟ್ ಇದ್ದಾಗ ಘೋಷಣೆ ಮಾಡುವ ಪೋಷಕರನ್ನು ಗುರುತಿಸುತ್ತದೆ।",
+        "ur": "پاسپورٹ موجود ہونے پر اقرار کرنے والے سرپرست کی شناخت کرتا ہے۔"
+      },
+      "example": "Z1234567",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "contact_no",
+      "aliases": [
+        "contact no",
+        "contact number",
+        "mobile number"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter a 10-digit mobile number the passport office can use to reach the parent.",
+        "hi": "10 अंकों का मोबाइल नंबर लिखें जिस पर पासपोर्ट कार्यालय संपर्क कर सके।",
+        "kn": "ಪಾಸ್‌ಪೋರ್ಟ್ ಕಚೇರಿ ಸಂಪರ್ಕಿಸಬಹುದಾದ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಬರೆಯಿರಿ।",
+        "ur": "۱۰ ہندسوں کا موبائل نمبر لکھیں جس پر پاسپورٹ دفتر رابطہ کر سکے۔"
+      },
+      "why_needed": {
+        "en": "Lets the office contact the declaring parent.",
+        "hi": "कार्यालय घोषणाकर्ता अभिभावक से संपर्क कर सके।",
+        "kn": "ಕಚೇರಿ ಘೋಷಣೆ ಮಾಡುವ ಪೋಷಕರನ್ನು ಸಂಪರ್ಕಿಸಲು।",
+        "ur": "دفتر اقرار کرنے والے سرپرست سے رابطہ کر سکے۔"
+      },
+      "example": "9876543210",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "email_id",
+      "aliases": [
+        "email id",
+        "email"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the parent's working email address.",
+        "hi": "माता/पिता का सही ईमेल पता लिखें।",
+        "kn": "ತಂದೆ/ತಾಯಿಯ ಕಾರ್ಯನಿರ್ವಹಿಸುವ ಇಮೇಲ್ ವಿಳಾಸ ಬರೆಯಿರಿ।",
+        "ur": "والد/والدہ کا درست ای میل پتہ لکھیں۔"
+      },
+      "why_needed": {
+        "en": "Used for application updates when the office emails.",
+        "hi": "कार्यालय ईमेल भेजे तो आवेदन अपडेट के लिए।",
+        "kn": "ಕಚೇರಿ ಇಮೇಲ್ ಕಳುಹಿಸಿದಾಗ ಅರ್ಜಿ ನವೀಕರಣಕ್ಕೆ।",
+        "ur": "دفتر ای میل بھیجے تو درخواست کی تازہ کاری کے لیے۔"
+      },
+      "example": "parent@example.com",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "address",
+      "aliases": [
+        "address"
+      ],
+      "type": "multiline",
+      "what_to_enter": {
+        "en": "Enter the full postal address of the father or mother as the column asks.",
+        "hi": "पिता या माता का पूरा डाक पता कॉलम के अनुसार लिखें।",
+        "kn": "ತಂದೆ ಅಥವಾ ತಾಯಿಯ ಪೂರ್ಣ ಅಂಚೆ ವಿಳಾಸವನ್ನು ಕಾಲಮ್‌ನಂತೆ ಬರೆಯಿರಿ।",
+        "ur": "والد یا والدہ کا پورا ڈاک پتہ کالم کے مطابق لکھیں۔"
+      },
+      "why_needed": {
+        "en": "Gives the office a postal contact for each parent column.",
+        "hi": "प्रत्येक अभिभावक कॉलम के लिए डाक संपर्क देता है।",
+        "kn": "ಪ್ರತಿ ಪೋಷಕ ಕಾಲಮ್‌ಗೆ ಅಂಚೆ ಸಂಪರ್ಕ ನೀಡುತ್ತದೆ।",
+        "ur": "ہر سرپرست کالم کے لیے ڈاک رابطہ دیتا ہے۔"
+      },
+      "example": "12 MG Road, Bengaluru 560001",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "arn_no",
+      "aliases": [
+        "arn no",
+        "passport application vide arn no"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Copy the Application Reference Number (ARN) from the passport application receipt.",
+        "hi": "पासपोर्ट आवेदन रसीद से ARN (Application Reference Number) नकल करें।",
+        "kn": "ಪಾಸ್‌ಪೋರ್ಟ್ ಅರ್ಜಿ ರಸೀದಿಯಿಂದ ARN (Application Reference Number) ನಕಲು ಮಾಡಿ।",
+        "ur": "پاسپورٹ درخواست کی رسید سے ARN (Application Reference Number) نقل کریں۔"
+      },
+      "why_needed": {
+        "en": "Ties this annexure to the filed passport application.",
+        "hi": "इस परिशिष्ट को दायर पासपोर्ट आवेदन से जोड़ता है।",
+        "kn": "ಈ ಅನುಬಂಧವನ್ನು ಸಲ್ಲಿಸಿದ ಪಾಸ್‌ಪೋರ್ಟ್ ಅರ್ಜಿಗೆ ಜೋಡಿಸುತ್ತದೆ।",
+        "ur": "اس ضمیمہ کو جمع شدہ پاسپورٹ درخواست سے جوڑتا ہے۔"
+      },
+      "example": "22-0001234567",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "aadhaar_no",
+      "aliases": [
+        "aadhaar card no",
+        "aadhaar"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the 12-digit Aadhaar number if you are using Aadhaar as the identity option.",
+        "hi": "यदि आधार विकल्प चुन रहे हैं तो 12 अंकों का आधार नंबर लिखें।",
+        "kn": "ಆಧಾರ್ ಆಯ್ಕೆ ಬಳಸುತ್ತಿದ್ದರೆ 12 ಅಂಕಿಯ ಆಧಾರ್ ಸಂಖ್ಯೆ ಬರೆಯಿರಿ।",
+        "ur": "اگر آپ آدھار اختیار استعمال کر رہے ہیں تو ۱۲ ہندسوں کا آدھار نمبر لکھیں۔"
+      },
+      "why_needed": {
+        "en": "One of the printed identity options for the declaring parent.",
+        "hi": "घोषणाकर्ता अभिभावक के छपे पहचान विकल्पों में से एक।",
+        "kn": "ಘೋಷಣೆ ಮಾಡುವ ಪೋಷಕರ ಮುದ್ರಿತ ಗುರುತಿನ ಆಯ್ಕೆಗಳಲ್ಲಿ ಒಂದು।",
+        "ur": "اقرار کرنے والے سرپرست کے چھپے شناختی اختیارات میں سے ایک۔"
+      },
+      "example": "1234 5678 9012",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "voter_id_no",
+      "aliases": [
+        "voter id card no",
+        "voter id"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the voter ID number if that is the identity document you are citing.",
+        "hi": "यदि मतदाता पहचान पत्र विकल्प है तो उसका नंबर लिखें।",
+        "kn": "ಮತದಾರ ಗುರುತಿನ ಚೀಟಿ ಆಯ್ಕೆಯಾದರೆ ಅದರ ಸಂಖ್ಯೆ ಬರೆಯಿರಿ।",
+        "ur": "اگر ووٹر شناختی کارڈ اختیار ہے تو اس کا نمبر لکھیں۔"
+      },
+      "why_needed": {
+        "en": "Alternate printed identity option for the parent.",
+        "hi": "अभिभावक के लिए वैकल्पिक छपा पहचान विकल्प।",
+        "kn": "ಪೋಷಕರಿಗೆ ಪರ್ಯಾಯ ಮುದ್ರಿತ ಗುರುತಿನ ಆಯ್ಕೆ।",
+        "ur": "سرپرست کے لیے متبادل چھپا شناختی اختیار۔"
+      },
+      "example": "ABC1234567",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "pan_no",
+      "aliases": [
+        "pan card no",
+        "pan"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the 10-character PAN if you are using PAN as the identity option.",
+        "hi": "यदि पैन विकल्प है तो 10 अक्षरों का पैन लिखें।",
+        "kn": "PAN ಆಯ್ಕೆಯಾದರೆ 10 ಅಕ್ಷರದ PAN ಬರೆಯಿರಿ।",
+        "ur": "اگر پان اختیار ہے تو ۱۰ حروف کا پان لکھیں۔"
+      },
+      "why_needed": {
+        "en": "Alternate printed identity option for the parent.",
+        "hi": "अभिभावक के लिए वैकल्पिक छपा पहचान विकल्प।",
+        "kn": "ಪೋಷಕರಿಗೆ ಪರ್ಯಾಯ ಮುದ್ರಿತ ಗುರುತಿನ ಆಯ್ಕೆ।",
+        "ur": "سرپرست کے لیے متبادل چھپا شناختی اختیار۔"
+      },
+      "example": "ABCDE1234F",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "driving_license_no",
+      "aliases": [
+        "driving license no",
+        "driving licence no"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Enter the driving licence number if that is the identity option you choose.",
+        "hi": "यदि ड्राइविंग लाइसेंस विकल्प है तो उसका नंबर लिखें।",
+        "kn": "ಚಾಲನಾ ಪರವಾನಗಿ ಆಯ್ಕೆಯಾದರೆ ಅದರ ಸಂಖ್ಯೆ ಬರೆಯಿರಿ।",
+        "ur": "اگر ڈرائیونگ لائسنس اختیار ہے تو اس کا نمبر لکھیں۔"
+      },
+      "why_needed": {
+        "en": "Alternate printed identity option for the parent.",
+        "hi": "अभिभावक के लिए वैकल्पिक छपा पहचान विकल्प।",
+        "kn": "ಪೋಷಕರಿಗೆ ಪರ್ಯಾಯ ಮುದ್ರಿತ ಗುರುತಿನ ಆಯ್ಕೆ।",
+        "ur": "سرپرست کے لیے متبادل چھپا شناختی اختیار۔"
+      },
+      "example": "KA01 20110012345",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "signature_parent",
+      "aliases": [
+        "signature of father/mother",
+        "signature/consent of shri/smt",
+        "signature"
+      ],
+      "type": "signature",
+      "what_to_enter": {
+        "en": "Leave this blank in FormSathi. Sign the official paper form by hand where indicated.",
+        "hi": "यहाँ FormSathi में कुछ न लिखें। सरकारी कागज़ पर जहाँ लिखा है वहाँ हाथ से हस्ताक्षर करें।",
+        "kn": "FormSathi ನಲ್ಲಿ ಇದನ್ನು ಖಾಲಿ ಬಿಡಿ. ಅಧಿಕೃತ ಕಾಗದದಲ್ಲಿ ಸೂಚಿಸಿದಲ್ಲಿ ಕೈಯಿಂದ ಸಹಿ ಮಾಡಿ।",
+        "ur": "FormSathi میں یہاں کچھ نہ لکھیں۔ سرکاری کاغذ پر جہاں لکھا ہے وہاں ہاتھ سے دستخط کریں۔"
+      },
+      "why_needed": {
+        "en": "A handwritten signature belongs only on the official paper.",
+        "hi": "हस्ताक्षर केवल आधिकारिक कागज़ पर ही लिखें।",
+        "kn": "ಸಹಿ ಕೇವಲ ಅಧಿಕೃತ ಕಾಗದದಲ್ಲಿಯೇ ಇರಬೇಕು।",
+        "ur": "دستخط صرف سرکاری کاغذ پر ہی ہونے چاہیے۔"
+      },
+      "example": "[SIGN MANUALLY]",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "date",
+      "aliases": [
+        "date"
+      ],
+      "type": "date",
+      "what_to_enter": {
+        "en": "Write today's date of signing in DD/MM/YYYY.",
+        "hi": "हस्ताक्षर की तिथि DD/MM/YYYY में लिखें।",
+        "kn": "ಸಹಿ ಮಾಡುವ ದಿನಾಂಕವನ್ನು DD/MM/YYYY ನಲ್ಲಿ ಬರೆಯಿರಿ।",
+        "ur": "دستخط کی تاریخ DD/MM/YYYY میں لکھیں۔"
+      },
+      "why_needed": {
+        "en": "Records when the declaration was signed.",
+        "hi": "घोषणा कब हस्ताक्षरित हुई यह दर्ज करता है।",
+        "kn": "ಘೋಷಣೆಗೆ ಯಾವಾಗ ಸಹಿ ಆಯಿತು ಎಂದು ದಾಖಲಿಸುತ್ತದೆ।",
+        "ur": "اقرار نامہ کب دستخط ہوا یہ درج کرتا ہے۔"
+      },
+      "example": "01/11/2026",
+      "validation": {
+        "kind": "date",
+        "format": "DD/MM/YYYY"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    },
+    {
+      "field_id": "place",
+      "aliases": [
+        "place"
+      ],
+      "type": "text",
+      "what_to_enter": {
+        "en": "Write the city or town where you are signing the declaration.",
+        "hi": "जहाँ आप घोषणा पर हस्ताक्षर कर रहे हैं वह नगर लिखें।",
+        "kn": "ನೀವು ಘೋಷಣೆಗೆ ಸಹಿ ಮಾಡುತ್ತಿರುವ ನಗರ/ಊರು ಬರೆಯಿರಿ।",
+        "ur": "جہاں آپ اقرار نامہ پر دستخط کر رہے ہیں وہ شہر لکھیں۔"
+      },
+      "why_needed": {
+        "en": "Records the place of signing.",
+        "hi": "हस्ताक्षर का स्थान दर्ज करता है।",
+        "kn": "ಸಹಿಯ ಸ್ಥಳವನ್ನು ದಾಖಲಿಸುತ್ತದೆ।",
+        "ur": "دستخط کی جگہ درج کرتا ہے۔"
+      },
+      "example": "Bengaluru",
+      "validation": {
+        "kind": "non_empty"
+      },
+      "source_reference": "FormSathi guidance for passport parent declaration layout"
+    }
+  ]
+}

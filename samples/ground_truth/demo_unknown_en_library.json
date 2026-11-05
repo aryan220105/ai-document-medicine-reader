@@ -1,0 +1,134 @@
+{
+  "form_id": null,
+  "language": "en",
+  "rtl": false,
+  "fields": [
+    {
+      "field_id": "full_name",
+      "label": "Full Name",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 184,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "father_name",
+      "label": "Father's Name",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 294,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "date_of_birth",
+      "label": "Date of Birth",
+      "type": "date",
+      "pixel": {
+        "x": 484,
+        "y": 406,
+        "width": 300,
+        "height": 38,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "mobile_number",
+      "label": "Mobile Number",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 514,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "email",
+      "label": "Email ID",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 624,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "pincode",
+      "label": "PIN Code",
+      "type": "text",
+      "pixel": {
+        "x": 484,
+        "y": 734,
+        "width": 692,
+        "height": 44,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "address",
+      "label": "Residential Address",
+      "type": "multiline",
+      "pixel": {
+        "x": 64,
+        "y": 890,
+        "width": 1112,
+        "height": 110,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "declaration_date",
+      "label": "Date",
+      "type": "date",
+      "pixel": {
+        "x": 484,
+        "y": 1036,
+        "width": 300,
+        "height": 38,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    },
+    {
+      "field_id": "signature",
+      "label": "Signature of Applicant",
+      "type": "signature",
+      "pixel": {
+        "x": 484,
+        "y": 1144,
+        "width": 420,
+        "height": 86,
+        "image_width": 1240,
+        "image_height": 1500
+      },
+      "options": []
+    }
+  ],
+  "image": "demo_unknown_en_library.png"
+}

@@ -10,10 +10,14 @@ export function PreviewDialog({ preview, onClose }: Props) {
     return null;
   }
   return (
-    <div className="fixed inset-0 z-20 flex items-center justify-center bg-slate-900/50 p-4" role="dialog" aria-label="Completed reference preview">
-      <div className="w-full max-w-lg rounded-lg bg-white p-5">
-        <h2 className="font-serif text-xl">Completed Reference Preview</h2>
-        <p className="mt-2 text-sm text-slate-700">
+    <div
+      className="fixed inset-0 z-20 flex items-center justify-center bg-ink/45 p-4 backdrop-blur-sm"
+      role="dialog"
+      aria-label="Completed reference preview"
+    >
+      <div className="w-full max-w-lg animate-rise rounded-3xl border border-softline bg-foam p-6 shadow-soft">
+        <h2 className="font-display text-2xl text-ink">Completed Reference Preview</h2>
+        <p className="mt-2 text-sm text-pine">
           Review this copy, then write the answers onto the official form. FormSathi does not submit anything.
         </p>
         {preview.warnings.length ? (
@@ -23,16 +27,18 @@ export function PreviewDialog({ preview, onClose }: Props) {
             ))}
           </ul>
         ) : null}
-        {preview.pdf_url ? (
-          <a className="mt-4 inline-block rounded bg-teal-800 px-4 py-2 text-white" href={preview.pdf_url} download>
-            Download PDF
-          </a>
-        ) : (
-          <p className="mt-3 text-sm">Correct overflow warnings before a PDF can be created.</p>
-        )}
-        <button type="button" className="ml-3 mt-4 text-slate-700 underline" onClick={onClose}>
-          Close
-        </button>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          {preview.pdf_url ? (
+            <a className="fs-btn-primary" href={preview.pdf_url} download>
+              Download PDF
+            </a>
+          ) : (
+            <p className="text-sm text-pine">Correct overflow warnings before a PDF can be created.</p>
+          )}
+          <button type="button" className="fs-btn-ghost" onClick={onClose}>
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );

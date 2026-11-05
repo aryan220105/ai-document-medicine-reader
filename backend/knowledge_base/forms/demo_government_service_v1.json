@@ -66,12 +66,14 @@
       "what_to_enter": {
         "en": "Enter the ward or locality number printed on your civic record, if you have it.",
         "hi": "Yadi pata ho to civic record ka ward number likhen.",
-        "kn": "Civic dakhale iruvaga ward sankhye baredi."
+        "kn": "Civic dakhale iruvaga ward sankhye baredi.",
+        "ur": "اگر آپ کے پاس ہے تو اپنے بلدیاتی ریکارڈ پر چھپا وارڈ یا علاقے کا نمبر لکھیں۔"
       },
       "why_needed": {
         "en": "Helps route a local service request.",
         "hi": "Sthaniya seva ke routing ke liye.",
-        "kn": "Sthaliya sevege kaluhisalu."
+        "kn": "Sthaliya sevege kaluhisalu.",
+        "ur": "مقامی درخواست کو صحیح دفتر تک پہنچانے میں مدد دیتا ہے۔"
       },
       "example": "12",
       "validation": {
@@ -89,12 +91,14 @@
       "what_to_enter": {
         "en": "Choose the printed service you are requesting, such as Water or Street light.",
         "hi": "Water ya Street light jaise chhape seva vikalp chunen.",
-        "kn": "Water athava Street light haage mudrisida seveyannu aayisi."
+        "kn": "Water athava Street light haage mudrisida seveyannu aayisi.",
+        "ur": "چھپی ہوئی خدمت منتخب کریں جس کی آپ درخواست کر رہے ہیں، جیسے پانی یا گلی کی بتی۔"
       },
       "why_needed": {
         "en": "Tells the office which demo service is needed.",
         "hi": "Kaunsi seva chahiye yeh batata hai.",
-        "kn": "Yava seve beku embudannu heluttade."
+        "kn": "Yava seve beku embudannu heluttade.",
+        "ur": "دفتر کو بتاتا ہے کہ کون سی خدمت درکار ہے۔"
       },
       "example": "Water",
       "validation": {
@@ -135,12 +139,14 @@
       "what_to_enter": {
         "en": "Mark only if you understand that this is a demonstration form.",
         "hi": "Tabhi chinhit karen jab aap samajhte hain ki yeh pradarshan form hai.",
-        "kn": "Idu pradarshana form endu tilididdare maatra gurutisi."
+        "kn": "Idu pradarshana form endu tilididdare maatra gurutisi.",
+        "ur": "صرف تب نشان لگائیں جب آپ سمجھتے ہوں کہ یہ ایک نمائشی فارم ہے۔"
       },
       "why_needed": {
         "en": "Confirms the applicant read the printed notice.",
         "hi": "Aavedak ne suchna padhi yeh darj karta hai.",
-        "kn": "Arjidaaru suchane nodida dakhale."
+        "kn": "Arjidaaru suchane nodida dakhale.",
+        "ur": "تصدیق کرتا ہے کہ درخواست دہندہ نے چھپی اطلاع پڑھ لی ہے۔"
       },
       "example": "I understand",
       "validation": {

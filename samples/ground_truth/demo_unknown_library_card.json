@@ -11,7 +11,7 @@
         "width": 740,
         "height": 40,
         "image_width": 1240,
-        "image_height": 1754
+        "image_height": 1400
       },
       "options": []
     },
@@ -25,7 +25,7 @@
         "width": 300,
         "height": 32,
         "image_width": 1240,
-        "image_height": 1754
+        "image_height": 1400
       },
       "options": []
     },
@@ -39,7 +39,7 @@
         "width": 740,
         "height": 40,
         "image_width": 1240,
-        "image_height": 1754
+        "image_height": 1400
       },
       "options": []
     },
@@ -53,7 +53,7 @@
         "width": 400,
         "height": 40,
         "image_width": 1240,
-        "image_height": 1754
+        "image_height": 1400
       },
       "options": []
     }

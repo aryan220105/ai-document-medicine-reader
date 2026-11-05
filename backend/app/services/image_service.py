@@ -9,7 +9,18 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-MAX_OCR_DIMENSION = 1800
+# Indic and Arabic scripts carry their meaning in small marks -- vowel signs, nuqtas,
+# dots above and below -- that disappear first when a page is downscaled. 1800 was enough
+# for Latin and too tight for the rest.
+MAX_OCR_DIMENSION = 2400
+
+# A page boundary covers most of the frame and reaches all four edges. Anything smaller
+# is an element inside the document -- usually a ruled table -- and cropping to it
+# silently deletes the rest of the form.
+MIN_DOCUMENT_AREA_RATIO = 0.60
+EDGE_INSET_RATIO = 0.12
+# Above this the image already *is* the page, so warping it would only resample the text.
+FULL_PAGE_AREA_RATIO = 0.97
 
 
 @dataclass
@@ -90,6 +101,17 @@ class ImageService:
         return cv2.resize(image, (int(width * scale), int(height * scale)), interpolation=cv2.INTER_AREA)
 
     def _largest_document_contour(self, image: np.ndarray) -> np.ndarray | None:
+        """Find the page's own edge, for a photograph of a document on a background.
+
+        Only the page edge. A form is full of large four-sided shapes -- every ruled table
+        is one -- and cropping to one of those throws away the rest of the document. On a
+        Kannada electoral form the two-column table won this contest and the processed
+        page lost its title, its first three fields and its entire lower half, which then
+        looked like a field-detection failure rather than a cropping one.
+
+        So a candidate must behave like a page boundary: cover most of the image, and
+        reach close to all four edges. An interior table satisfies neither.
+        """
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
         edges = cv2.Canny(blurred, 50, 150)
@@ -98,16 +120,32 @@ class ImageService:
         if not contours:
             return None
         height, width = image.shape[:2]
-        image_area = height * width
+        image_area = float(height * width)
         best = None
         best_area = 0.0
         for contour in contours:
             peri = cv2.arcLength(contour, True)
             approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
             area = cv2.contourArea(approx)
-            if len(approx) == 4 and area > best_area and area > 0.18 * image_area:
-                best = approx
-                best_area = area
+            if len(approx) != 4 or area <= best_area:
+                continue
+            if area < MIN_DOCUMENT_AREA_RATIO * image_area:
+                continue
+            x, y, w, h = cv2.boundingRect(approx)
+            reaches_edges = (
+                x <= EDGE_INSET_RATIO * width
+                and y <= EDGE_INSET_RATIO * height
+                and x + w >= (1.0 - EDGE_INSET_RATIO) * width
+                and y + h >= (1.0 - EDGE_INSET_RATIO) * height
+            )
+            if not reaches_edges:
+                continue
+            if area > FULL_PAGE_AREA_RATIO * image_area:
+                # Already a flat, full-bleed page: a rendered PDF, or a scan with no
+                # visible margin. Warping it would only resample and blur the text.
+                continue
+            best = approx
+            best_area = area
         return best
 
     def _order_points(self, points: np.ndarray) -> np.ndarray:
@@ -138,6 +176,12 @@ class ImageService:
 
     def _enhance_for_ocr(self, image: np.ndarray) -> np.ndarray:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # A rendered or cleanly scanned page is already black ink on white paper.
+        # Denoising and a second threshold break Urdu and Hindi strokes; Tesseract
+        # reads the grayscale page itself far more accurately. Photographs of a
+        # form on a desk are darker and still take the cleanup below.
+        if float((gray > 200).mean()) > 0.85:
+            return cv2.cvtColor(self._deskew(gray), cv2.COLOR_GRAY2BGR)
         denoised = cv2.fastNlMeansDenoising(gray, None, 15, 7, 21)
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
         contrasted = clahe.apply(denoised)

@@ -51,6 +51,34 @@ class FieldDetectionService:
             )
         return fields
 
+    def detect_marks(self, image_path: str, page_index: int) -> list[DetectedField]:
+        """Only the tick boxes and radio buttons.
+
+        Exposed separately because a page analysed as a table grid still needs its
+        checkboxes, and they are found by a different measurement than the cells are.
+        """
+        image = cv2.imdecode(np.fromfile(image_path, dtype=np.uint8), cv2.IMREAD_COLOR)
+        if image is None:
+            image = cv2.imread(image_path)
+        if image is None:
+            return []
+        height, width = image.shape[:2]
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        marks = self._drop_glyph_rows(self._check_marks(gray, width, height, page_index))
+        merged = self._merge(self._prune(marks, width, height))
+        return [
+            DetectedField(
+                id=f"p{page_index}-m{index}",
+                page_index=page_index,
+                label="",
+                field_type=candidate.field_type,
+                input_box=normalize_box(candidate.pixel),
+                confidence=candidate.confidence,
+                confidence_reasons=candidate.reasons,
+            )
+            for index, candidate in enumerate(merged)
+        ]
+
     def _prune(self, candidates: list[DetectionCandidate], width: int, height: int) -> list[DetectionCandidate]:
         kept: list[DetectionCandidate] = []
         for candidate in candidates:
